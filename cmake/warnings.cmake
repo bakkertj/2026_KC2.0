@@ -16,13 +16,29 @@ function(add_demo session name)
   add_test(NAME ${tgt} COMMAND ${tgt})
 endfunction()
 
-# add_exercise_variant(<exercise> <variant>) : builds starter or solution with its tests
-function(add_exercise_variant exercise variant)
-  set(tgt ${exercise}_${variant})
-  file(GLOB srcs CONFIGURE_DEPENDS ${variant}/*.cpp)
+# add_exercise_variant(<exercise> <variant> <std>) : builds one variant of an exercise.
+#   <variant>/src/*.cpp + <variant>/include  -> static library  <exercise>_<variant>_lib
+#   <variant>/main.cpp                       -> executable      <exercise>_<variant>
+#   tests/*.cpp                              -> test executable <exercise>_<variant>_tests
+# <std> is the C++ standard the variant is compiled as (11 for a C++11 starter, 23 otherwise).
+function(add_exercise_variant exercise variant std)
+  set(base ${exercise}_${variant})
+  file(GLOB srcs CONFIGURE_DEPENDS ${variant}/src/*.cpp)
   file(GLOB tests CONFIGURE_DEPENDS tests/*.cpp)
-  add_executable(${tgt} ${srcs} ${tests})
-  target_include_directories(${tgt} PRIVATE ${variant})
-  target_link_libraries(${tgt} PRIVATE course_warnings doctest)
-  add_test(NAME ${tgt} COMMAND ${tgt})
+
+  add_library(${base}_lib STATIC ${srcs})
+  target_include_directories(${base}_lib PUBLIC ${variant}/include)
+  target_link_libraries(${base}_lib PUBLIC course_warnings)
+  set_target_properties(${base}_lib PROPERTIES CXX_STANDARD ${std})
+
+  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${variant}/main.cpp)
+    add_executable(${base} ${variant}/main.cpp)
+    target_link_libraries(${base} PRIVATE ${base}_lib)
+    set_target_properties(${base} PROPERTIES CXX_STANDARD ${std})
+  endif()
+
+  add_executable(${base}_tests ${tests})
+  target_link_libraries(${base}_tests PRIVATE ${base}_lib doctest)
+  set_target_properties(${base}_tests PROPERTIES CXX_STANDARD ${std})
+  add_test(NAME ${base}_tests COMMAND ${base}_tests)
 endfunction()
