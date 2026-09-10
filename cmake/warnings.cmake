@@ -37,7 +37,12 @@ endfunction()
 function(add_exercise_variant exercise variant std)
   set(base ${exercise}_${variant})
   file(GLOB srcs CONFIGURE_DEPENDS ${variant}/src/*.cpp)
-  file(GLOB tests CONFIGURE_DEPENDS tests/*.cpp)
+  # Tests live in <variant>/tests/ when the exercise changes interfaces (Session 2 on),
+  # otherwise in a shared tests/ directory.
+  file(GLOB tests CONFIGURE_DEPENDS ${variant}/tests/*.cpp)
+  if(NOT tests)
+    file(GLOB tests CONFIGURE_DEPENDS tests/*.cpp)
+  endif()
 
   add_library(${base}_lib STATIC ${srcs})
   target_include_directories(${base}_lib PUBLIC ${variant}/include)
@@ -54,4 +59,16 @@ function(add_exercise_variant exercise variant std)
   target_link_libraries(${base}_tests PRIVATE ${base}_lib doctest)
   set_target_properties(${base}_tests PROPERTIES CXX_STANDARD ${std})
   add_test(NAME ${base}_tests COMMAND ${base}_tests)
+endfunction()
+
+# add_report_diff_test(<exercise>) : the starter and solution executables must print
+# byte-identical reports for data/sample.csv. The behavior-preservation proof when an
+# exercise changes interfaces and therefore its tests.
+function(add_report_diff_test exercise)
+  add_test(NAME ${exercise}_report_identical
+    COMMAND ${CMAKE_COMMAND}
+      -DSTARTER=$<TARGET_FILE:${exercise}_starter>
+      -DSOLUTION=$<TARGET_FILE:${exercise}_solution>
+      -DDATA=${CMAKE_CURRENT_SOURCE_DIR}/data/sample.csv
+      -P ${CMAKE_SOURCE_DIR}/cmake/report_diff.cmake)
 endfunction()
