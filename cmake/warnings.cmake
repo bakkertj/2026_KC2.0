@@ -1,3 +1,16 @@
+# Toolchain notes (see handouts/toolchain-support-matrix.md):
+#   GCC 14 + libstdc++       : everything this course uses.
+#   Clang 18 + libstdc++ 14  : NO std::expected (libstdc++ gates it on __cpp_concepts >= 202002L,
+#                              which Clang reports only from version 19).
+#   Clang 18 + libc++ 18     : std::expected and std::print present; from_chars<double> is NOT
+#                              (libc++ 20). The Session 1 solution falls back to strtod there.
+# So Clang builds default to libc++. Override with -DCOURSE_LIBCXX=OFF.
+option(COURSE_LIBCXX "Use libc++ when compiling with Clang" ON)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND COURSE_LIBCXX)
+  add_compile_options(-stdlib=libc++)
+  add_link_options(-stdlib=libc++)
+endif()
+
 # Shared warning flags. Every demo and exercise target links course_warnings.
 add_library(course_warnings INTERFACE)
 target_compile_options(course_warnings INTERFACE

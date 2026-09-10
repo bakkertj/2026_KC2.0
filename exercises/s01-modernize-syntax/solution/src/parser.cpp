@@ -1,8 +1,10 @@
 #include "telemetry/parser.h"
 
 #include <charconv>
+#include <cstdlib>
 #include <istream>
 #include <system_error>
+#include <version>
 
 #include "telemetry/config.h"
 
@@ -62,6 +64,18 @@ template <typename T>
     }
     return true;
 }
+
+// Feature-test macro (C++20 <version>): libc++ before 20 has no floating-point
+// from_chars, and does not define __cpp_lib_to_chars. Fall back to strtod there.
+#ifndef __cpp_lib_to_chars
+template <>
+[[nodiscard]] bool parse_number<double>(const std::string& text, double* out) {
+    if (text.empty()) return false;
+    char* end = nullptr;
+    *out = std::strtod(text.c_str(), &end);
+    return *end == '\0';
+}
+#endif
 
 }  // namespace
 

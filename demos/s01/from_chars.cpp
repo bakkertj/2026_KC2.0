@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <string>
 #include <system_error>
+#include <version>
 
 // [snippet: before]
 bool parse_value_cpp11(const std::string& text,
@@ -21,6 +22,7 @@ bool parse_value_cpp11(const std::string& text,
 }
 // [/snippet]
 
+#ifdef __cpp_lib_to_chars   // libc++ < 20 lacks floating-point from_chars
 // [snippet: after]
 bool parse_value(const std::string& text,
                  double* out) {
@@ -30,6 +32,9 @@ bool parse_value(const std::string& text,
     return ec == std::errc{} && ptr == last;
 }
 // [/snippet]
+#else
+bool parse_value(const std::string& text, double* out) { return parse_value_cpp11(text, out); }
+#endif
 
 int main() {
     double a = 0, b = 0;
