@@ -1,0 +1,27 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        include:
+          - { cc: gcc-14,   cxx: g++-14 }
+          - { cc: clang-18, cxx: clang++-18 }
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build ${{ matrix.cxx == 'g++-14' && 'g++-14' || 'clang-18' }}
+      - run: cmake -S . -B build -G Ninja -DCMAKE_C_COMPILER=${{ matrix.cc }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+      - run: cmake --build build
+      - run: ctest --test-dir build --output-on-failure
+  slides:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install -g @marp-team/marp-cli
+      - run: python3 tools/check-standard-tags.py slides/*.md
+      - run: bash slides/build.sh
+      - uses: actions/upload-artifact@v4
+        with: { name: slides, path: slides/out }

@@ -1,0 +1,84 @@
+/* @theme course */
+/* Marp theme for "The Evolution of C++: C++14 through C++23".
+   Slide templates (set with <!-- _class: ... --> on a slide):
+     feature   : title + standard badge + problem statement + code
+     twocol    : before/after columns (wrap columns in <div class="cols"><div>...</div><div>...</div></div>)
+     evolution : vertical timeline of one feature across standards
+     demo      : compiler explorer link and what to watch for
+     takeaway  : closing statement for a segment
+   Standard badge: put <span class="badge cpp20">C++20</span> in the heading line. */
+
+@import 'default';
+
+:root {
+  --accent: #1f3864;
+  --accent-2: #2e5597;
+  --ink: #1a1a1a;
+  --muted: #666;
+  --code-bg: #f4f4f4;
+  --c14: #6c757d;
+  --c17: #2e7d32;
+  --c20: #1565c0;
+  --c23: #ad1457;
+  font-family: 'Calibri', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  color: var(--ink);
+}
+
+section {
+  padding: 48px 64px;
+  font-size: 26px;
+  line-height: 1.35;
+}
+
+h1 { color: var(--accent); font-size: 52px; }
+h2 { color: var(--accent); font-size: 40px; margin-bottom: 0.4em; }
+h3 { color: var(--accent-2); font-size: 30px; }
+
+section.lead { text-align: left; justify-content: center; }
+section.lead h1 { font-size: 60px; }
+section.lead p { color: var(--muted); font-size: 28px; }
+
+code, pre { font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace; }
+pre { background: var(--code-bg); font-size: 20px; line-height: 1.3; padding: 14px 18px; border-left: 4px solid var(--accent-2); }
+:not(pre) > code { background: var(--code-bg); color: #7b1e1e; padding: 0 4px; font-size: 0.9em; }
+
+/* Standard badges */
+.badge {
+  display: inline-block; float: right; margin-top: 6px;
+  font-size: 18px; font-weight: 700; color: #fff; letter-spacing: 0.03em;
+  padding: 2px 12px; border-radius: 14px; vertical-align: middle;
+}
+.badge.cpp14 { background: var(--c14); }
+.badge.cpp17 { background: var(--c17); }
+.badge.cpp20 { background: var(--c20); }
+.badge.cpp23 { background: var(--c23); }
+
+/* Problem statement under a feature title */
+.problem { color: var(--muted); font-style: italic; margin-top: -0.3em; }
+
+/* Two-column before/after */
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+.cols > div > h4 { margin: 0 0 6px 0; font-size: 22px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.cols pre { font-size: 18px; }
+.cols > div:first-child pre { border-left-color: #999; }
+.cols > div:last-child pre { border-left-color: var(--c20); }
+
+/* Evolution timeline */
+.evo { border-left: 4px solid var(--accent-2); padding-left: 20px; }
+.evo .step { margin-bottom: 10px; }
+.evo .step b { color: var(--accent-2); }
+.evo pre { font-size: 17px; margin: 4px 0; }
+
+/* Demo slides */
+section.demo { background: #eef2f8; }
+section.demo h2::before { content: 'DEMO  '; color: var(--c20); font-size: 0.7em; letter-spacing: 0.1em; }
+section.demo a { font-size: 22px; }
+
+/* Takeaway slides */
+section.takeaway { background: var(--accent); color: #fff; justify-content: center; }
+section.takeaway h2 { color: #fff; }
+section.takeaway strong { color: #ffd966; }
+
+/* Footer and pagination */
+section::after { color: var(--muted); font-size: 16px; }
+footer { color: var(--muted); font-size: 16px; }

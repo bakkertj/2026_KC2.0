@@ -1,0 +1,9 @@
+# Used in Session 5 to show attendees how to find modernization candidates.
+Checks: >
+  -*,
+  modernize-*,
+  -modernize-use-trailing-return-type,
+  cppcoreguidelines-pro-type-member-init,
+  performance-*
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
