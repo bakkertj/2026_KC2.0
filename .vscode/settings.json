@@ -1,0 +1,19 @@
+{
+  // Teaching layout: slides in the left editor group (Simple Browser), demo file on the
+  // right, terminal at the bottom. Share the VS Code window in Teams, not the screen.
+  "window.zoomLevel": 1,
+  "editor.fontSize": 16,
+  "editor.minimap.enabled": false,
+  "editor.renderWhitespace": "none",
+  "editor.lineNumbers": "on",
+  "terminal.integrated.fontSize": 16,
+  "workbench.activityBar.location": "hidden",
+  "workbench.statusBar.visible": false,
+  "breadcrumbs.enabled": false,
+  "workbench.editor.showTabs": "single",
+  "files.exclude": { "build/": true, "slides/out/": true, "Claude outputs/": true },
+  "markdown.marp.themes": ["./slides/theme/course.css"],
+  "markdown.marp.html": "all",
+  "C_Cpp.default.cppStandard": "c++23",
+  "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json"
+}

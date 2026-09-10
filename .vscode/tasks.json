@@ -1,0 +1,26 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "slides: serve (live reload)",
+      "type": "shell",
+      "command": "marp -s --html --theme-set slides/theme/course.css slides",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated", "reveal": "silent" }
+    },
+    {
+      "label": "build + test",
+      "type": "shell",
+      "command": "cmake -S . -B build && cmake --build build && ctest --test-dir build --output-on-failure",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "slides: export notes",
+      "type": "shell",
+      "command": "mkdir -p slides/out && for d in slides/0*.md; do marp --notes -o slides/out/$(basename ${d%.md}).notes.txt $d; done",
+      "problemMatcher": []
+    }
+  ]
+}
