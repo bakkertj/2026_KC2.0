@@ -26,4 +26,6 @@ Baseline: GCC 14 with libstdc++ 14, and Clang 18 with libc++ 18 (the repo's CMak
 | Named modules / import std; | | | to verify in Session 5; needs CMake 3.28+ / 3.30+ and Ninja |
 | Parallel algorithms | | | to verify in Session 4; libstdc++ needs TBB |
 | jthread / latch / barrier / semaphore | | | to verify in Session 5 |
-| views::zip / enumerate / chunk_by / to | | | to verify in Session 4 |
+| views::zip, chunk_by, split, take, filter, iota; ranges::to; ranges::contains; projections | OK | OK | Session 4 solution. |
+| views::enumerate | OK | MISSING (libc++ 20) | Solution uses `views::zip(views::iota(1uz), ...)` instead. |
+| const views | | | `filter_view`/`drop_while_view` are not const-iterable on either (by design); take ranges by `R&&`. |
