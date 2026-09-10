@@ -8,8 +8,10 @@ Baseline: GCC 14 with libstdc++ 14, and Clang 18 with libc++ 18 (the repo's CMak
 | std::print / println | OK | OK | |
 | std::format, std::formatter specializations | OK | OK | libc++ requires the formatter's `format()` member to be a template on the context type (it checks against a compile-time context). |
 | from_chars for double | OK | MISSING (libc++ 20) | `__cpp_lib_to_chars` is undefined on libc++ 18; the Session 1 solution and `demos/s01/from_chars.cpp` fall back to `strtod` under `#ifndef __cpp_lib_to_chars`. |
-| Deducing this | OK | OK | |
+| Deducing this | OK | OK | Session 3 solution (`SensorStats::add`), constexpr, chained on lvalues and rvalues. |
 | operator<=>, designated initializers, using enum, uz, auto(x), to_underlying, unreachable | OK | OK | Session 1 demos. |
+| consteval, constexpr std::array/optional/string_view/span in constant expressions | OK | OK | Session 3 solution. `std::as_bytes` is not constexpr on either (reinterpret_cast). |
+| Concepts, abbreviated function templates, requires-clauses, fold expressions | OK | OK | Session 3 solution. |
 | [[assume]] | OK (GCC 13+) | MISSING (Clang 19) | Clang 18 warns on the unknown attribute; kept out of compiled demos. |
 | Range-for temporaries lifetime (P2718) | GCC 15 | Clang 19 | Slide shows the C++20 init-statement workaround. |
 | std::generator | | | to verify in Session 5 |
