@@ -9,7 +9,7 @@ import pathlib
 import re
 import sys
 
-BADGE = re.compile(r'class="badge cpp(14|17|20|23)"')
+BADGE = re.compile(r'class="badge cpp(11|14|17|20|23)"')
 FEATURE = re.compile(r"<!--\s*_class:\s*(feature|twocol)")
 
 errors = 0

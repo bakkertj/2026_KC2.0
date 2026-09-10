@@ -21,7 +21,7 @@ Requirements: CMake 3.28+, GCC 14 or Clang 18, Ninja (optional), Node 20+ with `
 
 ## Conventions
 
-- Every code sample on a slide is an excerpt of a file in `demos/` or `exercises/`, pulled in by `tools/extract-snippets.py`; never type code into a deck
+- Code on slides is an excerpt of a compiled file in `demos/`, pulled in by `tools/extract-snippets.py`, wherever the code can compile under C++23; the few hand-typed blocks (C++11-only forms, fragments) say so in their speaker notes
 - Every feature slide carries a standard badge; `tools/check-standard-tags.py` enforces it
 - All code builds warning-free under `-Wall -Wextra -Wpedantic -Werror` on both compilers
 - No em dashes in prose

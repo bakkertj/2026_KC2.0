@@ -7,26 +7,28 @@
 #include <cstdint>
 
 // [snippet: before]
-// C++11: six operators, all hand-written, all easy to get subtly wrong
+// C++11: six operators, all hand-written
 struct Version11 {
     int major, minor, patch;
 };
-bool operator==(const Version11& a, const Version11& b) {
-    return a.major == b.major && a.minor == b.minor && a.patch == b.patch;
+using V = Version11;
+bool operator==(const V& a, const V& b) {
+    return a.major == b.major && a.minor == b.minor
+        && a.patch == b.patch;
 }
-bool operator<(const Version11& a, const Version11& b) {
+bool operator<(const V& a, const V& b) {
     if (a.major != b.major) return a.major < b.major;
     if (a.minor != b.minor) return a.minor < b.minor;
     return a.patch < b.patch;
 }
-bool operator!=(const Version11& a, const Version11& b) { return !(a == b); }
-bool operator>(const Version11& a, const Version11& b) { return b < a; }
-bool operator<=(const Version11& a, const Version11& b) { return !(b < a); }
-bool operator>=(const Version11& a, const Version11& b) { return !(a < b); }
+bool operator!=(const V& a, const V& b) {return !(a == b);}
+bool operator>(const V& a, const V& b)  {return b < a;}
+bool operator<=(const V& a, const V& b) {return !(b < a);}
+bool operator>=(const V& a, const V& b) {return !(a < b);}
 // [/snippet]
 
 // [snippet: after]
-// C++20: one line; == and <=> are generated memberwise, the other four are rewritten
+// C++20: one line; == and <=> generated memberwise
 struct Version20 {
     int major, minor, patch;
     auto operator<=>(const Version20&) const = default;
