@@ -1,4 +1,4 @@
-build/
+build*/
 slides/out/
 .cache/
 compile_commands.json
