@@ -17,15 +17,16 @@ Baseline: GCC 14 with libstdc++ 14, and Clang 18 with libc++ 18 (the repo's CMak
 | Concepts, abbreviated function templates, requires-clauses, fold expressions | OK | OK | Session 3 solution. |
 | [[assume]] | OK (GCC 13+) | MISSING (Clang 19) | Clang 18 warns on the unknown attribute; kept out of compiled demos. |
 | Range-for temporaries lifetime (P2718) | GCC 15 | Clang 19 | Slide shows the C++20 init-statement workaround. |
-| std::generator | | | to verify in Session 5 |
+| std::generator | OK (GCC 14) | MISSING (libc++: not yet) | Session 5 solution gates `records()` on `__cpp_lib_generator`. |
 | std::flat_map / flat_set | MISSING (GCC 15) | MISSING (libc++ 20 has flat_set only) | `demos/s02/tour_flat_map.cpp` gated on `__cpp_lib_flat_map`; slide uses Compiler Explorer with a trunk compiler. |
 | std::mdspan | MISSING (GCC 15) | OK (libc++ 17+) | Slide only; Compiler Explorer. |
 | std::stacktrace | OK, link `-lstdc++exp` | MISSING | `demos/s02/tour_stacktrace.cpp` gated on `__cpp_lib_stacktrace`; CMake adds the link library for GCC. |
 | std::optional monadic ops, std::expected value_or/error_or | OK | OK | Session 2 solution. `transform(&T::member)` on a temporary optional does not compile on either (rvalue-reference result); use a lambda. |
 | std::string::contains / ends_with | OK | OK | Session 2 solution and tests. |
-| Named modules / import std; | | | to verify in Session 5; needs CMake 3.28+ / 3.30+ and Ninja |
-| Parallel algorithms | | | to verify in Session 4; libstdc++ needs TBB |
-| jthread / latch / barrier / semaphore | | | to verify in Session 5 |
+| Named modules | OK (GCC 14, `#include` before `import`) | OK (Clang 18) | `demos/s05/modules`, `-DCOURSE_MODULES=ON`, Ninja generator, CMake 3.28+. |
+| `import std;` | GCC 15 | libc++ 17+ with CMake 3.30+ | Not built here (CMake 3.28). |
+| Parallel algorithms | OK; TBB needed for actual parallelism | `-fexperimental-library` (added by CMake) | `demos/s04/parallel.cpp`. |
+| jthread, stop_token, counting_semaphore | OK | OK with `-fexperimental-library` (libc++ 18; CMake adds it) | Session 5 solution; clean under ThreadSanitizer on both. |
 | views::zip, chunk_by, split, take, filter, iota; ranges::to; ranges::contains; projections | OK | OK | Session 4 solution. |
 | views::enumerate | OK | MISSING (libc++ 20) | Solution uses `views::zip(views::iota(1uz), ...)` instead. |
 | const views | | | `filter_view`/`drop_while_view` are not const-iterable on either (by design); take ranges by `R&&`. |

@@ -7,8 +7,17 @@
 # So Clang builds default to libc++. Override with -DCOURSE_LIBCXX=OFF.
 option(COURSE_LIBCXX "Use libc++ when compiling with Clang" ON)
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND COURSE_LIBCXX)
-  add_compile_options(-stdlib=libc++)
-  add_link_options(-stdlib=libc++)
+  # -fexperimental-library: libc++ 18 keeps std::jthread, std::stop_token, std::osyncstream
+  # and the parallel algorithms behind this flag (links libc++experimental).
+  add_compile_options(-stdlib=libc++ -fexperimental-library)
+  add_link_options(-stdlib=libc++ -fexperimental-library)
+endif()
+
+# Sanitizers: -DCOURSE_SANITIZE=thread (or address, undefined) instruments everything.
+set(COURSE_SANITIZE "" CACHE STRING "Sanitizer to enable: thread, address, undefined, or empty")
+if(COURSE_SANITIZE)
+  add_compile_options(-fsanitize=${COURSE_SANITIZE} -g -fno-omit-frame-pointer)
+  add_link_options(-fsanitize=${COURSE_SANITIZE})
 endif()
 
 # Shared warning flags. Every demo and exercise target links course_warnings.
