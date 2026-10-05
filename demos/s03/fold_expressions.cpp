@@ -1,6 +1,6 @@
 // Demo: fold expressions (C++17)
 // Session: s03
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/jz9oqPqdW
 #include <print>
 #include <string>
 

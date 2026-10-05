@@ -1,6 +1,6 @@
 // Demo: std::generator (C++23)
 // Session: s05
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/WKsn3cezn
 // Availability: libstdc++ 14 ships <generator>; libc++ 18 does not. Gated on __cpp_lib_generator.
 #include <print>
 #include <ranges>

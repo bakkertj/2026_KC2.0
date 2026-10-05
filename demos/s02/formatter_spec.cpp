@@ -1,6 +1,6 @@
 // Demo: a formatter that accepts its own format spec (C++20)
 // Session: s02
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/xTqKo3dnM
 #include <format>
 #include <print>
 

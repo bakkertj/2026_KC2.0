@@ -1266,7 +1266,7 @@ void cpp23(std::vector<Record> records) {
 }
 ```
 
-Compiler Explorer: `demos/s04/same_task_three_ways.cpp`, three functions, same output. Compare the generated code for `cpp20` and `cpp23`: the `chunk_by` version is not slower.
+Compiler Explorer: [`demos/s04/same_task_three_ways.cpp`](https://godbolt.org/z/acK9aq7d6), three functions, same output. Compare the generated code for `cpp20` and `cpp23`: the `chunk_by` version is not slower.
 
 <!--
 Notes: Show all three functions in the demo file, then the assembly. The C++11 version has a map

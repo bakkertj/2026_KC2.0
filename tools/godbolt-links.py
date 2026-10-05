@@ -17,6 +17,8 @@ Usage:
   tools/godbolt-links.py --shorten       # also shorten, cache in tools/godbolt-links.json, and
                                          # write the short link into each demo's header comment
   tools/godbolt-links.py --check         # exit non-zero if any demo still has <add short link>
+  tools/godbolt-links.py --dump f.json   # write the client states so something else can shorten them;
+                                         # put the results in tools/godbolt-links.json as {key: url}
 
 Per-demo settings come from the file itself:
   - a `#ifdef SHOW_ERRORS` anywhere      -> a second link with -DSHOW_ERRORS
@@ -101,7 +103,9 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--shorten", action="store_true")
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--dump", metavar="FILE", help="write {key: client state} JSON for an external shortener run")
     args = ap.parse_args()
+    dump: dict[str, dict] = {}
 
     cache = json.loads(CACHE.read_text()) if CACHE.exists() else {}
     demos = sorted(DEMOS.glob("s0*/*.cpp"))
@@ -128,6 +132,7 @@ def main() -> int:
                             and not HINT_RE.match(l)) + "\n"
             state = client_state(src, options)
             key = f"{p.relative_to(ROOT)}#{label}"
+            dump[key] = state
             url = cache.get(key)
             if args.shorten and not url:
                 try:
@@ -144,6 +149,8 @@ def main() -> int:
             if new != text:
                 p.write_text(new)
 
+    if args.dump:
+        pathlib.Path(args.dump).write_text(json.dumps(dump))
     if args.shorten:
         CACHE.write_text(json.dumps(cache, indent=1, sort_keys=True) + "\n")
 

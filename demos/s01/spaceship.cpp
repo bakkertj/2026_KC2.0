@@ -1,6 +1,6 @@
 // Demo: three-way comparison and defaulted comparisons (C++20)
 // Session: s01
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/4d5TMj6K6
 // Slide: slides/01-everyday-language.md
 #include <compare>
 #include <cstdio>

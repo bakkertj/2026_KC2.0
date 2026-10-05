@@ -1,6 +1,6 @@
 // Demo: chunk, slide, stride, adjacent (C++23)
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/6Yav9Eq8G
 // Availability: libstdc++ 13+. libc++ (including Apple Clang 17 / Xcode 26) lacks some or all of
 // chunk/slide/stride/adjacent; gated on the feature-test macros rather than a library version.
 #include <print>

@@ -1,6 +1,6 @@
 // Demo: the range concept hierarchy (C++20)
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/fPxf1YoKf
 #include <deque>
 #include <forward_list>
 #include <list>

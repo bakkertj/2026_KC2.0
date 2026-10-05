@@ -1,6 +1,6 @@
 // Demo: C++17 numeric algorithms
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/7jGcraz8G
 #include <algorithm>
 #include <functional>
 #include <numeric>

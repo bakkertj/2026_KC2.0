@@ -1,6 +1,6 @@
 // Demo: when std::move does nothing (C++11 calibration)
 // Session: s01
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/M46MnP5vq
 #include <cstdio>
 #include <string>
 #include <utility>

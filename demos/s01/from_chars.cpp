@@ -1,6 +1,6 @@
 // Demo: std::from_chars replacing strtod (C++17)
 // Session: s01
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/fPrKdEnao
 #include <cerrno>
 #include <charconv>
 #include <cstdio>

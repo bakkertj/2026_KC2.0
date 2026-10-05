@@ -1,6 +1,6 @@
 // Demo: inline variables (C++17)
 // Session: s01
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/jvWcYKqsa
 #include <cstdio>
 #include <string>
 

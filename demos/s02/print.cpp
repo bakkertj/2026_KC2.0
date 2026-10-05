@@ -1,6 +1,6 @@
 // Demo: std::print and std::println (C++23)
 // Session: s02
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/7YdaTGPrx
 #include <cstdio>
 #include <print>
 #include <string>

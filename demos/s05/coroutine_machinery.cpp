@@ -1,6 +1,6 @@
 // Demo: what the compiler generates for a coroutine (C++20)
 // Session: s05
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/dc9q3hf8b
 // A minimal hand-written generator, so std::generator is not magic. Not for production use:
 // no allocator support, no exceptions, no nested yields. Use std::generator (C++23) instead.
 #include <coroutine>

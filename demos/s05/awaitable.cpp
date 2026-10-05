@@ -1,6 +1,6 @@
 // Demo: co_await and a hand-written awaitable (C++20)
 // Session: s05
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/YdqGGP7K7
 // A task type that can suspend waiting for a value another thread supplies. Educational only.
 #include <coroutine>
 #include <exception>

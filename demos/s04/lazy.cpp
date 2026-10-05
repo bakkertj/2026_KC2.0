@@ -1,6 +1,6 @@
 // Demo: views are lazy (C++20)
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/n7v4dv8f7
 #include <print>
 #include <ranges>
 #include <vector>

@@ -1,6 +1,6 @@
 // Demo: the same task in C++11, C++20, and C++23
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/acK9aq7d6
 // Task: for each sensor, print the top 2 readings by value, highest first.
 #include <algorithm>
 #include <map>

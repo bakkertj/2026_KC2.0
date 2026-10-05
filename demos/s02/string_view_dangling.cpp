@@ -1,6 +1,6 @@
 // Demo: the four ways a string_view dangles (C++17)
 // Session: s02
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/qsc6eqsTE
 #include <cstdio>
 #include <string>
 #include <string_view>

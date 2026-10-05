@@ -1,6 +1,6 @@
 // Demo: std::flat_map (C++23)
 // Session: s02
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/cTc7c64b1
 // Availability: libstdc++ 15, libc++ 20 (flat_set: libc++ 21). Kept out of the default build
 // when the header is missing; the slide uses Compiler Explorer.
 #include <print>

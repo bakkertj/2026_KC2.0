@@ -1,6 +1,6 @@
 // Demo: <chrono> calendars and time zones (C++20)
 // Session: s02
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/WcYcT9PGd
 #include <chrono>
 #include <print>
 

@@ -1,6 +1,6 @@
 // Demo: std::ranges::to (C++23)
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/snWcqTr7d
 #include <map>
 #include <print>
 #include <ranges>

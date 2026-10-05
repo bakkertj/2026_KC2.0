@@ -1,6 +1,6 @@
 // Demo: std::osyncstream (C++20)
 // Session: s05
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/o3x8Wd1EK
 #include <iostream>
 #include <syncstream>
 #include <thread>

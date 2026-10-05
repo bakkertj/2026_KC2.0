@@ -1,6 +1,6 @@
 // Demo: std::span (C++20)
 // Session: s02
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/8chqf58j3
 #include <array>
 #include <cstdio>
 #include <span>

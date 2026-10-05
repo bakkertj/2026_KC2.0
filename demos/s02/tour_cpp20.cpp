@@ -1,6 +1,6 @@
 // Demo: C++20 library odds and ends
 // Session: s02
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/YKodx7Kz1
 #include <array>
 #include <cmath>
 #include <map>

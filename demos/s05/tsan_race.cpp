@@ -1,7 +1,8 @@
 // Demo: a data race ThreadSanitizer catches (build with -DCOURSE_SANITIZE=thread)
 // Session: s05
-// Compiler Explorer: <add short link>
-// godbolt: -fsanitize=thread -g
+// Compiler Explorer: https://godbolt.org/z/KabfzKsnE
+// godbolt: -g
+// (ThreadSanitizer cannot run inside Compiler Explorer's sandbox; the TSan report needs the repo build)
 #include <print>
 #include <thread>
 

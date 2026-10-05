@@ -1,6 +1,6 @@
 // Demo: auto pitfalls (C++11 calibration)
 // Session: s01
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/oo96WqKPT
 #include <cstdio>
 #include <string>
 #include <vector>

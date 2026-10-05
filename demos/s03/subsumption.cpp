@@ -1,6 +1,6 @@
 // Demo: subsumption, how the more constrained overload wins (C++20)
 // Session: s03
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/ajf3YhKx5
 #include <concepts>
 #include <print>
 #include <string>

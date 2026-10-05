@@ -1,6 +1,6 @@
 // Demo: views::chunk_by, the group-by (C++23)
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/dPdMKEe4h
 #include <algorithm>
 #include <print>
 #include <ranges>

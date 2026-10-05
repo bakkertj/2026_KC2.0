@@ -1,6 +1,6 @@
 // Demo: storing and composing adaptors; your own adaptor (C++20 / C++23)
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/KTxsPeoEd
 #include <print>
 #include <ranges>
 #include <vector>

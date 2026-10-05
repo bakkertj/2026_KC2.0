@@ -1,6 +1,6 @@
 // Demo: cartesian_product, repeat, join_with, as_rvalue (C++23)
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/PKo93Ksrn
 #include <print>
 #include <ranges>
 #include <string>

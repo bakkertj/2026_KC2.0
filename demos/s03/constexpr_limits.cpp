@@ -1,6 +1,6 @@
 // Demo: what a constant expression refuses (and why that is a feature)
 // Session: s03
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/6GGTzK98P
 #include <array>
 #include <climits>
 #include <cstdint>

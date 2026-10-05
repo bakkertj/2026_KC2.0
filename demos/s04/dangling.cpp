@@ -1,6 +1,6 @@
 // Demo: borrowed ranges and dangling (C++20)
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/3zcbjqr7o
 #include <algorithm>
 #include <print>
 #include <ranges>
