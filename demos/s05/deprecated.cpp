@@ -44,11 +44,11 @@ void legacy(std::vector<Sensor>& v) {
     std::random_shuffle(v.begin(), v.end());                  // removed C++17
     auto lt5 = std::bind2nd(std::less<int>(), 5);             // removed C++17
     using R = std::result_of<decltype(&by_id)(Sensor, Sensor)>::type;   // removed C++20
-    void f() throw();                                         // removed C++20: dynamic exception specification (a hard error everywhere)
+    void f() throw();                                         // removed C++20: dynamic exception specification (GCC 13 still accepts it silently; Clang 18 warns)
     struct It : std::iterator<std::forward_iterator_tag, int> {};      // deprecated C++17
     std::aligned_storage_t<sizeof(Sensor), alignof(Sensor)> s;         // deprecated C++23
     volatile int counter = 0;
-    ++counter;                                                // deprecated C++20, un-deprecated C++23; still avoid
+    ++counter;                                                // deprecated C++20 and still deprecated: C++23 (P2327R1) restored only |=, &=, ^=
 }
 // [/snippet]
 #endif

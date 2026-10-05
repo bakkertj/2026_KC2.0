@@ -1,7 +1,7 @@
 // Demo: std::flat_map (C++23)
 // Session: s02
 // Compiler Explorer: <add short link>
-// Availability: libstdc++ 15, libc++ 20 (flat_set) / not yet. Kept out of the default build
+// Availability: libstdc++ 15, libc++ 20 (flat_set: libc++ 21). Kept out of the default build
 // when the header is missing; the slide uses Compiler Explorer.
 #include <print>
 #include <string_view>

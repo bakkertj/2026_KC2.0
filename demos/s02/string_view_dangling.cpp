@@ -15,7 +15,7 @@ struct Config {
 #ifdef SHOW_ERRORS                  // Clang 18 rejects all three below under -Werror:
 std::string_view first_word() {     //   -Wreturn-stack-address, -Wdangling-gsl
     std::string s = "hello world";
-    return s.substr(0, 5);          // (2) view of a local: dangles at return
+    return std::string_view(s).substr(0, 5);   // (2) view of a local: dangles at return
 }
 
 void dangling() {

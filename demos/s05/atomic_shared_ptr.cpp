@@ -7,6 +7,7 @@
 #include <print>
 #include <string>
 #include <thread>
+#include <utility>
 
 #ifdef __cpp_lib_atomic_shared_ptr                     // libstdc++ 12+; not libc++ 18
 // [snippet: rcu]

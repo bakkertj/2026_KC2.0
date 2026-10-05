@@ -22,7 +22,8 @@ struct Reading {
 // What the compiler does with a < b when only <=> is declared:
 //     a < b      becomes   (a <=> b) < 0
 //     a >= b     becomes   (a <=> b) >= 0
-//     b > a      becomes   (a <=> b) < 0     (operands may be swapped)
+//     a > b      becomes   (a <=> b) > 0
+//     42 > v     becomes   0 > (v <=> 42)    (reversed: only when the types differ)
 // What it does NOT do: derive == from <=>. A defaulted <=> also defaults ==,
 // but a hand-written <=> leaves == undeclared. Reason: == can be much faster
 // (std::string compares lengths first), so the two are kept separate.

@@ -3,6 +3,7 @@
 // Compiler Explorer: <add short link>
 #include <atomic>
 #include <chrono>
+#include <functional>
 #include <print>
 #include <stop_token>
 #include <thread>

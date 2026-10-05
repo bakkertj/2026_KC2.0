@@ -40,9 +40,9 @@ std::optional<int> doubled(std::string_view s) {
 // [/snippet]
 
 // [snippet: trap]
-// find_sensor(name).transform(&SensorConfig::units)   // does not compile: on a temporary optional
-//                                                     // the member yields string_view&&, and
-//                                                     // optional<T&&> is ill-formed. Use a lambda.
+// find_sensor(name).transform(&SensorConfig::units)   // does not compile: invoking the pointer-to-member
+//                                                     // yields a reference to the member (string_view&
+//                                                     // or &&), and optional<T&> is ill-formed. Use a lambda.
 // [/snippet]
 
 int main() { std::printf("%s %s %d\n", units_cpp17("rpm").c_str(), units("rpm").c_str(), *doubled("abc")); }

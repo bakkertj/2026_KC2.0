@@ -1,6 +1,6 @@
 # Session 3 deck outline: Compile-Time and Generic Programming
 
-One line per slide. Badge in brackets; "2col" is before/after; "evo" is a timeline slide; "demo" is live. Target: 54 content slides for 90 minutes, then the exercise. "From the exercise" slides pull code from `exercises/s03-compile-time/` starter and solution.
+One line per slide. Badge in brackets; "2col" is before/after; "evo" is a timeline slide; "demo" is live. Target: 51 slides as built (this list has 48 entries; items 11, 14, 20, and 32 each became two slides in the deck, and item 37 was cut) for 95 minutes, then the exercise. "From the exercise" slides pull code from `exercises/s03-compile-time/` starter and solution.
 
 ## 0. Opening (0:00, 5 slides)
 
@@ -31,7 +31,7 @@ One line per slide. Badge in brackets; "2col" is before/after; "evo" is a timeli
 19. The problem with C++11 templates (feature): SFINAE, `enable_if`, tag dispatch, recursive variadics; one real error message from the starter's `serialize(ParseError{})`
 20. Fold expressions [17] (2col, from the exercise): `serialize_all(vs...)` with a comma fold vs the C++11 recursive base-case pair; the four fold forms
 21. `if constexpr` replacing tag dispatch and `enable_if` [17] (2col): one function with branches instead of three overloads
-22. Variable templates [14] and the `_v`/`_t` aliases [17] (feature): `std::is_integral_v<T>` instead of `std::is_integral<T>::value`; writing your own
+22. Variable templates [14], the `_t` aliases [14], and the `_v` aliases [17] (feature): `std::is_integral_v<T>` instead of `std::is_integral<T>::value`; writing your own
 23. CTAD and deduction guides [17] (feature): the `overloaded` visitor from Session 2 revisited: how `overloaded{lambda1, lambda2}` deduces; when you need a guide (C++17) and when you do not (C++20 aggregates)
 24. `auto` non-type template parameters [17] (feature): `template <auto N>`, and a preview of class-type NTTPs
 25. Segment takeaway: fold expressions and `if constexpr` remove most of the reasons templates used to be unreadable
@@ -49,7 +49,7 @@ One line per slide. Badge in brackets; "2col" is before/after; "evo" is a timeli
 34. Concept design guidance (feature): semantic requirements the compiler cannot check (`std::regular` promises more than its syntax); prefer standard concepts; name the concept for the **capability**, not the type; do not over-constrain generic code
 35. Template lambdas [20] and lambdas in unevaluated contexts [20] (feature): `[]<typename T>(std::span<T> s) {}` when `auto` is not enough; `decltype([]{})` as a unique type
 36. Class types as non-type template parameters [20] (feature): `template <FixedString Name>`; a compile-time string as a template argument; why `SensorConfig` cannot be one (a `string_view` member is not a structural type) and what would make it one
-37. `constexpr` and concepts together (feature): a `consteval` function constrained by a concept; `static_assert` with a concept as the message; a compile-time registry pattern
+37. (cut, not in the deck) `constexpr` and concepts together (feature): a `consteval` function constrained by a concept; `static_assert` with a concept as the message; a compile-time registry pattern
 38. Concepts and SFINAE side by side (2col): the same constraint written both ways, with the two error messages
 39. Segment takeaway: constrain every template parameter with the weakest concept that makes the body compile; the error message is the feature
 
@@ -76,7 +76,7 @@ One line per slide. Badge in brackets; "2col" is before/after; "evo" is a timeli
 - `consteval_constinit.cpp`, `is_constant_evaluated.cpp` (and the `if consteval` form)
 - `fold_expressions.cpp`, `if_constexpr_dispatch.cpp`, `variable_templates.cpp`, `ctad_guides.cpp`, `auto_nttp.cpp`
 - `concepts_basics.cpp` (the four spellings), `requires_expressions.cpp`, `subsumption.cpp`, `concepts_vs_sfinae.cpp` (both forms, errors under `SHOW_ERRORS`)
-- `template_lambdas.cpp`, `class_nttp.cpp` (`FixedString`)
+- `template_lambdas.cpp` (`FixedString` lives in `auto_nttp.cpp`)
 - `deducing_this.cpp` (const dedup, CRTP, recursive lambda)
 - Exercise excerpts from `exercises/s03-compile-time/{starter,solution}`
 

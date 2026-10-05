@@ -190,7 +190,7 @@ struct Config {
 #ifdef SHOW_ERRORS                  // Clang 18 rejects all three below under -Werror:
 std::string_view first_word() {     //   -Wreturn-stack-address, -Wdangling-gsl
     std::string s = "hello world";
-    return s.substr(0, 5);          // (2) view of a local: dangles at return
+    return std::string_view(s).substr(0, 5);   // (2) view of a local: dangles at return
 }
 
 void dangling() {
@@ -403,12 +403,12 @@ std::map<std::string, int> plain;
 std::map<std::string, int, std::less<>> transparent;   // std::less<> compares any two comparable types
 
 void lookups(std::string_view key) {
-    plain.find(std::string(key));      // must build a std::string to search: an allocation per lookup
+    plain.find(std::string(key));      // must build a std::string to search: an allocation per lookup (past SSO)
     transparent.find(key);             // compares string_view to string directly: no allocation
 }
 ```
 
-`std::less<>` (no template argument) compares any two comparable types. C++20 adds the same for `unordered_map` with a transparent hash.
+`std::less<>` (no template argument) compares any two comparable types. C++20 adds the same for `unordered_map` with a transparent hash **and** a transparent key-equal (`std::equal_to<>`).
 
 <!--
 Notes: The exercise's StatsBySensor gains std::less<> so find("rpm") works from a literal (task
@@ -572,16 +572,16 @@ returns another optional (may fail). or_else: recover. The units lookup in the e
 
 ## The pointer-to-member trap <span class="badge cpp23">C++23</span>
 
-<p class="problem">transform(&Struct::member) on a temporary optional does not compile, and the error is unhelpful.</p>
+<p class="problem">transform(&Struct::member) does not compile, on a temporary or a named optional, and the error is unhelpful.</p>
 
 <!-- snippet: demos/s02/optional_monadic.cpp#trap -->
 ```cpp
-// find_sensor(name).transform(&SensorConfig::units)   // does not compile: on a temporary optional
-//                                                     // the member yields string_view&&, and
-//                                                     // optional<T&&> is ill-formed. Use a lambda.
+// find_sensor(name).transform(&SensorConfig::units)   // does not compile: invoking the pointer-to-member
+//                                                     // yields a reference to the member (string_view&
+//                                                     // or &&), and optional<T&> is ill-formed. Use a lambda.
 ```
 
-Invoking a pointer-to-member on an rvalue object yields an rvalue reference to the member; `optional<T&&>` is ill-formed. A lambda that returns by value is the fix.
+Invoking a pointer-to-member yields a reference to the member (an lvalue reference on a named optional, an rvalue reference on a temporary); `optional<T&>` and `optional<T&&>` are both ill-formed in C++23. A lambda that returns by value is the fix.
 
 <!--
 Notes: Both compilers produce a wall of text for this; the exercise README asks attendees to
@@ -647,6 +647,7 @@ demos/s02/variant_visit.cpp
 <!-- snippet: demos/s02/variant_visit.cpp#visitor -->
 ```cpp
 template <class... Fs> struct overloaded : Fs... { using Fs::operator()...; };   // one object, all the overloads
+template <class... Fs> overloaded(Fs...) -> overloaded<Fs...>;                // C++17 needs this guide; C++20 CTAD does not
 
 std::string describe(const Value& v) {
     return std::visit(overloaded{
@@ -655,13 +656,16 @@ std::string describe(const Value& v) {
         [](const std::string& s) { return "text " + s; },
     }, v);
 }
-// Add a fourth alternative to Value and this stops compiling until you add a fourth lambda.
+// Add a fourth alternative to Value and this stops compiling until some lambda accepts it.
+// (One that converts implicitly, float to double, const char* to std::string, is accepted silently.)
 ```
 
 <!--
 Notes: The `overloaded` struct is two lines that appear in every codebase that uses variant:
 inherit from all the lambdas, pull in all their operator()s, and CTAD (Session 1) deduces the
-types. Exhaustive: add an alternative and visit stops compiling until you handle it. Demo file:
+types; in C++17 the deduction guide is required, C++20 aggregate CTAD makes it optional.
+Exhaustive: add an alternative and visit stops compiling until some lambda accepts it (an
+implicit conversion to an existing parameter type counts, so float to double passes silently). Demo file:
 demos/s02/variant_visit.cpp
 -->
 
@@ -682,6 +686,7 @@ struct Fault     { std::uint16_t code; std::string detail; };
 using Message = std::variant<Reading, Heartbeat, Fault>;   // the whole protocol, in one line
 
 template <class... Fs> struct overloaded : Fs... { using Fs::operator()...; };
+template <class... Fs> overloaded(Fs...) -> overloaded<Fs...>;
 
 void handle(const Message& m) {
     std::visit(overloaded{
@@ -774,7 +779,7 @@ Notes: Same table as the ownership one, from the other direction: start from the
 ## Where these came from
 
 <div class="evo">
-<div class="step"><b>2002–2003</b> Boost.Variant and Boost.Optional ship; a decade of production use follows</div>
+<div class="step"><b>2003–2004</b> Boost.Optional (1.30) and Boost.Variant (1.31) ship; a decade of production use follows</div>
 <div class="step"><b>2013</b> Library Fundamentals TS proposes optional; variant debated (what happens on a throwing assignment?)</div>
 <div class="step"><b>2016</b> The "never valueless" vs "valueless by exception" argument settles; all three land in C++17</div>
 <div class="step"><b>2022</b> std::expected adopted for C++23, from the same lineage (Boost.Outcome, tl::expected)</div>
@@ -816,8 +821,8 @@ Notes: 1:00. On to expected.
 | Error codes (`int`, `errno`) | yes | **yes** | no | a compare |
 | `bool` + out-params | yes, via another param | **yes** | no | a compare |
 | `std::error_code` (C++11) | yes, typed | yes | no | a compare |
-| `optional<T>` | **no** | no (`[[nodiscard]]`-friendly) | yes (monadic) | a compare |
-| `expected<T, E>` (C++23) | yes | no | yes (monadic) | a compare |
+| `optional<T>` | **no** | yes, unless `[[nodiscard]]` | yes (monadic) | a compare |
+| `expected<T, E>` (C++23) | yes | yes, unless `[[nodiscard]]` | yes (monadic) | a compare |
 
 <!--
 Notes: The gap in the table is the row optional cannot fill: it says "no" without saying why.
@@ -854,7 +859,7 @@ bool parse_cpp11(std::string_view s, int* out, ParseError* err) {
 
 <!-- snippet: demos/s02/expected_basics.cpp#after -->
 ```cpp
-// C++23: the value, or the reason. One return, [[nodiscard]] by nature.
+// C++23: the value, or the reason. One return; add [[nodiscard]] so the caller must look at it.
 std::expected<int, ParseError> parse(std::string_view s) {
     if (s.empty()) return std::unexpected(ParseError::Empty);
     int v = 0;
@@ -1143,7 +1148,7 @@ void report(std::FILE* out, const std::string& name, std::size_t n, double mean)
 </div>
 </div>
 
-Overloads for `FILE*` and `std::ostream`. Unicode-correct on Windows consoles. `println` with no arguments prints a newline.
+Overloads for `FILE*` and `std::ostream`. Unicode-correct on Windows consoles. `println()` with no arguments is C++26 (P3142).
 
 <!--
 Notes: The report in the exercise (task 3): every fprintf becomes a println and every cast to
@@ -1264,7 +1269,8 @@ Notes: The `::` spec passes a spec to each element; `:n` drops the brackets. Map
 ```cpp
 std::array<char, 32> buf;                                 // no heap: embedded-friendly
 auto r = std::format_to_n(buf.data(), buf.size(), "{}:{:.2f}", "rpm", 4811.0);
-std::size_t written = static_cast<std::size_t>(r.size);   // what it WOULD have needed
+std::size_t written = static_cast<std::size_t>(r.out - buf.data());   // chars actually in buf
+std::size_t would_need = static_cast<std::size_t>(r.size);            // what it WOULD have needed
 std::size_t needed = std::formatted_size("{}:{:.2f}", "rpm", 4811.0);
 
 std::string s;
@@ -1336,6 +1342,7 @@ fs::path p = fs::temp_directory_path() / "telemetry" / "run1.csv";   // operator
 std::println("{} {} {}", p.filename().string(), p.extension().string(), p.parent_path().string());
 
 fs::create_directories(p.parent_path());
+std::ofstream{p} << "ts,sensor,value\n";                 // make the file so the queries have something to find
 std::println("exists: {}", fs::exists(p));            // no exception: a bool
 for (const auto& entry : fs::directory_iterator(p.parent_path())) {
     std::println("{} {}", entry.path().string(), entry.is_regular_file() ? entry.file_size() : 0);
@@ -1487,7 +1494,7 @@ the tzdata database (libstdc++ 13+ ships one; libc++ 19+). Demo file: demos/s02/
 
 ## C++23 tour, 1: `flat_map`, `stacktrace`, `move_only_function` <span class="badge cpp23">C++23</span>
 
-<p class="problem">Three additions with uneven availability today (GCC 15 / libc++ 20 for flat_map; libstdc++ only for stacktrace, link -lstdc++exp; libc++ 19 for move_only_function).</p>
+<p class="problem">Three additions with uneven availability today (GCC 15 / libc++ 20 for flat_map; libstdc++ only for stacktrace, link -lstdc++exp; libstdc++ only for move_only_function, libc++ has none yet).</p>
 
 ```cpp
 std::flat_map<std::string_view, double> limits{{"rpm", 12000.0}};   // sorted vectors, map API
@@ -1526,7 +1533,7 @@ s.resize_and_overwrite(16, [](char* buf, std::size_t n) {     // write into unin
 std::println("{}", s);
 ```
 
-Also: `std::to_underlying` and `std::unreachable` (Session 1), `std::forward_like`, `std::spanstream`, `std::string::resize_and_overwrite` for writing into uninitialized capacity.
+Also: `std::to_underlying` and `std::unreachable` (Session 1), `std::forward_like`, `std::spanstream`, `std::out_ptr`/`inout_ptr` for C APIs that fill a `T**` (in the demo file, gated on `__cpp_lib_out_ptr`).
 
 <!--
 Notes: byteswap is the endian-conversion everyone had a macro for; constexpr. out_ptr adapts a
@@ -1543,15 +1550,15 @@ demos/s02/tour_cpp23.cpp
 | Standard | Deprecated | Removed |
 |---|---|---|
 | C++17 | `std::iterator`, `std::result_of`, `<codecvt>`, `std::uncaught_exception` | `auto_ptr`, `random_shuffle`, `bind1st`/`bind2nd`, `std::function` allocator support |
-| C++20 | `volatile` compound ops, `std::is_pod`, `atomic_init`, `<ciso646>`'s point | `std::result_of`, `std::iterator`, `raw_storage_iterator`, `uncaught_exception` |
+| C++20 | `volatile` compound ops, `std::is_pod`, `atomic_init` | `std::result_of`, `raw_storage_iterator`, `uncaught_exception`, `<ciso646>` |
 | C++23 | `std::aligned_storage`/`aligned_union`, `std::numeric_limits<T>::has_denorm` | garbage-collection support API |
-| C++26 | (planned) `<codecvt>`, `strstream` | |
+| C++26 | | `<codecvt>` (P2871), `strstream` (P2867) |
 
-`-Wdeprecated` on both compilers reports uses of these; clang-tidy `modernize-*` fixes many.
+`-Wdeprecated-declarations` (on by default) on both compilers reports uses of these; clang-tidy `modernize-*` fixes many.
 
 <!--
 Notes: Fast. The aligned_storage one bites anyone with a hand-written small-buffer optimization:
-replace with alignas(T) std::byte buf[sizeof T].
+replace with alignas(T) std::byte buf[sizeof(T)]. std::iterator is still only deprecated in C++23.
 -->
 
 ---
@@ -1569,7 +1576,7 @@ replace with alignas(T) std::byte buf[sizeof T].
 | `flat_map` | missing (GCC 15) | missing | Compiler Explorer |
 | `mdspan` | missing (GCC 15) | OK | Compiler Explorer |
 | `stacktrace` | OK, `-lstdc++exp` | missing | `__cpp_lib_stacktrace` |
-| `move_only_function`, `out_ptr` | OK | missing (libc++ 19) | feature-test macros |
+| `move_only_function`, `out_ptr` | OK | missing (`out_ptr`: libc++ 19; `move_only_function`: not yet) | feature-test macros |
 
 **The tool:** `<version>` (C++20) and `__cpp_lib_*` macros. Test the feature, not the compiler version.
 
@@ -1607,7 +1614,7 @@ Notes: The screenshot slide. Everything on it is in today's solution.
 
 Open `exercises/s02-vocabulary-types/README.md`
 
-**In class (20 minutes):**
+**In class (15 minutes):**
 
 1. `parse_record` returns `std::expected<Record, ParseError>`; delete `ParseError::None`
 2. `find_sensor` returns `std::optional<SensorConfig>`; `parse_status` returns `std::optional<Status>`
@@ -1623,7 +1630,7 @@ The new test `s02_report_identical` diffs your report against the starter's. One
 
 <!--
 Notes: Walk the room. The common stumble on task 1 is forgetting std::unexpected around the
-error; on task 3 it is the %-16s to {:<16} translation. Call time at 20 minutes and show the
+error; on task 3 it is the %-16s to {:<16} translation. Call time at 15 minutes and show the
 solution's parser.h.
 -->
 

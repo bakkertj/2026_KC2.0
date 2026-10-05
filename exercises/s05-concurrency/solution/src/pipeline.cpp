@@ -3,6 +3,7 @@
 #include <istream>
 #include <string>
 #include <thread>
+#include <utility>
 #include <variant>
 
 #include "telemetry/queue.h"

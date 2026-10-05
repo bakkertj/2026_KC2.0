@@ -1,13 +1,15 @@
 // Demo: chunk, slide, stride, adjacent (C++23)
 // Session: s04
 // Compiler Explorer: <add short link>
-// Availability: libstdc++ 13+; libc++ 20+ (libc++ 18 has none of chunk/slide/stride/adjacent).
+// Availability: libstdc++ 13+. libc++ (including Apple Clang 17 / Xcode 26) lacks some or all of
+// chunk/slide/stride/adjacent; gated on the feature-test macros rather than a library version.
 #include <print>
 #include <ranges>
 #include <vector>
+#include <version>
 
 int main() {
-#if defined(__GLIBCXX__) || (defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 200000)
+#if defined(__cpp_lib_ranges_chunk) && defined(__cpp_lib_ranges_slide) && defined(__cpp_lib_ranges_stride) && defined(__cpp_lib_ranges_zip)
     std::vector<double> signal{1, 2, 4, 8, 16, 32, 64};
     namespace v = std::views;
     // [snippet: windows]

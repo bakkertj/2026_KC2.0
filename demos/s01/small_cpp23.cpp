@@ -13,9 +13,9 @@ enum class Level : unsigned char { Low = 1, High = 2 };
 void small(std::vector<std::string>& v) {
     for (auto i = 0uz; i < v.size(); ++i) {}              // uz: a size_t literal
 
-    auto copy = auto(v.front());                            // auto(x): explicit decay copy
-    v.erase(v.begin());                                     // ...which survives this erase
-    std::printf("%s\n", copy.c_str());
+    std::erase(v, auto(v.front()));                         // auto(x): explicit decay copy.
+    // Without it, erase takes v.front() by reference, and that reference is to an
+    // element the erase is moving. The copy cannot alias.
 
     std::printf("%u\n", std::to_underlying(Level::High));   // no static_cast needed
 }
@@ -36,7 +36,8 @@ int classify(int x) {
 // [/snippet]
 
 int main() {
-    std::vector<std::string> v{"first", "second"};
+    std::vector<std::string> v{"first", "second", "first", "third"};
     small(v);
+    std::printf("%zu\n", v.size());
     std::printf("%d\n", classify(5));
 }

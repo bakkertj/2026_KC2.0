@@ -20,7 +20,7 @@ bool parse_cpp11(std::string_view s, int* out, ParseError* err) {
 // [/snippet]
 
 // [snippet: after]
-// C++23: the value, or the reason. One return, [[nodiscard]] by nature.
+// C++23: the value, or the reason. One return; add [[nodiscard]] so the caller must look at it.
 std::expected<int, ParseError> parse(std::string_view s) {
     if (s.empty()) return std::unexpected(ParseError::Empty);
     int v = 0;

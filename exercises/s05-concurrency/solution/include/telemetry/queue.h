@@ -6,6 +6,7 @@
 #include <queue>
 #include <semaphore>
 #include <stop_token>
+#include <utility>
 
 namespace telemetry {
 

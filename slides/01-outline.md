@@ -50,7 +50,7 @@ One line per slide. Badge in brackets. "2col" means a before/after slide; "demo"
 35. `[[maybe_unused]]` and `[[fallthrough]]` [17]
 36. Guaranteed copy elision [17]: what "returns a prvalue" means, factories for non-movable types
 37. Class template argument deduction [17]: `std::pair{a, b}`, `std::lock_guard lk{m}`, `std::vector v{1, 2}` and its trap
-38. `std::from_chars` and `std::to_chars` [17] (2col, from `parse_record`): no errno, no locale, no allocation
+38. `std::from_chars` and `std::to_chars` [17] (2col, from `parse_record`): no errno, no locale, no NUL terminator
 39. `std::string_view` preview [17]: one slide now, the full treatment in Session 2
 40. Expression evaluation order and `noexcept` in the type system [17]: the quiet fixes
 41. Removals: `auto_ptr`, `register`, trigraphs, dynamic exception specs, `random_shuffle` [17]; C++17 takeaway

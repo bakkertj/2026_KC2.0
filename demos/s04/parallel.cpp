@@ -26,14 +26,14 @@ int main() {
     std::sort(ex::seq, v.begin(), v.end());                          // sequential: same as plain sort
     auto t1 = std::chrono::steady_clock::now();
     std::shuffle(v.begin(), v.end(), rng);                           // same input again, for a fair comparison
-    t1 = std::chrono::steady_clock::now();
+    auto t2 = std::chrono::steady_clock::now();                      // a fresh timestamp: the reshuffle is not timed
     std::sort(ex::par, v.begin(), v.end());                          // may use threads; elements must be independent
-    auto t2 = std::chrono::steady_clock::now();
-    double s = std::reduce(ex::par_unseq, v.begin(), v.end());       // may also vectorize: no locks, no allocation in the body
     auto t3 = std::chrono::steady_clock::now();
+    double s = std::reduce(ex::par_unseq, v.begin(), v.end());       // may also vectorize: no locks, no allocation in the body
+    auto t4 = std::chrono::steady_clock::now();
     // Not available for std::ranges:: algorithms until C++26. Iterator pairs only.
     // [/snippet]
     using ms = std::chrono::duration<double, std::milli>;
-    std::println("seq {:.0f}ms  par {:.0f}ms  par_unseq reduce {:.0f}ms  sum {:.3e}", ms(t1 - t0).count(), ms(t2 - t1).count(), ms(t3 - t2).count(), s);
+    std::println("seq {:.0f}ms  par {:.0f}ms  par_unseq reduce {:.0f}ms  sum {:.3e}", ms(t1 - t0).count(), ms(t3 - t2).count(), ms(t4 - t3).count(), s);
 #endif
 }

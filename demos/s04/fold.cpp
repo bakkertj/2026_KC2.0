@@ -8,13 +8,14 @@
 #include <print>
 #include <ranges>
 #include <string>
+#include <version>
 #include <vector>
 
 struct Record { std::string sensor; double value; };
 
 int main() {
     std::vector<Record> v{{"rpm", 1.5}, {"rpm", 2.5}, {"temp", 4.0}};
-#if defined(__GLIBCXX__) || (defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 200000)   // libc++ 18 has fold_left only
+#ifdef __cpp_lib_ranges_fold   // defined only when all the folds exist; libc++ (Apple Clang 17 included) has fold_left alone
     // [snippet: fold]
     // C++20 ranges had no accumulate. C++23: fold_left, with a range and any binary op.
     double total = std::ranges::fold_left(v | std::views::transform(&Record::value), 0.0, std::plus{});
@@ -31,7 +32,8 @@ int main() {
     // arithmetic, so 0 (an int) truncates doubles at every step. A classic bug.
     // [/snippet]
 #else
-    double total = std::ranges::fold_left(v | std::views::transform(&Record::value), 0.0, std::plus{});
+    auto vals = v | std::views::transform(&Record::value);
+    double total = std::accumulate(vals.begin(), vals.end(), 0.0);
     std::optional<double> maxv = 4.0;
     std::string names = "(fold_right not available)";
 #endif

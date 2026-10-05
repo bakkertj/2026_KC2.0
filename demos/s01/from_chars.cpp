@@ -27,9 +27,11 @@ bool parse_value_cpp11(const std::string& text,
 bool parse_value(const std::string& text,
                  double* out) {
     const char* last = text.data() + text.size();
-    auto [ptr, ec] =
-        std::from_chars(text.data(), last, *out);
-    return ec == std::errc{} && ptr == last;
+    double v = 0.0;               // parse into a local: *out untouched on failure
+    auto [ptr, ec] = std::from_chars(text.data(), last, v);
+    if (ec != std::errc{} || ptr != last) return false;
+    *out = v;
+    return true;
 }
 // [/snippet]
 #else
@@ -38,5 +40,7 @@ bool parse_value(const std::string& text, double* out) { return parse_value_cpp1
 
 int main() {
     double a = 0, b = 0;
-    std::printf("%d %d %.2f %.2f\n", parse_value_cpp11("41.25", &a), parse_value("41.25x", &b), a, b);
+    const bool ok_a = parse_value_cpp11("41.25", &a);   // separate statements: printf's
+    const bool ok_b = parse_value("41.25x", &b);        // argument order is unspecified
+    std::printf("%d %d %.2f %.2f\n", ok_a, ok_b, a, b);
 }

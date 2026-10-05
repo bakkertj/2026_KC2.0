@@ -15,6 +15,7 @@ struct Fault     { std::uint16_t code; std::string detail; };
 using Message = std::variant<Reading, Heartbeat, Fault>;   // the whole protocol, in one line
 
 template <class... Fs> struct overloaded : Fs... { using Fs::operator()...; };
+template <class... Fs> overloaded(Fs...) -> overloaded<Fs...>;
 
 void handle(const Message& m) {
     std::visit(overloaded{

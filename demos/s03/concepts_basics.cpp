@@ -26,7 +26,7 @@ std::size_t len4(const StringLike auto& s) { return std::string_view{s}.size(); 
 // [/snippet]
 
 // [snippet: sfinae]
-// The same constraint in C++11/14. Read it aloud to a colleague.
+// The same constraint with C++11 enable_if (string_view itself is C++17). Read it aloud to a colleague.
 template <typename T, typename std::enable_if<std::is_convertible<T, std::string_view>::value, int>::type = 0>
 std::size_t len_old(const T& s) { return std::string_view{s}.size(); }
 // [/snippet]

@@ -34,8 +34,9 @@ threads and a coroutine to the program and it still prints the Session 1 report 
 
 <!--
 Notes: Exercise README: exercises/s05-concurrency/README.md. The starter is the Session 4
-solution. The in-class part is the bounded queue and the jthread pipeline; TSan is the check.
-The roadmap workshop is the only exercise in the course without a solution.
+solution. Tasks 1 to 3 (the bounded queue, the jthread pipeline, TSan as the check) are the core
+of the at-home work; the in-class exercise today is the roadmap workshop (task 8), the only
+exercise in the course without a solution.
 -->
 
 ---
@@ -201,7 +202,8 @@ Same algorithm as `std::lock` underneath (deadlock-free for any number of mutexe
 <!--
 Notes: The one-mutex case matters more than the two-mutex case: scoped_lock replaces lock_guard
 as the default, so there is one spelling in the codebase. The trap: `std::scoped_lock lock;`
-with no mutex compiles and locks nothing. clang-tidy catches it. Demo file:
+with no mutex compiles and locks nothing. GCC's -Wunused-variable catches it; clang-tidy's
+bugprone-unused-raii catches the sibling `std::scoped_lock{m};` temporary. Demo file:
 demos/s05/scoped_lock.cpp
 -->
 
@@ -211,7 +213,7 @@ demos/s05/scoped_lock.cpp
 
 ## False sharing and `hardware_destructive_interference_size` <span class="badge cpp17">C++17</span>
 
-<p class="problem">Two counters, two threads, no shared data, and the program is five times slower than expected.</p>
+<p class="problem">Two counters, two threads, no shared data, and the program is four times slower than expected.</p>
 
 <!-- snippet: demos/s05/false_sharing.cpp#false_sharing -->
 ```cpp
@@ -281,8 +283,9 @@ From the exercise: `std::jthread producer([&](std::stop_token producer_stop) { .
 <!--
 Notes: jthread = joining thread. Its destructor calls request_stop() then join(), in that order.
 That turns "forgot to join" from terminate into correct behavior, and gives every thread a
-cancellation channel. Replace std::thread with std::jthread everywhere; there is no downside
-except the extra stop_source (a small allocation). Demo file: demos/s05/jthread.cpp
+cancellation channel. Replace std::thread with std::jthread everywhere; the cost is the extra
+stop_source (a small allocation). One caveat: the destructor joins, so a thread that never checks
+its token hangs the destructor instead of terminating the process. Demo file: demos/s05/jthread.cpp
 -->
 
 ---
@@ -382,13 +385,13 @@ template <typename T, std::size_t N>
 class Queue11 {
 public:
     void push(T v) {
-        std::unique_lock lock(m_);
+        std::unique_lock<std::mutex> lock(m_);   // C++11: no CTAD yet
         not_full_.wait(lock, [&] { return q_.size() < N; });
         q_.push(std::move(v));
         not_empty_.notify_one();
     }
     T pop() {
-        std::unique_lock lock(m_);
+        std::unique_lock<std::mutex> lock(m_);
         not_empty_.wait(lock, [&] { return !q_.empty(); });
         T v = std::move(q_.front()); q_.pop();
         not_full_.notify_one();
@@ -511,8 +514,9 @@ std::atomic_ref<int> ref(obj.counter);          // atomic operations on a plain 
 std::jthread a([&] { for (int i = 0; i < 1000; ++i) ref.fetch_add(1); });
 std::jthread b([&] { for (int i = 0; i < 1000; ++i) ref.fetch_add(1); });
 a.join(); b.join();
-std::println("{}", obj.counter);                // 2000; the object never changed type
-// Rule: while any atomic_ref to an object exists, touch it ONLY through atomic_refs.
+std::println("{}", ref.load());                 // 2000; the object never changed type
+// Rule: while any atomic_ref to an object exists, touch it ONLY through atomic_refs
+// (so obj.counter is read through ref here, not directly).
 ```
 
 <!--
@@ -565,7 +569,7 @@ one if short on time. Demo file: demos/s05/atomic_shared_ptr.cpp
 
 ## `std::osyncstream` <span class="badge cpp20">C++20</span>
 
-<p class="problem">Four threads log with <code>cout &lt;&lt; a &lt;&lt; b &lt;&lt; c</code>. Each <code>&lt;&lt;</code> is atomic; the line is not.</p>
+<p class="problem">Four threads log with <code>cout &lt;&lt; a &lt;&lt; b &lt;&lt; c</code>. The standard promises no data race; it promises nothing about the line.</p>
 
 <!-- snippet: demos/s05/osyncstream.cpp#sync -->
 ```cpp
@@ -1061,7 +1065,7 @@ Notes: Three real numbers, then the caveats: Debug build, so take the ordering n
 the eager version's allocation is amortized over millions of elements. What matters: a
 generator is roughly the cost of an indirect call per element, plus one allocation for the
 frame. HALO (heap allocation elision) can remove the allocation when the coroutine is inlined
-into its consumer; Clang does it sometimes, GCC rarely; never rely on it for a hard real-time
+into its consumer; Clang does it sometimes, GCC has no such pass (do not expect it); never rely on it for a hard real-time
 budget. std::generator takes an allocator argument if you need control. Demo file:
 demos/s05/generator_perf.cpp (build Release for real numbers).
 -->
@@ -1077,7 +1081,7 @@ demos/s05/generator_perf.cpp (build Release for real numbers).
 | Language (`co_await`, `<coroutine>`) | yes | yes | yes |
 | `std::generator` | **yes** | no (in progress) | no |
 | `__cpp_lib_generator` | defined | not defined | not defined |
-| HALO | rarely | often | sometimes |
+| HALO | do not expect it | sometimes | sometimes |
 
 The exercise: `#if __has_include(<generator>) && defined(__cpp_lib_generator)` defines `TELEMETRY_HAS_GENERATOR`; the coroutine parser and its test compile only there. For libc++ today: a third-party generator (cppcoro, `std::generator` reference implementation from the paper) is a header.
 
@@ -1243,7 +1247,7 @@ import telemetry.crc;         // declaration" or duplicate attachment errors). C
 Notes: Exercise task 6 asks them to swap the two lines in main.cpp and read the GCC error. The
 rule exists because GCC 14 treats a header included after an import as possibly re-declaring
 things the module's global fragment already attached. Clang is more forgiving. Write includes
-first everywhere and both compilers are happy.
+first everywhere and both compilers are happy. Hand-typed excerpts.
 -->
 
 ---
@@ -1278,7 +1282,7 @@ import <vector>;              // a header unit: a header compiled as if it were 
 Notes: Optional slide; fold into the previous one if short on time. Partitions split the
 interface; implementation units split the definitions (like .cpp files); header units are the
 compatibility mechanism and are the least supported piece (CMake has no official header-unit
-support as of 3.30).
+support as of 3.30). Hand-typed excerpts; no demo file.
 -->
 
 ---
@@ -1307,7 +1311,7 @@ int main() { std::println("{}", std::ranges::max(std::vector{1, 2, 3})); }
 Notes: The pragmatic entry point: no code changes beyond replacing a block of includes, and the
 compile-time win is immediate. The blocker in this room is libstdc++ 14; GCC 15 adds it. Clang
 18 with libc++ can do it today with the CMake experimental flag. Not enabled in the repo because
-CMake 3.28 is the floor there.
+CMake 3.28 is the floor there. Hand-typed excerpt; no demo file.
 -->
 
 ---
@@ -1335,7 +1339,8 @@ cmake -S . -B build-mod -G Ninja -DCOURSE_MODULES=ON && cmake --build build-mod
 <!--
 Notes: Live: configure with Ninja and COURSE_MODULES=ON, build, run, then `ninja -t deps` or
 open the .ddi files to show the scan output. The one-line CMake is the good news; the
-generator requirement is what blocks Make-based projects.
+generator requirement is what blocks Make-based projects. The CMake block is a hand-typed
+excerpt from demos/s05/modules/CMakeLists.txt.
 -->
 
 ---
@@ -1409,7 +1414,7 @@ added.
 | `std::iterator<...>` base class | deprecated C++17 | the five member typedefs, or C++20 iterator concepts |
 | `std::result_of`, `std::uncaught_exception`, `raw_storage_iterator` | removed C++20 | `invoke_result`, `uncaught_exceptions` |
 | `<codecvt>`, `wstring_convert` | deprecated C++17, removed C++26 | a library (ICU, simdutf) |
-| `volatile` compound ops (`v++`, `v += 1`) | deprecated C++20, partly restored C++23 | `v = v + 1`, or an atomic |
+| `volatile` compound ops (`v++`, `v += 1`) | deprecated C++20; C++23 restored only `\|=`, `&=`, `^=` | `v = v + 1`, or an atomic |
 | `std::aligned_storage`, `aligned_union` | deprecated C++23 | `alignas(T) std::byte buf[sizeof(T)]` |
 | `std::atomic_init`, `ATOMIC_VAR_INIT`, free `atomic_load(shared_ptr*)` | deprecated C++20 | constructors, `atomic<shared_ptr>` |
 | Garbage-collection support (`declare_reachable`) | removed C++23 | nothing; nobody used it |
@@ -1453,8 +1458,10 @@ Exercise task 7: the clang-tidy count on the Session 1 starter versus the Sessio
 
 <!--
 Notes: Live: the two compiler runs, side by side. Then clang-tidy on the Session 1 starter (many
-warnings) and on the Session 5 solution (near zero). -Wdeprecated is on by default in both
-compilers for library deprecations; -Werror=deprecated-declarations makes it a build break,
+warnings) and on the Session 5 solution (near zero). Library deprecations warn through
+-Wdeprecated-declarations, on by default in both compilers; -Wdeprecated is a separate group
+(language deprecations such as volatile ++) and not on by default in Clang.
+-Werror=deprecated-declarations makes it a build break,
 which is the right setting once the count reaches zero. Demo file: demos/s05/deprecated.cpp
 -->
 
@@ -1490,7 +1497,9 @@ Tier 1 is the exercise from Session 1. Tier 2 is Sessions 2 to 4. Tier 3 is toda
 
 <!--
 Notes: The tiers map to the course. Tier 1 needs no meeting. Tier 2 needs the tests the course
-kept insisting on (report_identical). Tier 3 needs a pilot and a measurement.
+kept insisting on (report_identical). Tier 3 needs a pilot and a measurement. The one tier 1
+item with a caveat: jthread's destructor joins, so a thread that never checks its token hangs
+rather than terminates; check the loop before swapping.
 -->
 
 ---
@@ -1538,7 +1547,7 @@ with three verbs gets applied in review; anything longer gets linked and ignored
 
 ## The worksheet
 
-Open `handouts/adoption-roadmap-template.md`. Ten minutes:
+Open `handouts/adoption-roadmap-template.md`. Eight minutes:
 
 1. Name a codebase you own and its current `-std=` flag
 2. Fill in the **tier 1** column: for each row, where (a directory or module), who, and whether clang-tidy can do it

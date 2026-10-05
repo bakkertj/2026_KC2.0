@@ -20,7 +20,7 @@ int main() {
     d += "!";
 
     // [snippet: braces]
-    auto x{42};        // int since C++17 (initializer_list<int> in 11/14)
+    auto x{42};        // int (N3922; GCC and Clang apply it back to C++11)
     auto y = {1, 2};   // initializer_list<int>, still
     std::vector<int> v(3, 7);   // three sevens
     std::vector<int> w{3, 7};   // the values 3 and 7

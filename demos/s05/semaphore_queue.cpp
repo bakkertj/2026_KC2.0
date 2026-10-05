@@ -8,6 +8,7 @@
 #include <queue>
 #include <semaphore>
 #include <thread>
+#include <utility>
 
 // [snippet: before]
 // C++11: a mutex, two condition_variables, two predicates by hand
@@ -15,13 +16,13 @@ template <typename T, std::size_t N>
 class Queue11 {
 public:
     void push(T v) {
-        std::unique_lock lock(m_);
+        std::unique_lock<std::mutex> lock(m_);   // C++11: no CTAD yet
         not_full_.wait(lock, [&] { return q_.size() < N; });
         q_.push(std::move(v));
         not_empty_.notify_one();
     }
     T pop() {
-        std::unique_lock lock(m_);
+        std::unique_lock<std::mutex> lock(m_);
         not_empty_.wait(lock, [&] { return !q_.empty(); });
         T v = std::move(q_.front()); q_.pop();
         not_full_.notify_one();

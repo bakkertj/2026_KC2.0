@@ -1,4 +1,4 @@
-// Demo: cartesian_product, repeat, join_with, as_rvalue, as_const (C++23)
+// Demo: cartesian_product, repeat, join_with, as_rvalue (C++23)
 // Session: s04
 // Compiler Explorer: <add short link>
 #include <print>
@@ -12,7 +12,7 @@ int main() {
     namespace v = std::views;
     std::vector<std::string> sensors{"rpm", "temp"};
     std::vector<int> channels{1, 2};
-#if defined(__GLIBCXX__) || (defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 200000)   // libc++ 18 lacks cartesian_product, join_with
+#if defined(__cpp_lib_ranges_cartesian_product) && defined(__cpp_lib_ranges_join_with)   // libc++ (Apple Clang 17 included) lacks these
     // [snippet: family]
     for (auto [s, c] : v::cartesian_product(sensors, channels)) std::print("{}/{} ", s, c);   // every pair
     std::println("");
@@ -21,11 +21,11 @@ int main() {
     std::println("");
 
     for (char ch : sensors | v::join_with(std::string_view{", "})) std::print("{}", ch);    // rpm, temp
-    std::println("");                                                                        // (pattern must be a range)
+    std::println("");                                                                        // (pattern: a range or a single element, e.g. ',')
 
     std::vector<std::string> src{"a", "b"};
     auto moved = src | v::as_rvalue | std::ranges::to<std::vector>();   // moves the strings out of src
-    std::println("{} {}", moved.size(), src[0].empty());
+    std::println("{} {}", moved.size(), moved[0]);                      // src's strings are now moved-from: valid but unspecified
     // [/snippet]
 #else
     std::println("C++23 view family not available in this standard library");

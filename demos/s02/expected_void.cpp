@@ -3,7 +3,7 @@
 // Compiler Explorer: <add short link>
 #include <cstdio>
 #include <expected>
-#include <string>
+#include <string_view>
 
 enum class IoError { NotOpen, Full };
 

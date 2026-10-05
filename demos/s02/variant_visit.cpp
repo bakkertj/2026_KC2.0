@@ -28,6 +28,7 @@ void inspect(const Value& v) {
 
 // [snippet: visitor]
 template <class... Fs> struct overloaded : Fs... { using Fs::operator()...; };   // one object, all the overloads
+template <class... Fs> overloaded(Fs...) -> overloaded<Fs...>;                // C++17 needs this guide; C++20 CTAD does not
 
 std::string describe(const Value& v) {
     return std::visit(overloaded{
@@ -36,7 +37,8 @@ std::string describe(const Value& v) {
         [](const std::string& s) { return "text " + s; },
     }, v);
 }
-// Add a fourth alternative to Value and this stops compiling until you add a fourth lambda.
+// Add a fourth alternative to Value and this stops compiling until some lambda accepts it.
+// (One that converts implicitly, float to double, const char* to std::string, is accepted silently.)
 // [/snippet]
 
 int main() {

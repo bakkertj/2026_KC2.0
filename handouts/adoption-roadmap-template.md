@@ -11,6 +11,9 @@ Codebase: ______________________   Current standard flag: ______   Target: _____
 | Structured bindings for pair/tuple returns | | | |
 | string_view at read-only boundaries | | | |
 | optional for sentinel returns | | | |
+| `using` over `typedef` | | | |
+| Defaulted `operator<=>` replacing hand-written comparisons | | | |
+| `scoped_lock` for `lock_guard`; `jthread` for `thread` (check the loop reads its stop token) | | | |
 | Run clang-tidy modernize-* and triage | | | |
 
 ## Tier 2: interface changes (this quarter)
@@ -21,12 +24,14 @@ Codebase: ______________________   Current standard flag: ______   Target: _____
 | expected for error-returning functions | | | |
 | Concepts on public templates | | | |
 | std::format / print replacing printf/iostream | | | |
+| constexpr lookup tables (CRC, sensor table) | | | |
+| Projections and ranges:: algorithms replacing comparator lambdas | | | |
 
 ## Tier 3: architectural (evaluate)
 
 | Change | Candidate area | Decision | Notes |
 |---|---|---|---|
 | Ranges pipelines | | | |
-| jthread and stop tokens | | | |
+| stop_token cancellation and semaphore queues | | | |
 | Coroutines (generator, async) | | | |
 | Modules | | | |

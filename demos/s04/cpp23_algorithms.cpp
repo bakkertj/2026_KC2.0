@@ -25,11 +25,14 @@ int main() {
     bool pre = false, suf = false;
 #endif
     std::vector<int> seq(5);
-#if defined(__GLIBCXX__) || (defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 190000)   // libc++ 18: no find_last, ranges::iota
+#ifdef __cpp_lib_ranges_find_last                                                 // GCC 13 / libc++ 19
     auto last2 = std::ranges::find_last(v, 2);                                       // a subrange from the last match to the end
-    std::ranges::iota(seq, 10);                                                      // 10 11 12 13 14 (ranges version)
 #else
     auto last2 = std::ranges::subrange(v.begin() + 3, v.end());
+#endif
+#ifdef __cpp_lib_ranges_iota                                                      // GCC 13; not yet in libc++ (Apple Clang 17 included)
+    std::ranges::iota(seq, 10);                                                      // 10 11 12 13 14 (ranges version)
+#else
     std::iota(seq.begin(), seq.end(), 10);
 #endif
     // std::ranges::shift_left / shift_right: GCC 15 / libc++ 20 (std::shift_left is C++20 and everywhere)

@@ -1,6 +1,6 @@
 # Session 2 deck outline: Vocabulary Types and the Standard Library
 
-One line per slide. Badge in brackets; "2col" is before/after; "demo" is live; "evo" is a timeline slide. Target: 58 content slides for 90 minutes, then the exercise. Every "from the exercise" slide pulls its code from `exercises/s02-vocabulary-types/` starter and solution.
+One line per slide. Badge in brackets; "2col" is before/after; "demo" is live; "evo" is a timeline slide. Target: 59 slides: 56 content slides for 100 minutes, then the exercise segment (3 slides, 20 minutes). Every "from the exercise" slide pulls its code from `exercises/s02-vocabulary-types/` starter and solution.
 
 ## 0. Opening (0:00, 5 slides)
 
@@ -29,14 +29,14 @@ One line per slide. Badge in brackets; "2col" is before/after; "demo" is live; "
 17. `std::optional` [17] (2col, `find_sensor` from the exercise): a nullable pointer said "maybe" and "look elsewhere for the object"; optional says only "maybe"
 18. `optional` mechanics: `has_value`/`operator bool`, `*`/`->` (unchecked), `value()` (throws), `value_or`, `std::nullopt`, `emplace`, `reset`; it holds the object inline, no allocation [17]
 19. `optional` as a return type vs as a member vs as a parameter: return yes; member sometimes (a lazily computed field); parameter rarely (overloads are clearer) [17]
-20. Monadic `optional` [23] (2col, the units lookup from the report): `and_then`, `transform`, `or_else` replace nested ifs; the pointer-to-member trap on a temporary
+20. Monadic `optional` [23] (2col, the units lookup from the report): `and_then`, `transform`, `or_else` replace nested ifs; the pointer-to-member trap (optional cannot hold a reference)
 21. `std::variant` [17] (feature): a type-safe tagged union; `std::get`, `std::get_if`, `index`, `holds_alternative`; what it replaces (a `kind` enum plus a `union`, or `void*`)
 22. `std::visit` and the overload-set visitor [17] (feature): `overloaded{ [](int){...}, [](std::string){...} }` with CTAD; exhaustive by construction
 23. Variant in practice (feature): a message type for a telemetry link (`std::variant<Reading, Heartbeat, Fault>`); when `visit` beats a virtual hierarchy and when it does not (open vs closed set of types)
 24. `variant` details worth knowing: `valueless_by_exception`, `std::monostate` for "empty", default constructs the first alternative, comparison and hashing work if the alternatives support them [17]
 25. `std::any` [17]: type-erased anything; `any_cast`; heap-allocates for large types; the honest advice (plugin boundaries, scripting bridges, and not much else)
 26. Choosing between them (table): optional = maybe one T; variant = exactly one of a fixed set; any = anything, you check at runtime; pointer = someone else owns it
-27. Evolution slide (evo): where these came from (Boost.Optional 2003, Boost.Variant 2002, proposals through 2016) and why it took until C++17
+27. Evolution slide (evo): where these came from (Boost.Optional 2003, Boost.Variant 2004, proposals through 2016) and why it took until C++17
 28. Segment takeaway
 
 ## 3. Error handling: `std::expected` (1:00, 8 slides)
@@ -72,7 +72,7 @@ One line per slide. Badge in brackets; "2col" is before/after; "demo" is live; "
 51. C++20 tour, part 3: `<chrono>` calendars and time zones: `year_month_day`, `sys_days`, `zoned_time`, formatting timestamps with `std::format("{:%F %T}")`; the exercise's raw `long long` timestamp could be `sys_time<milliseconds>` [20]
 52. C++23 tour, part 1: `std::flat_map`/`flat_set` (sorted vectors with a map interface; cache-friendly; the sensor table as a `flat_map`); `std::stacktrace` (`std::stacktrace::current()` in an error path); `std::move_only_function` [23]
 53. C++23 tour, part 2: `std::string::contains` (seen), `resize_and_overwrite`, `std::byteswap`, `std::out_ptr`/`inout_ptr` for C APIs that fill a pointer, `std::forward_like`, `std::to_underlying` (seen), `std::spanstream` [23]
-54. Deprecated and removed in the library: `std::iterator`, `std::result_of`, `random_shuffle`, `<codecvt>`, `std::aligned_storage` (C++23), `strstream` (C++26); `-Wdeprecated` finds them [17/20/23]
+54. Deprecated and removed in the library: `std::iterator`, `std::result_of`, `random_shuffle`, `<codecvt>`, `std::aligned_storage` (C++23), `strstream` (C++26); `-Wdeprecated-declarations` finds them [17/20/23]
 55. Support matrix for this session (table): `expected` on Clang 18 needs libc++; `from_chars<double>` missing on libc++ < 20; `flat_map`, `mdspan`, `stacktrace` per compiler; feature-test macros and `<version>` as the tool
 
 ## 6. Exercise and close (1:40, 3 slides)

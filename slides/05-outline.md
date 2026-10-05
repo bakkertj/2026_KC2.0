@@ -67,7 +67,7 @@ One line per slide. Badge in brackets; "2col" is before/after; "demo" is live; "
 46. Three tiers (feature): tier 1 mechanical and zero-risk (`make_unique`, `[[nodiscard]]`, structured bindings, `string_view` at boundaries, `optional` for sentinels, `using`, `<=>`); tier 2 interface changes (`span`, `expected`, concepts on public templates, `format`/`print`, `constexpr` tables); tier 3 architectural (ranges pipelines, `jthread` and stop tokens, coroutines, modules)
 47. Tooling as a force multiplier (feature): clang-tidy `modernize-*` and `performance-*` with `-fix`; compiler flag progression (`-std=c++17` then `20` then `23`, warnings as errors per directory); feature-test macros for mixed toolchains; the support matrix as a living document
 48. Writing the coding-standard update (feature): what to mandate (tier 1), what to allow (tier 2), what to pilot (tier 3); the C++ Core Guidelines as the reference; one page, not thirty
-49. The worksheet (demo): `handouts/adoption-roadmap-template.md`; attendees fill in the tier-1 column for a codebase they own, ten minutes, then three volunteers read theirs
+49. The worksheet (demo): `handouts/adoption-roadmap-template.md`; attendees fill in the tier-1 column for a codebase they own, eight minutes, then three volunteers read theirs
 50. The capstone (feature): `exercises/capstone/README.md`, 300 to 500 lines of your own code, tiers 1 and 2, a before/after diff and one paragraph
 
 ## 6. Close (1:50, 3 slides)

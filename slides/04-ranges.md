@@ -68,8 +68,9 @@ for (const auto& r : records) { lo = std::min(lo, r.value); hi = std::max(hi, r.
 Every one: **two iterators** that must match, a **comparator lambda** that says "by this member", and **no way to compose** the steps without a temporary vector.
 
 <!--
-Notes: The four lines are real, from stats.cpp. Count the lambdas: three, all saying "compare by
-a member". Projections remove all three. Hand-typed excerpt.
+Notes: The four lines are real, from stats.cpp. Count the lambdas: three. Two say "compare by a
+member"; projections remove those two, and the min/max loop. The copy_if predicate captures
+`sensor` and survives as the filter lambda on the pipe-syntax slide. Hand-typed excerpt.
 -->
 
 ---
@@ -287,7 +288,7 @@ Demo file: demos/s04/sentinels.cpp
 `std::ranges::begin`, `end`, `size`, `data`, `swap`, and every `std::ranges::` algorithm are **objects**, not functions.
 
 - They cannot be found by argument-dependent lookup, so `sort(v)` with `using namespace std::ranges` cannot be hijacked by a `sort` in `v`'s namespace
-- They dispatch correctly to member `begin()`, free `begin()`, or arrays, in that order, and reject anything else with a concept error
+- They dispatch correctly to arrays, member `begin()`, or ADL free `begin()`, in that order, reject anything else with a concept error, and refuse an rvalue of a non-borrowed range
 - `std::ranges::begin(r)` is the spelling to use in generic code; `r.begin()` only works for members
 - Consequence: you can pass `std::ranges::sort` to another function without a wrapper lambda
 
@@ -307,16 +308,19 @@ are first-class values.
 ```cpp
 for (const auto& r : records | std::views::filter(is_rpm)) { ... }     // fine: records is an lvalue
 
-for (const auto& r : load().records | std::views::take(3)) { ... }     // BUG before C++23: load() dies before the body
-for (auto loaded = load(); const auto& r : loaded.records | std::views::take(3)) { ... }   // C++20 fix
+for (const auto& r : load().records() | std::views::take(3)) { ... }   // BUG before C++23: records() is a reference into load(), which dies before the body
+for (auto loaded = load(); const auto& r : loaded.records() | std::views::take(3)) { ... }   // C++20 fix
 
 for (auto&& x : some_view) { ... }        // auto&& because some views yield prvalues (transform) and some references
 ```
 
 <!--
 Notes: The init-statement form from Session 1 is the C++20 fix; C++23's P2718 makes the bug
-line legal (GCC 15, Clang 19). The auto&& advice: transform yields values, filter yields
-references; auto&& binds either without a copy. Hand-typed.
+line legal (GCC 15, Clang 19). The bug needs a REFERENCE into the temporary: an accessor
+returning const vector&. Piping a data member of a temporary (`load().records | take(3)`) is
+already safe, because the rvalue vector is moved into an owning_view (P2415, a C++20 DR) that
+lives for the loop. The auto&& advice: transform yields values, filter yields references;
+auto&& binds either without a copy. Hand-typed.
 -->
 
 ---
@@ -374,7 +378,7 @@ Demo file: demos/s04/dangling.cpp
 | `bidirectional_range` | also backward | `std::list`, `std::map`, `views::filter` over a vector |
 | `random_access_range` | `it + n` in O(1) | `std::deque`, `views::iota`, `views::transform` over a vector |
 | `contiguous_range` | `data()` is a pointer | `std::vector`, `std::array`, `std::span`, `std::string_view` |
-| `sized_range` | `size()` in O(1) | all of the above except `forward_list` and `filter` |
+| `sized_range` | `size()` in O(1) | all of the above except `forward_list`, `filter`, and the `istream` and `split` views |
 | `view` | cheap copy, non-owning | `span`, `string_view`, every `views::` result |
 | `borrowed_range` | iterators may outlive it | `span`, `string_view`, `subrange`, any lvalue |
 | `common_range` | `begin()` and `end()` same type | containers; `views::common` makes any range one |
@@ -508,7 +512,7 @@ adaptors compose left to right. The pipeline reads as the steps. Hand-typed from
 
 ## The core adaptors <span class="badge cpp20">C++20</span>
 
-<p class="problem">Fourteen adaptors cover most pipelines.</p>
+<p class="problem">Twelve adaptors cover most pipelines.</p>
 
 <!-- snippet: demos/s04/adaptors_tour.cpp#tour -->
 ```cpp
@@ -570,8 +574,9 @@ A view is a **`string_view` over a computation**: non-owning, O(1) to copy and m
 
 <!--
 Notes: The owning_view case is the exception to "non-owning": piping an rvalue container moves
-it into the view. That is what makes `load() | views::take(3)` safe to STORE, but not to
-iterate in a range-for before C++23 (temporary lifetime).
+it into the view. That is what makes `load() | views::take(3)` safe both to store and to
+iterate in a range-for, even in C++20: the container now lives inside the view. The dangling
+case is a REFERENCE into a temporary, `load().records() | views::take(3)` (the range-for slide).
 -->
 
 ---
@@ -654,8 +659,9 @@ int sum_even_squares(const std::vector<int>& v) {
     return s;
 }
 
-// Evaluates the filter predicate TWICE per element in some cases: reverse of filter needs
-// the end, and finding the end runs the predicate; iterating runs it again.
+// Evaluates the filter predicate TWICE per element: reverse_iterator::operator* decrements a
+// COPY of the filter iterator (running the predicate back to the previous match), then
+// operator++ decrements the real one and runs it again. Measured: 12 calls for 6 elements.
 int reverse_of_filter(const std::vector<int>& v) {
     int s = 0;
     for (int x : v | std::views::filter([](int x) { return x % 2 == 0; }) | std::views::reverse) s += x;
@@ -668,9 +674,10 @@ int reverse_of_filter(const std::vector<int>& v) {
 
 <!--
 Notes: filter | transform | take: one loop with a branch, identical codegen at -O2 on both
-compilers (show on Compiler Explorer). reverse of filter: the predicate can run twice per
-element. join and split are forward-only and branchy. Rule: views in code you own and measure;
-a plain loop is still right in a hot inner loop when the view would need to compute the end.
+compilers (show on Compiler Explorer). reverse of filter: the predicate runs twice per element,
+because reverse_iterator dereferences through a decremented copy and then decrements again.
+join and split are forward-only and branchy. Rule: views in code you own and measure; a plain
+loop is still right in a hot inner loop when the adaptor stack repeats work like this.
 Demo file: demos/s04/cost_model.cpp
 -->
 
@@ -837,9 +844,10 @@ time, and the plan for 23 was written before 20 was even published.
 void top_per_sensor_cpp11(std::vector<Record> v) {
     std::map<std::string, std::vector<Record>> groups;
     for (const auto& r : v) groups[r.sensor].push_back(r);
-    for (auto& [name, rs] : groups) {
+    for (auto& g : groups) {                      // no structured bindings yet
+        std::vector<Record>& rs = g.second;
         std::sort(rs.begin(), rs.end(), [](const Record& a, const Record& b) { return a.value > b.value; });
-        std::println("{}: {}", name, rs.front().value);
+        std::println("{}: {}", g.first, rs.front().value);   // println for output only; the rest is C++11
     }
 }
 ```
@@ -903,7 +911,7 @@ Availability: libstdc++ 13+; libc++ 20+ (none of these on libc++ 18).
 
 <!--
 Notes: The telemetry use: slide(3) | transform(mean) is a moving average in one line; adjacent<2>
-gives deltas; stride(2) decimates. Demo file: demos/s04/windows.cpp (gated on libc++ version)
+gives deltas; stride(2) decimates. Demo file: demos/s04/windows.cpp (gated on feature-test macros; prints a notice on libc++)
 -->
 
 ---
@@ -923,17 +931,19 @@ for (int x : v::repeat(7, 3)) std::print("{} ", x);                             
 std::println("");
 
 for (char ch : sensors | v::join_with(std::string_view{", "})) std::print("{}", ch);    // rpm, temp
-std::println("");                                                                        // (pattern must be a range)
+std::println("");                                                                        // (pattern: a range or a single element, e.g. ',')
 
 std::vector<std::string> src{"a", "b"};
 auto moved = src | v::as_rvalue | std::ranges::to<std::vector>();   // moves the strings out of src
-std::println("{} {}", moved.size(), src[0].empty());
+std::println("{} {}", moved.size(), moved[0]);                      // src's strings are now moved-from: valid but unspecified
 ```
 
 <!--
 Notes: cartesian_product for "every combination" (test matrices, sensor x channel);
-join_with for string joining (the pattern must be a range: a string_view, not a const char*);
-as_rvalue to move elements out of a range into a container. Demo file: demos/s04/zip_family.cpp
+join_with for string joining (the pattern is a range such as a string_view, or a single
+element such as ','; a const char* is neither); as_rvalue to move elements out of a range into
+a container. The moved-from strings in src are valid but unspecified, so print moved, not src.
+Demo file: demos/s04/zip_family.cpp
 -->
 
 ---
@@ -964,7 +974,7 @@ auto names = std::ranges::fold_right(v | std::views::transform(&Record::sensor),
 <!--
 Notes: fold_left(range, init, op). fold_left_first has no init, so it returns optional (empty
 range gives nullopt) and cannot fall into the std::accumulate(..., 0) integer-truncation trap.
-libc++ 18 has fold_left only. Demo file: demos/s04/fold.cpp
+libc++ (Apple Clang 17 included) has fold_left only; the demo is gated on __cpp_lib_ranges_fold. Demo file: demos/s04/fold.cpp
 -->
 
 ---
@@ -986,11 +996,14 @@ libc++ 18 has fold_left only. Demo file: demos/s04/fold.cpp
     bool pre = false, suf = false;
 #endif
     std::vector<int> seq(5);
-#if defined(__GLIBCXX__) || (defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 190000)   // libc++ 18: no find_last, ranges::iota
+#ifdef __cpp_lib_ranges_find_last                                                 // GCC 13 / libc++ 19
     auto last2 = std::ranges::find_last(v, 2);                                       // a subrange from the last match to the end
-    std::ranges::iota(seq, 10);                                                      // 10 11 12 13 14 (ranges version)
 #else
     auto last2 = std::ranges::subrange(v.begin() + 3, v.end());
+#endif
+#ifdef __cpp_lib_ranges_iota                                                      // GCC 13; not yet in libc++ (Apple Clang 17 included)
+    std::ranges::iota(seq, 10);                                                      // 10 11 12 13 14 (ranges version)
+#else
     std::iota(seq.begin(), seq.end(), 10);
 #endif
     // std::ranges::shift_left / shift_right: GCC 15 / libc++ 20 (std::shift_left is C++20 and everywhere)
@@ -998,7 +1011,7 @@ libc++ 18 has fold_left only. Demo file: demos/s04/fold.cpp
 
 <!--
 Notes: contains with a projection is the exercise's validate() duplicate check (task 6), and it
-is constexpr. starts_with/ends_with: GCC 15, libc++ 17. find_last and ranges::iota: GCC 14,
+is constexpr. starts_with/ends_with: GCC 15, libc++ 17. find_last and ranges::iota: GCC 13,
 libc++ 19. Demo file: demos/s04/cpp23_algorithms.cpp (gated)
 -->
 
@@ -1042,11 +1055,11 @@ auto t0 = std::chrono::steady_clock::now();
 std::sort(ex::seq, v.begin(), v.end());                          // sequential: same as plain sort
 auto t1 = std::chrono::steady_clock::now();
 std::shuffle(v.begin(), v.end(), rng);                           // same input again, for a fair comparison
-t1 = std::chrono::steady_clock::now();
+auto t2 = std::chrono::steady_clock::now();                      // a fresh timestamp: the reshuffle is not timed
 std::sort(ex::par, v.begin(), v.end());                          // may use threads; elements must be independent
-auto t2 = std::chrono::steady_clock::now();
-double s = std::reduce(ex::par_unseq, v.begin(), v.end());       // may also vectorize: no locks, no allocation in the body
 auto t3 = std::chrono::steady_clock::now();
+double s = std::reduce(ex::par_unseq, v.begin(), v.end());       // may also vectorize: no locks, no allocation in the body
+auto t4 = std::chrono::steady_clock::now();
 // Not available for std::ranges:: algorithms until C++26. Iterator pairs only.
 ```
 
@@ -1162,7 +1175,7 @@ Notes: Thirty seconds. The searcher matters when the same pattern is searched in
 
 - `std::shift_left` / `std::shift_right`: move elements by n within a range, the missing complement to `rotate`
 - `std::lexicographical_compare_three_way`: `<=>` for sequences
-- `std::ranges::` versions of every `<algorithm>` function (not `<numeric>`)
+- `std::ranges::` versions of nearly every `<algorithm>` function (not `<numeric>`; `shift_left`/`shift_right` wait for C++23, `lexicographical_compare_three_way` has none)
 - `std::midpoint`, `std::lerp` (Session 2), `std::ssize`
 - `std::erase` / `std::erase_if` free functions for every container (Session 2): the end of erase-remove
 - `unseq` execution policy
@@ -1182,9 +1195,9 @@ Notes: Fast. shift_left is the one people did not know they needed (ring-buffer 
 |---|---|
 | `ranges::contains`, `contains_subrange` | GCC 13+, libc++ 17+ |
 | `ranges::starts_with`, `ends_with` | GCC 15, libc++ 17+ |
-| `ranges::find_last`, `find_last_if` | GCC 14, libc++ 19+ |
+| `ranges::find_last`, `find_last_if` | GCC 13+, libc++ 19+ |
 | `ranges::fold_left`, `fold_right`, `fold_left_first`, `fold_left_with_iter` | GCC 13+; libc++ 18 `fold_left` only |
-| `ranges::iota`, `ranges::shift_left`/`shift_right` | GCC 14 / 15; libc++ 19 / 20 |
+| `ranges::iota`, `ranges::shift_left`/`shift_right` | GCC 13 / 15; libc++ 19 / 20 |
 | `ranges::to` | GCC 14, libc++ 17+ |
 | **C++26 preview:** `std::ranges::` parallel algorithms (`ranges::sort(par, ...)`), `views::concat`, `views::cache_latest`, `ranges::generate_random` | |
 
@@ -1203,7 +1216,7 @@ parallel ranges algorithms taking a policy as their first argument.
 |---|---|---|---|
 | Constrained algorithms, projections, core views, `ranges::to`, `zip`, `chunk_by`, `split`, `fold_left`, `contains` | OK | OK | yes |
 | `views::enumerate` | OK | missing (libc++ 20) | avoided: `zip(iota(1uz), ...)` |
-| `chunk`, `slide`, `stride`, `adjacent`, `cartesian_product`, `join_with`, `zip_transform` | OK | missing (libc++ 20) | no |
+| `chunk`, `slide`, `stride`, `adjacent`, `cartesian_product`, `join_with`, `zip_transform` | OK | missing (also on Apple Clang 17 / Xcode 26; demos print a notice) | no |
 | `fold_left_first`, `fold_right`; `find_last`, `ranges::iota`; `range_adaptor_closure` | OK | missing (libc++ 19/20) | no |
 | `ranges::starts_with`/`ends_with`; range formatting | missing (GCC 15) | OK | no |
 | Parallel algorithms | OK with TBB | needs `-fexperimental-library` | no |
@@ -1266,7 +1279,7 @@ to C++20. Demo file: demos/s04/same_task_three_ways.cpp
 
 Open `exercises/s04-ranges/README.md`
 
-**In class (20 minutes):**
+**In class (10 minutes; finish at home):**
 
 1. Projections: `minmax`, `lower_bound`, `find` with `&Record::value`, `&Record::ts`, `&SensorConfig::name`. Every comparator lambda disappears.
 2. `top_n_by_value` as `filter | to<vector>` plus a projected `stable_sort`
@@ -1296,6 +1309,6 @@ The lifetime rules are the same as every other view. The tests define the contra
 **Next session:** concurrency (`jthread`, `stop_token`, `latch`, `barrier`), coroutines and `std::generator`, modules, and the adoption roadmap for your own codebase.
 
 <!--
-Notes: Point at handouts/cheat-sheet-ranges.md (written in working session 12) and the support
+Notes: Point at handouts/cheat-sheet-ranges.md and the support
 matrix.
 -->

@@ -24,8 +24,9 @@ int main() {
 #endif
     // [/snippet]
 
-    // zip_transform: combine in lockstep (libstdc++ 13+; libc++ 20+)
-#if defined(__GLIBCXX__) || (defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 200000)
+    // zip_transform: combine in lockstep. __cpp_lib_ranges_zip is defined only once zip, zip_transform,
+    // adjacent and adjacent_transform are all present; libc++ has zip alone for several releases.
+#ifdef __cpp_lib_ranges_zip
     for (auto s : std::views::zip_transform([](const std::string& n, double v) { return n + ":" + std::to_string(int(v)); }, names, values))
         std::print("{} ", s);
     std::println("");

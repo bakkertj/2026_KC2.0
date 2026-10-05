@@ -8,7 +8,7 @@
 // [snippet: ice]
 // One function, two implementations: exact at compile time, fast at runtime
 constexpr double power(double base, int exp) {
-    if consteval {                                   // C++23: a real branch on evaluation mode
+    if (std::is_constant_evaluated()) {              // C++20 (C++23 spells it `if consteval`)
         double r = 1.0;
         for (int i = 0; i < exp; ++i) r *= base;     // constexpr-friendly loop
         return r;

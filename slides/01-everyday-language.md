@@ -29,12 +29,12 @@ Then straight into the agenda.
 3. C++14: the polish release (25 min)
 4. C++17: syntax you will use daily (25 min)
 5. C++20 and C++23: small but valuable (15 min)
-6. Guided exercise: modernize the syntax (20 min)
+6. Guided exercise: modernize the syntax (20 min), then wrap-up (5 min)
 
 <!--
 Notes: Point at the exercise README now (exercises/s01-modernize-syntax/README.md) so people can
-open it and build the starter during the first break. The exercise is cumulative: the program you
-modernize today is the one you carry through all five sessions.
+open it; the two-minute toolchain check on slide 5 builds the starter. The exercise is cumulative:
+the program you modernize today is the one you carry through all five sessions.
 -->
 
 ---
@@ -67,13 +67,14 @@ Every feature slide has three parts:
 
 - **The badge** (top right): the standard that introduced it. Also the answer to "can I use this under our flags?"
 - **The problem line** (italic, under the title): what was wrong before
-- **The code**: an excerpt from a file in `demos/` that compiles under `-Wall -Wextra -Werror` on GCC 14 and Clang 18
+- **The code**: an excerpt from a file in `demos/` that compiles under `-Wall -Wextra -Wpedantic -Werror` on GCC 14 and Clang 18
 
 "Before / After" slides show the C++11 way on the left and the modern way on the right, doing the same thing.
 
 <!--
-Notes: Make the point that every line of code in this deck is pulled from a compiled file by a
-script, so nothing on a slide is pseudo-code. Demo files are named in the notes and the repo.
+Notes: Make the point that every code block on a feature slide that names a demo file is pulled
+from that compiled file by a script, so it is not pseudo-code. Short hand-typed blocks (C++11-only
+code, one-liners, previews) say so in their notes.
 -->
 
 ---
@@ -82,7 +83,7 @@ script, so nothing on a slide is pseudo-code. Demo files are named in the notes 
 
 - `-std=c++23` with GCC 14 or Clang 18. Either. Both, ideally.
 - `-Wall -Wextra -Wpedantic -Werror` throughout: the compiler is a course participant
-- Compiler Explorer (godbolt.org) links on every demo slide: no local setup needed to follow along
+- Compiler Explorer (godbolt.org) links in every `demos/` file header: no local setup needed to follow along
 - The repo `Dockerfile` pins the same toolchain if you want it locally
 
 **Two-minute check now:** `cmake -S . -B build && cmake --build build && ctest --test-dir build`
@@ -107,7 +108,7 @@ which. Today's session uses nothing that is missing on either.
 
 Reads lines like that, validates them against a sensor table, computes per-sensor statistics, prints a report.
 
-Run it: `build/exercises/s01-modernize-syntax/s01_starter data/sample.csv`
+Run it: `build/exercises/s01-modernize-syntax/s01_starter exercises/s01-modernize-syntax/data/sample.csv`
 
 <!--
 Notes: Run it live on sample.csv. Show the report: seven rejections, one per reason, then stats per
@@ -150,7 +151,7 @@ auto& d = c.name;         // std::string&: a mutable alias into c
 
 <!-- snippet: demos/s01/auto_pitfalls.cpp#braces -->
 ```cpp
-auto x{42};        // int since C++17 (initializer_list<int> in 11/14)
+auto x{42};        // int (N3922; GCC and Clang apply it back to C++11)
 auto y = {1, 2};   // initializer_list<int>, still
 std::vector<int> v(3, 7);   // three sevens
 std::vector<int> w{3, 7};   // the values 3 and 7
@@ -159,8 +160,8 @@ std::vector<int> w{3, 7};   // the values 3 and 7
 <!--
 Notes: The first line copies a 100-byte string silently; in a loop over a map that is a copy of
 every pair. Rule: `const auto&` by default when reading, `auto&` when mutating, plain `auto` when
-you want a copy. The braces rule changed in C++17 (auto x{42} is int now), which is why this deck
-is compiled as 23. Demo file: demos/s01/auto_pitfalls.cpp
+you want a copy. The braces rule changed with N3922, adopted for C++17 but treated as a defect
+report: GCC and Clang give int even under -std=c++11. Demo file: demos/s01/auto_pitfalls.cpp
 -->
 
 ---
@@ -236,7 +237,7 @@ Demo file: demos/s01/escaping_lambda.cpp
 ## `unique_ptr` vs `shared_ptr`: ownership, not "modern pointer"
 
 - `std::unique_ptr<T>`: exactly one owner. Zero overhead over a raw pointer. **The default.**
-- `std::shared_ptr<T>`: reference counted. Two atomic increments per copy, a control block per object, and it makes lifetime a runtime question. **A design decision, not a convenience.**
+- `std::shared_ptr<T>`: reference counted. An atomic increment per copy (and a decrement per destruction), a control block per object, and it makes lifetime a runtime question. **A design decision, not a convenience.**
 - Raw `T*`: non-owning, may be null. Still fine as a parameter. Never for ownership.
 - `T&`: non-owning, never null. The best parameter when it fits.
 
@@ -283,8 +284,8 @@ constexpr int factorial14(int n) {
 ```
 
 <!--
-Notes: This is the one hand-typed code block in the deck, because the C++11 restriction cannot be
-demonstrated with a file compiled as C++23. Just plant the flag: constexpr in 11 was a toy; the
+Notes: This code block is hand-typed, because the C++11 restriction cannot be demonstrated with a
+file compiled as C++23. Just plant the flag: constexpr in 11 was a toy; the
 Session 3 timeline shows it becoming a second language.
 -->
 
@@ -372,12 +373,12 @@ std::sort(v.begin(), v.end(),
 
 <!-- snippet: demos/s01/generic_lambda.cpp#generic -->
 ```cpp
-// auto parameters: one lambda, any type with .size()
-auto by_size = [](const auto& a, const auto& b) { return a.size() < b.size(); };
+// auto parameters: one lambda, any type with .value
+auto value_descending = [](const auto& a, const auto& b) { return a.value > b.value; };
 ```
 
 ```cpp
-std::sort(v.begin(), v.end(), by_size);
+std::sort(v.begin(), v.end(), value_descending);
 ```
 
 </div>
@@ -385,7 +386,7 @@ std::sort(v.begin(), v.end(), by_size);
 
 <!--
 Notes: `auto` in a lambda parameter makes operator() a template. One comparator works for any
-type with .size(). The starter's stats.cpp has ValueDescending exactly as on the left; the
+type with .value. The starter's stats.cpp has ValueDescending exactly as on the left; the
 solution replaces it with a generic lambda (exercise task 6). The left block is hand-typed to
 mirror the exercise starter. Demo file: demos/s01/generic_lambda.cpp
 -->
@@ -430,7 +431,7 @@ auto make_printer(std::unique_ptr<std::string> owned) { return [s = std::move(ow
 <!--
 Notes: The rule most teams settle on: auto return is for local helpers, generic code, and
 anything returning a lambda; explicit types on anything a colleague calls. decltype(auto) is
-rare; show it once and move on.
+rare; show it once and move on. Hand-typed block.
 -->
 
 ---
@@ -493,7 +494,8 @@ The separator is `'` and it is ignored by the compiler. It works in any base.
 
 <!--
 Notes: Embedded people love binary literals for register masks. The polynomial line is from the
-Session 1 solution (crc.cpp). Digit separators are in the sensor table too (12'000.0).
+Session 1 solution (crc.cpp). Digit separators are in the sensor table too (12'000.0). Hand-typed
+block.
 -->
 
 ---
@@ -514,7 +516,7 @@ std::this_thread::sleep_for(100us);
 <!--
 Notes: The chrono literals are the ones that change code: sleep_for(100) does not compile,
 sleep_for(100ms) does, and the unit is in the source. Convention: `using namespace
-std::literals;` at function scope or file scope in .cpp files, never in headers.
+std::literals;` at function scope or file scope in .cpp files, never in headers. Hand-typed block.
 -->
 
 ---
@@ -526,13 +528,13 @@ std::literals;` at function scope or file scope in .cpp files, never in headers.
 bool parse_record(const char* line, std::size_t len, Record* out);
 ```
 
-- The first standard attribute most people used. Works on functions, types, variables, enumerators, namespaces.
+- The first standard attribute most people used. Works on functions, types, variables; on enumerators and namespaces too from C++17 (N4266).
 - Compiler warns at every call site, with your message. Under `-Werror`, that is a build break you schedule.
 - The same `[[...]]` syntax carries `[[nodiscard]]`, `[[fallthrough]]`, `[[likely]]` later today.
 
 <!--
 Notes: The migration pattern: add [[deprecated]] on the old signature, add the new one, fix the
-warnings over a sprint, delete the old one. Much better than a grep.
+warnings over a sprint, delete the old one. Much better than a grep. Hand-typed block.
 -->
 
 ---
@@ -585,7 +587,7 @@ Removed: `gets`. Added: nothing large.
 
 <!--
 Notes: Time check: should be at 0:55. If behind, the C++17 segment has two slides that can be
-skipped (evaluation order, removals).
+skipped (the string_view preview, the two quiet fixes).
 -->
 
 ---
@@ -696,6 +698,7 @@ switch (auto status = poll(); status.kind) { ... }
 Notes: The bug it prevents: a variable declared before the if leaks into the rest of the
 function, gets reused, and now means something else. Also the lock_guard idiom on line 2 is worth
 a second: the lock is held for exactly the if/else and released before the next statement.
+Hand-typed block.
 -->
 
 ---
@@ -714,7 +717,7 @@ a.merge(b);                                       // splice everything that does
 
 <!--
 Notes: The starter's compute_stats uses insert(make_pair(...)) which constructs a SensorStats
-every iteration. The solution uses try_emplace. This is exercise task 3's bonus.
+every iteration. The solution uses try_emplace. This is exercise task 3's bonus. Hand-typed block.
 -->
 
 ---
@@ -779,7 +782,7 @@ namespace telemetry::detail::crc {
 C++20 adds `namespace a::inline b {}` for inline namespaces.
 
 <!--
-Notes: Thirty seconds. Purely cosmetic, universally adopted.
+Notes: Thirty seconds. Purely cosmetic, universally adopted. Hand-typed block.
 -->
 
 ---
@@ -836,10 +839,10 @@ int verbosity(Level lvl, [[maybe_unused]] bool color) {   // used only in some b
 ```
 
 <!--
-Notes: `-Wimplicit-fallthrough` is in -Wextra on both compilers; [[fallthrough]] is how you tell
-it the fall-through is deliberate. [[maybe_unused]] replaces `(void)param;` and applies to
-variables, functions, and types too (things only used under #ifdef). Demo file:
-demos/s01/nodiscard.cpp
+Notes: `-Wimplicit-fallthrough` is in -Wextra on GCC; Clang needs it spelled out (its -Wextra does
+not enable it). [[fallthrough]] is how you tell either one the fall-through is deliberate.
+[[maybe_unused]] replaces `(void)param;` and applies to variables, functions, and types too
+(things only used under #ifdef). Demo file: demos/s01/nodiscard.cpp
 -->
 
 ---
@@ -937,9 +940,11 @@ bool parse_value_cpp11(const std::string& text,
 bool parse_value(const std::string& text,
                  double* out) {
     const char* last = text.data() + text.size();
-    auto [ptr, ec] =
-        std::from_chars(text.data(), last, *out);
-    return ec == std::errc{} && ptr == last;
+    double v = 0.0;               // parse into a local: *out untouched on failure
+    auto [ptr, ec] = std::from_chars(text.data(), last, v);
+    if (ec != std::errc{} || ptr != last) return false;
+    *out = v;
+    return true;
 }
 ```
 
@@ -948,8 +953,9 @@ bool parse_value(const std::string& text,
 
 <!--
 Notes: This is parse_value from the starter's parser.cpp (exercise task 5). What disappears:
-errno, the NUL-terminator requirement, the locale dependency (strtod parses "41,25" as 41 in a
-German locale), allocation. from_chars is also several times faster. Caveat: floating-point
+errno, the NUL-terminator requirement, the locale dependency (in a German locale strtod reads
+"41.25" as 41 and stops at the dot). from_chars is also several times faster. One difference:
+from_chars rejects a leading '+' that strtod accepts. Caveat: floating-point
 from_chars needs libstdc++ 11+ or libc++ 20+. Demo file: demos/s01/from_chars.cpp
 -->
 
@@ -961,7 +967,7 @@ from_chars needs libstdc++ 11+ or libc++ 20+. Demo file: demos/s01/from_chars.cp
 bool parse_record(std::string_view line, Record* out, ParseError* err);   // no copy, any source
 
 parse_record("1,rpm,4800", ...);          // from a literal: no std::string constructed
-parse_record(buffer.substr_view(0, n));   // from a slice: no allocation
+parse_record(std::string_view(buffer).substr(0, n));   // from a slice: no allocation
 ```
 
 A pointer and a length. Non-owning. **Never store one** unless you own what it points at.
@@ -978,15 +984,16 @@ same rule as the escaping lambda: a view is a reference. Hand-typed preview.
 ## Two quiet fixes <span class="badge cpp17">C++17</span>
 
 **Evaluation order is now specified** for `a.b`, `a->b`, `a(b)` argument-vs-callee, `a = b`, `a << b`, and more.
-`f(std::unique_ptr<A>(new A), g())` can no longer leak if `g` throws. `s = s + f(s)` behaves.
+`f(std::unique_ptr<A>(new A), g())` can no longer leak if `g` throws. `m[k] = m.size();` behaves.
 
 **`noexcept` is part of the function type.**
 `void (*p)() noexcept = f;` requires `f` to be `noexcept`. A `noexcept` function pointer cannot receive a throwing function.
 
 <!--
 Notes: Optional slide if behind. Both are things that made C++11 code subtly wrong and are now
-simply correct. Function argument evaluation order between arguments is still unspecified; only
-callee-before-arguments and a few operators were fixed.
+simply correct. The leak fix: arguments are now indeterminately sequenced, so `new A` and the
+unique_ptr constructor cannot interleave with `g()`. The order between arguments is still
+unspecified, and the operands of `+` are still unordered; only the listed operators were fixed.
 -->
 
 ---
@@ -1002,7 +1009,7 @@ Removed: `auto_ptr`, `register`, trigraphs, `throw(...)` specifications, `random
 **Monday morning:** add `[[nodiscard]]` to one header and read what the compiler says.
 
 <!--
-Notes: Time check: 1:20. The next segment is 13 slides in 15 minutes; three of them are the
+Notes: Time check: 1:20. The next segment is 12 slides in 15 minutes; three of them are the
 spaceship operator and deserve the time, the rest are fast.
 -->
 
@@ -1055,7 +1062,7 @@ constexpr SensorConfig kTemp{
 Notes: Aggregates only, declaration order only (unlike C99, no out-of-order and no array
 designators). Skipped trailing members are value-initialized but -Wextra warns, so under this
 repo's flags you name them all. The sensor table in the exercise is the natural place for this.
-Demo file: demos/s01/designated_init.cpp
+The left block is hand-typed. Demo file: demos/s01/designated_init.cpp
 -->
 
 ---
@@ -1128,7 +1135,8 @@ be inconsistent. Demo file: demos/s01/spaceship.cpp
 // What the compiler does with a < b when only <=> is declared:
 //     a < b      becomes   (a <=> b) < 0
 //     a >= b     becomes   (a <=> b) >= 0
-//     b > a      becomes   (a <=> b) < 0     (operands may be swapped)
+//     a > b      becomes   (a <=> b) > 0
+//     42 > v     becomes   0 > (v <=> 42)    (reversed: only when the types differ)
 // What it does NOT do: derive == from <=>. A defaulted <=> also defaults ==,
 // but a hand-written <=> leaves == undeclared. Reason: == can be much faster
 // (std::string compares lengths first), so the two are kept separate.
@@ -1277,7 +1285,7 @@ struct Handle {
 <!--
 Notes: Fast slide. The honest advice on likely/unlikely: use them on error paths in hot loops
 and nowhere else. no_unique_address matters for allocator-aware containers and policy-based
-designs; most application code never writes it.
+designs; most application code never writes it. Hand-typed block.
 -->
 
 ---
@@ -1287,7 +1295,7 @@ designs; most application code never writes it.
 - `char8_t`: a distinct type for UTF-8; `u8"..."` literals are now `const char8_t*`, which **breaks** code that assigned them to `const char*`
 - `__VA_OPT__(,)`: variadic macros that work with zero arguments
 - `consteval` (must run at compile time) and `constinit` (must be statically initialized): Session 3
-- `[=, this]` capture spelled explicitly; `[=]` no longer implicitly captures `this` (deprecated)
+- `[=, this]` capture spelled explicitly; `[=]` still captures `this` implicitly, but that is now deprecated
 - Aggregates can be initialized with parentheses: `Record(1, "rpm", 0.0, Status::Ok)`
 
 <!--
@@ -1301,16 +1309,16 @@ both compilers as an escape hatch. Everything else here: recognize it in code re
 
 ## The small C++23 features <span class="badge cpp23">C++23</span>
 
-<p class="problem">Four quality-of-life additions and one new way to say "this cannot happen".</p>
+<p class="problem">Three quality-of-life additions and one new way to say "this cannot happen".</p>
 
 <!-- snippet: demos/s01/small_cpp23.cpp#small -->
 ```cpp
 void small(std::vector<std::string>& v) {
     for (auto i = 0uz; i < v.size(); ++i) {}              // uz: a size_t literal
 
-    auto copy = auto(v.front());                            // auto(x): explicit decay copy
-    v.erase(v.begin());                                     // ...which survives this erase
-    std::printf("%s\n", copy.c_str());
+    std::erase(v, auto(v.front()));                         // auto(x): explicit decay copy.
+    // Without it, erase takes v.front() by reference, and that reference is to an
+    // element the erase is moving. The copy cannot alias.
 
     std::printf("%u\n", std::to_underlying(Level::High));   // no static_cast needed
 }
@@ -1325,7 +1333,8 @@ int classify(int x) {
 
 <!--
 Notes: uz ends the signed/unsigned comparison warning in index loops. auto(x) is the explicit
-"give me a copy that does not alias" that was previously spelled `T(x)` or `std::decay_t`. to_underlying
+"give me a copy that does not alias" that was previously spelled `T(x)` or `std::decay_t`; without
+it, `std::erase(v, v.front())` misses the second "first" (3 elements left instead of 2). to_underlying
 replaces a static_cast to underlying_type_t. std::unreachable is UB if reached, which the
 optimizer exploits; assert-then-unreachable is the pattern. Demo file: demos/s01/small_cpp23.cpp
 -->
@@ -1357,12 +1366,13 @@ stays off the compiled demo. Under a minute for this slide.
 - **C++20 deprecated** compound assignment on `volatile` (`v += 1`, `v++`); C++23 un-deprecated `+=` and friends but `++`/`--` stay deprecated. Embedded code is full of these; `v = v + 1` is the safe spelling.
 - **C++23 deprecated** `std::aligned_storage` and `std::aligned_union`: use `alignas` on a byte array.
 - **C++20 deprecated** implicit capture of `this` via `[=]`; write `[=, this]`.
-- **C++17 deprecated, C++20 removed**: `std::iterator`, `std::result_of`, `<codecvt>` (still present, deprecated), `std::uncaught_exception` (use the plural).
+- **C++17 deprecated** (still present): `std::iterator`, `<codecvt>`. **C++17 deprecated, C++20 removed**: `std::result_of`, `std::uncaught_exception` (use the plural).
 
 <!--
 Notes: The volatile story is the one to tell in a defense/embedded room: P1152 deprecated the
-compound ops in C++20 because they hide two accesses; P2327 restored most of them in C++23 after
-pushback from the embedded community. Increment is still deprecated. -Wdeprecated finds them.
+compound ops in C++20 because they hide two accesses; in C++23, P2327 restored the bitwise ones
+(`|=`, `&=`, `^=`) and CWG 2654 the rest, after pushback from the embedded community. Increment
+is still deprecated. -Wdeprecated finds them.
 -->
 
 ---
@@ -1401,8 +1411,12 @@ cmake --build build && ctest --test-dir build -R s01 --output-on-failure
 
 **At home:** tasks 4 to 9. `solution/` is next session's starter.
 
+The starter builds as C++11. Before task 2, change `11` to `23` in `exercises/s01-modernize-syntax/CMakeLists.txt`.
+
 <!--
-Notes: Walk the room. The common stumble on task 2: forgetting `#include <compare>` or leaving
+Notes: Walk the room. The first blocker: the starter is compiled as C++11 (add_exercise_variant(s01
+starter 11) in the exercise CMakeLists), so `operator<=>` will not compile until that is 23.
+The common stumble on task 2: forgetting `#include <compare>` or leaving
 one old operator declaration in the header (ambiguous overload). On task 3: trying to bind into
 existing variables. Call time at 20 minutes and show the solution's record.h.
 -->

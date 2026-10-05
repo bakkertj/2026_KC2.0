@@ -27,8 +27,9 @@ int main() {
     std::jthread a([&] { for (int i = 0; i < 1000; ++i) ref.fetch_add(1); });
     std::jthread b([&] { for (int i = 0; i < 1000; ++i) ref.fetch_add(1); });
     a.join(); b.join();
-    std::println("{}", obj.counter);                // 2000; the object never changed type
-    // Rule: while any atomic_ref to an object exists, touch it ONLY through atomic_refs.
+    std::println("{}", ref.load());                 // 2000; the object never changed type
+    // Rule: while any atomic_ref to an object exists, touch it ONLY through atomic_refs
+    // (so obj.counter is read through ref here, not directly).
     // [/snippet]
 #else
     std::println("atomic_ref: not available on this standard library");

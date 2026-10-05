@@ -15,9 +15,10 @@ struct Record { long long ts; std::string sensor; double value; };
 void top_per_sensor_cpp11(std::vector<Record> v) {
     std::map<std::string, std::vector<Record>> groups;
     for (const auto& r : v) groups[r.sensor].push_back(r);
-    for (auto& [name, rs] : groups) {
+    for (auto& g : groups) {                      // no structured bindings yet
+        std::vector<Record>& rs = g.second;
         std::sort(rs.begin(), rs.end(), [](const Record& a, const Record& b) { return a.value > b.value; });
-        std::println("{}: {}", name, rs.front().value);
+        std::println("{}: {}", g.first, rs.front().value);   // println for output only; the rest is C++11
     }
 }
 // [/snippet]

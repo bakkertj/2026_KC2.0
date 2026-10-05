@@ -11,7 +11,7 @@ This session replaces them with constrained algorithms (with projections) and vi
 
 Target tests: `solution/tests/`. Clang users are on libc++, where a few C++23 views are missing (`views::enumerate` among them); the solution avoids those, and `handouts/toolchain-support-matrix.md` lists the rest.
 
-## In class (about 20 minutes)
+## In class (about 10 minutes; finish at home if needed)
 
 1. **Projections.** In `stats.cpp`, replace the min/max loop in `value_range` with one call: `std::ranges::minmax(records, {}, &Record::value)` returns the min and max **records**, compared by value. Replace the comparator lambda in `first_at_or_after` with `std::ranges::lower_bound(records, ts, {}, &Record::ts)`. In `config.h`, `find_sensor` becomes `std::ranges::find(kSensors, name, &SensorConfig::name)`. Note what disappeared: every comparator lambda.
 

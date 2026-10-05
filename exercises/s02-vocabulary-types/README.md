@@ -19,7 +19,7 @@ Build and test:
 
 Because the interfaces change, the tests change too. `solution/tests/` is the target suite; write toward it. (Clang users: the repo's CMake selects libc++, which is where Clang 18 has `std::expected` and `std::print`.)
 
-## In class (about 20 minutes)
+## In class (about 15 minutes)
 
 1. **`std::expected` for the parser.** Change `parse_record` to `std::expected<Record, ParseError> parse_record(std::string_view line)` and delete `ParseError::None` (an error enum no longer needs a "not an error" value). Each early `return false` becomes `return std::unexpected(Reason)`. Update `load_stream`: `if (auto parsed = parse_record(line))` then `parsed.error()` on the else branch.
 
@@ -37,7 +37,7 @@ Because the interfaces change, the tests change too. `solution/tests/` is the ta
 
 7. **A precondition becomes a return type.** `value_range` returns `std::optional<std::pair<double, double>>`; the report's "no accepted records" branch now falls out of `if (!range)`.
 
-8. **Monadic operations (C++23).** In the report, the units lookup becomes `find_sensor(name).transform([](const SensorConfig& c) { return c.units; }).value_or("")`. Try `&SensorConfig::units` as the projection first and read the compiler error: on a temporary `optional`, a pointer-to-member yields an rvalue reference, which `optional` cannot hold. In the tests, `parse_record(line).value_or(fallback)` and `.error_or(...)` show the `expected` side.
+8. **Monadic operations (C++23).** In the report, the units lookup becomes `find_sensor(name).transform([](const SensorConfig& c) { return c.units; }).value_or("")`. Try `&SensorConfig::units` as the projection first and read the compiler error: a pointer-to-member yields a reference to the member (rvalue on a temporary, lvalue on a named `optional`), and `optional` cannot hold a reference in C++23. In the tests, `parse_record(line).value_or(fallback)` and `.error_or(...)` show the `expected` side.
 
 9. **Small things to notice.** `std::map<std::string, SensorStats, std::less<>>` lets `find("rpm")` work without constructing a `std::string`. `std::string::ends_with` and `contains` (C++20/23) replace the `line[line.size() - 1] == '\r'` idiom. `SensorConfig::name` can be a `std::string_view` because the table is `constexpr` and the strings are literals.
 

@@ -11,7 +11,8 @@ int main() {
     // [snippet: buffer]
     std::array<char, 32> buf;                                 // no heap: embedded-friendly
     auto r = std::format_to_n(buf.data(), buf.size(), "{}:{:.2f}", "rpm", 4811.0);
-    std::size_t written = static_cast<std::size_t>(r.size);   // what it WOULD have needed
+    std::size_t written = static_cast<std::size_t>(r.out - buf.data());   // chars actually in buf
+    std::size_t would_need = static_cast<std::size_t>(r.size);            // what it WOULD have needed
     std::size_t needed = std::formatted_size("{}:{:.2f}", "rpm", 4811.0);
 
     std::string s;
@@ -22,5 +23,5 @@ int main() {
     int answer = 42;                                           // make_format_args takes lvalues (C++23 DR)
     std::string t = std::vformat(user_fmt, std::make_format_args(answer));
     // [/snippet]
-    std::printf("%.*s %zu %zu %s %s\n", static_cast<int>(written), buf.data(), written, needed, s.c_str(), t.c_str());
+    std::printf("%.*s %zu %zu %zu %s %s\n", static_cast<int>(written), buf.data(), written, would_need, needed, s.c_str(), t.c_str());
 }

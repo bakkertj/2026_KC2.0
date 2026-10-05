@@ -27,7 +27,8 @@ Notes: Two halves: making the compiler compute (constexpr, consteval) and making
 3. C++17 template quality of life (15 min)
 4. C++20 concepts (25 min)
 5. C++23: deducing `this` (15 min)
-6. Guided exercise (20 min)
+6. Guided exercise (22 min, including the live diagnostics)
+7. Wrap-up (3 min)
 
 <!--
 Notes: Exercise README: exercises/s03-compile-time/README.md. The starter is the Session 2
@@ -58,9 +59,9 @@ Three things in the starter do work at runtime that never changes:
 
 | In the starter | What it costs | After today |
 |---|---|---|
-| `crc.cpp` builds a 256-entry table behind a function-local static | first-call latency, a guard check on every call, one more thing at startup | `inline constexpr auto kCrcTable = make_crc_table();` |
+| `crc.cpp` builds a 256-entry table behind a function-local static | first-call latency, a guard check on every call, a table that exists only after first use | `inline constexpr auto kCrcTable = make_crc_table();` |
 | `config.cpp` holds the sensor table; nothing validates it | a bad entry ships and misbehaves in the field | `static_assert(validate(kSensors).empty())` |
-| `serialize.h` is seven overloads | an unsupported type gives a page of candidates | four constrained templates and a `Serializable` concept |
+| `serialize.h` is seven overloads | an unsupported type gives a page of candidates | five constrained templates and a `Serializable` concept |
 
 **Zero runtime cost, no static-initialization order, and one class of bug that cannot reach a running program.**
 
@@ -278,7 +279,7 @@ constexpr std::uint16_t first_two_bytes(std::span<const char> s) {
 // This is why std::as_bytes is not constexpr, and why the exercise's crc16 uses static_cast per byte.
 ```
 
-Also not allowed: `goto`, `asm`, non-literal types (pre-C++20), calling non-`constexpr` functions, `std::to_string` (until C++26).
+Also refused when evaluated: `goto`, `asm`, non-literal variables (since C++20/23 they may appear in a `constexpr` function, as long as the evaluated path avoids them), calls to non-`constexpr` functions (`std::to_string` until C++26; integral `std::to_chars` is `constexpr` since C++23).
 
 <!--
 Notes: Exercise task 1 hits this. The fix in the solution: a template over the byte type with
@@ -330,7 +331,7 @@ demos/s03/constexpr_alloc.cpp
 ```cpp
 // One function, two implementations: exact at compile time, fast at runtime
 constexpr double power(double base, int exp) {
-    if consteval {                                   // C++23: a real branch on evaluation mode
+    if (std::is_constant_evaluated()) {              // C++20 (C++23 spells it `if consteval`)
         double r = 1.0;
         for (int i = 0; i < exp; ++i) r *= base;     // constexpr-friendly loop
         return r;
@@ -414,9 +415,10 @@ static_assert(validate(kRpm).empty(), "sensor limit is invalid");
 In the exercise: `validate(std::span<const SensorConfig>)` checks names, units, ranges, and duplicates, and `static_assert(validate(kSensors).empty(), "sensor configuration table is invalid");` guards the table.
 
 <!--
-Notes: Exercise task 2. Break the table live and read the error: the static_assert message plus
-the returned string_view in the "evaluated to" note. C++26 lets static_assert take a
-constexpr string directly. Demo file: demos/s03/consteval_constinit.cpp
+Notes: Exercise task 2. Break the table live and read the error: GCC 13 and Clang 18 print only
+the static_assert message and the failed expression, not the returned string_view (Clang in
+-std=c++2c can print it as the message, P2741). C++26 lets static_assert take a constexpr string
+directly. Demo file: demos/s03/consteval_constinit.cpp
 -->
 
 ---
@@ -483,8 +485,8 @@ as the compile-time path does not touch it. Demo file: demos/s03/constexpr_evolu
 <div class="step"><b>C++11</b> single return statement, recursion; array bounds and little else</div>
 <div class="step"><b>C++14</b> loops, locals, if, mutation: normal-looking functions <span style="color:var(--muted)">(the CRC loop)</span></div>
 <div class="step"><b>C++17</b> lambdas, <code>if constexpr</code>, <code>std::array</code>, <code>inline constexpr</code> variables <span style="color:var(--muted)">(the CRC table)</span></div>
-<div class="step"><b>C++20</b> allocation, <code>vector</code>/<code>string</code>, virtual, try/catch, <code>consteval</code>, <code>constinit</code>, <code>is_constant_evaluated</code> <span style="color:var(--muted)">(the config validator)</span></div>
-<div class="step"><b>C++23</b> <code>if consteval</code>, static locals, non-literal variables, <code>unique_ptr</code>, <code>optional</code>/<code>string_view</code> everywhere <span style="color:var(--muted)">(find_sensor, parse_status)</span></div>
+<div class="step"><b>C++20</b> allocation, <code>vector</code>/<code>string</code>, virtual, try/catch, <code>consteval</code>, <code>constinit</code>, <code>is_constant_evaluated</code> <span style="color:var(--muted)">(the config validator, find_sensor, parse_status)</span></div>
+<div class="step"><b>C++23</b> <code>if consteval</code>, static locals, non-literal variables, <code>unique_ptr</code>, integral <code>to_chars</code></div>
 <div class="step"><b>C++26</b> exceptions, placement new, <code>to_string</code>, <code>&lt;cmath&gt;</code>, static_assert with a computed message</div>
 </div>
 
@@ -530,7 +532,7 @@ note:   template argument deduction/substitution failed:
 ...
 ```
 
-Seven candidates, no reason. And that is the **simple** case; `enable_if` errors run to pages.
+Nine candidates (seven overloads, two templates), no reason. And that is the **simple** case; `enable_if` errors run to pages.
 
 <!--
 Notes: This is the real error from the Session 2 starter. Keep it on screen while introducing
@@ -677,10 +679,11 @@ template <typename T>
 constexpr bool is_small_v = sizeof(T) <= sizeof(void*);   // your own _v trait
 
 static_assert(pi<float> > pi<double>);            // float rounds pi UP: a compile-time float lesson for free
-static_assert(is_small_v<int> && !is_small_v<long double>);
+static_assert(is_small_v<int> && !is_small_v<std::array<void*, 2>>);   // (long double is 8 or 16 bytes depending on the ABI)
 
 // C++11:  std::is_integral<T>::value      std::remove_const<T>::type
-// C++17:  std::is_integral_v<T>           std::remove_const_t<T>
+// C++14:                                   std::remove_const_t<T>      (the _t aliases)
+// C++17:  std::is_integral_v<T>                                       (the _v aliases)
 static_assert(std::is_integral_v<int> && std::is_same_v<std::remove_const_t<const int>, int>);
 ```
 
@@ -770,7 +773,7 @@ Notes: 0:55. Concepts: the biggest segment after constexpr.
 
 Compiler Explorer, two panes, same call: `serialize(ParseError::EmptyLine)`
 
-**Left:** the Session 2 starter (overloads). Seven candidates, no reason.
+**Left:** the Session 2 starter (overloads). Nine candidates, no reason.
 
 **Right:** the Session 3 solution (constrained templates).
 ```
@@ -854,11 +857,11 @@ demos/s03/concepts_basics.cpp
 <div class="cols">
 <div>
 
-#### Before (C++11)
+#### Before (`enable_if`)
 
 <!-- snippet: demos/s03/concepts_basics.cpp#sfinae -->
 ```cpp
-// The same constraint in C++11/14. Read it aloud to a colleague.
+// The same constraint with C++11 enable_if (string_view itself is C++17). Read it aloud to a colleague.
 template <typename T, typename std::enable_if<std::is_convertible<T, std::string_view>::value, int>::type = 0>
 std::size_t len_old(const T& s) { return std::string_view{s}.size(); }
 ```
@@ -925,7 +928,7 @@ demos/s03/requires_expressions.cpp
 |---|---|
 | `<concepts>` core | `same_as`, `derived_from`, `convertible_to`, `common_with`, `integral`, `signed_integral`, `floating_point`, `assignable_from`, `swappable` |
 | `<concepts>` objects | `destructible`, `constructible_from`, `default_initializable`, `move_constructible`, `copy_constructible`, `movable`, `copyable`, `semiregular`, `regular` |
-| `<concepts>` comparison | `equality_comparable`, `totally_ordered`, `three_way_comparable` |
+| `<concepts>` comparison | `equality_comparable`, `totally_ordered`; `three_way_comparable` lives in `<compare>` |
 | `<concepts>` callables | `invocable`, `regular_invocable`, `predicate`, `relation`, `strict_weak_order` |
 | `<iterator>` | `input_iterator`, `forward_iterator`, ..., `sentinel_for`, `indirectly_readable` |
 | `<ranges>` | `range`, `input_range`, `sized_range`, `contiguous_range`, `view`, `borrowed_range` (Session 4) |
@@ -1030,7 +1033,8 @@ they are a way to ASK the compiler about your own code. Hand-typed from the solu
 
 <!--
 Notes: Opinionated; say so. The third bullet is the one people argue about; the position here is
-the same as the Core Guidelines (T.10 through T.26).
+close to the Core Guidelines (T.10 through T.26), which add that the weakest concept must
+still be a meaningful one with a complete set of operations (T.20, T.21).
 -->
 
 ---
@@ -1202,7 +1206,7 @@ struct SensorStats {
         return *this;
     }
 };
-// SensorStats{}.add(1).add(2)
+// SensorStats{}.add(v, s).add(v, s)
 //   returns a reference to a temporary
 //   and copying out of it copies
 ```
@@ -1221,8 +1225,8 @@ struct SensorStats {
         return std::forward<Self>(self);
     }
 };
-// stats.add(1).add(2)        -> SensorStats&
-// SensorStats{}.add(1).add(2) -> SensorStats&&
+// stats.add(v, s).add(v, s)        -> SensorStats&
+// SensorStats{}.add(v, s).add(v, s) -> SensorStats&&
 ```
 
 </div>
@@ -1290,8 +1294,9 @@ struct Square : Shape { void draw_impl() { std::println("square"); } };
 
 <!--
 Notes: `this auto&& self` deduces to the DERIVED type at the call site, because that is the type
-of the object the member was called on. No template parameter on the base, no static_cast, and
-the base is a plain struct you can put in a container. Demo file: demos/s03/deducing_this.cpp
+of the object the member was called on. No template parameter on the base, no static_cast. Dispatch is
+still static: `Shape& s = circle; s.draw()` deduces Shape and fails to compile, so this does not
+replace virtual functions. Demo file: demos/s03/deducing_this.cpp
 -->
 
 ---
@@ -1354,12 +1359,13 @@ Before the exercise, one live comparison:
 serialize(ParseError::EmptyLine);
 ```
 
-in the **starter** (seven overloads) and the **solution** (four constrained templates), on both compilers.
+in the **starter** (seven overloads, two templates) and the **solution** (five constrained templates), on both compilers.
 
 Then break the sensor table (`.min_valid = 500.0`) and rebuild.
 
 <!--
-Notes: Two minutes. This primes task 2 and task 8.
+Notes: Two minutes. The serialize comparison is a ten-second reprise of slide 29; the table
+break is the new part. This primes task 2 and task 8.
 -->
 
 ---
@@ -1382,8 +1388,8 @@ cmake --build build && ctest --test-dir build -R s03 --output-on-failure
 
 <!--
 Notes: Walk the room. Task 1's as_bytes snag is deliberate; let them find it, then point at the
-"reinterpret_cast is never constexpr" slide. Task 2: the static_assert message plus the returned
-string are both in the error.
+"reinterpret_cast is never constexpr" slide. Task 2: only the static_assert message and the failed
+expression are in the error; the returned string is not printed (GCC 13, Clang 18).
 -->
 
 ---
