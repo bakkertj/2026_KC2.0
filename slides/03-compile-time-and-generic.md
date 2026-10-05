@@ -30,6 +30,8 @@ Notes: Two halves: making the compiler compute (constexpr, consteval) and making
 6. Guided exercise (22 min, including the live diagnostics)
 7. Wrap-up (3 min)
 
+Every demo opens in Compiler Explorer, preconfigured for GCC 14: `handouts/compiler-explorer-links.md`
+
 <!--
 Notes: Exercise README: exercises/s03-compile-time/README.md. The starter is the Session 2
 solution.

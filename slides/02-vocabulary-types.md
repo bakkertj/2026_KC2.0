@@ -30,6 +30,8 @@ C++11 interface left to a comment: maybe? which one? did it fail, and why? who o
 6. Library tour, fast (10 min)
 7. Guided exercise (20 min)
 
+Every demo opens in Compiler Explorer, preconfigured for GCC 14: `handouts/compiler-explorer-links.md`
+
 <!--
 Notes: Exercise README: exercises/s02-vocabulary-types/README.md. The starter is last session's
 solution. Remind people to bring theirs or take ours.

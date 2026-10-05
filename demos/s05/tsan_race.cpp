@@ -1,6 +1,7 @@
 // Demo: a data race ThreadSanitizer catches (build with -DCOURSE_SANITIZE=thread)
 // Session: s05
 // Compiler Explorer: <add short link>
+// godbolt: -fsanitize=thread -g
 #include <print>
 #include <thread>
 

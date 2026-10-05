@@ -32,6 +32,8 @@ threads and a coroutine to the program and it still prints the Session 1 report 
 6. The adoption roadmap workshop (20 min)
 7. C++26 and close (10 min)
 
+Every demo opens in Compiler Explorer, preconfigured for GCC 14: `handouts/compiler-explorer-links.md`
+
 <!--
 Notes: Exercise README: exercises/s05-concurrency/README.md. The starter is the Session 4
 solution. Tasks 1 to 3 (the bounded queue, the jthread pipeline, TSan as the check) are the core

@@ -31,6 +31,8 @@ Then straight into the agenda.
 5. C++20 and C++23: small but valuable (15 min)
 6. Guided exercise: modernize the syntax (20 min), then wrap-up (5 min)
 
+Every demo opens in Compiler Explorer, preconfigured for GCC 14: `handouts/compiler-explorer-links.md`
+
 <!--
 Notes: Point at the exercise README now (exercises/s01-modernize-syntax/README.md) so people can
 open it; the two-minute toolchain check on slide 5 builds the starter. The exercise is cumulative:

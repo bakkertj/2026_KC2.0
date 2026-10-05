@@ -31,6 +31,8 @@ C++23 views; the support matrix slide at the end lists them.
 6. Algorithm additions worth knowing (10 min)
 7. Guided exercise (20 min)
 
+Every demo opens in Compiler Explorer, preconfigured for GCC 14: `handouts/compiler-explorer-links.md`
+
 <!--
 Notes: Exercise README: exercises/s04-ranges/README.md. The starter is the Session 3 solution.
 -->

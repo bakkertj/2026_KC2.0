@@ -1,6 +1,7 @@
 // Demo: parallel algorithms (C++17 execution policies)
 // Session: s04
 // Compiler Explorer: <add short link>
+// godbolt: skip
 // libstdc++ needs TBB (link -ltbb) for par to actually parallelize; without it the
 // policies compile and run sequentially. libc++ 18: partial (-fexperimental-library).
 #include <algorithm>
