@@ -438,7 +438,7 @@ So `value_descending` works for any type that has a `.value` member: `Record`, t
 
 One lambda, declared once at namespace scope, used like any function object, and it replaces the struct on the left one for one.
 
-To be fair to the slide: the left and right aren't the same comparison. The left sorts records by value, the right sorts anything by size. In the exercise, task 6, `ValueDescending` becomes a one-line lambda, `[](const auto& a, const auto& b) { return a.value > b.value; }`, right at the `std::sort` call. Same behavior, and the comparison is next to the sort that uses it.
+The two columns are the same comparison: records by value, descending, and the lambda replaces the struct one for one. In the exercise, task 6, `ValueDescending` becomes that one-line lambda written inline at the `std::stable_sort` call in `stats.cpp`, so the comparison sits next to the sort that uses it instead of in a struct forty lines up. Same behavior, less to read.
 
 (pause)
 
