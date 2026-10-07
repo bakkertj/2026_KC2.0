@@ -7,7 +7,7 @@ Demos that need more than one file or a library godbolt does not provide (`demos
 ## Session 1
 
 | Demo | What it shows | Open |
-|---|---|---|
+|------------------------------|--------------------------------------------------|--------------------|
 | `auto_pitfalls.cpp` | auto pitfalls (C++11 calibration) | [run](https://godbolt.org/z/oo96WqKPT) |
 | `copy_elision.cpp` | guaranteed copy elision (C++17) | [run](https://godbolt.org/z/c4KzY95zf) |
 | `ctad.cpp` | class template argument deduction (C++17) | [run](https://godbolt.org/z/1o8EKq5KE) |
@@ -28,7 +28,7 @@ Demos that need more than one file or a library godbolt does not provide (`demos
 ## Session 2
 
 | Demo | What it shows | Open |
-|---|---|---|
+|------------------------------|--------------------------------------------------|--------------------|
 | `any.cpp` | std::any (C++17) | [run](https://godbolt.org/z/z895Knx3s) |
 | `expected_basics.cpp` | std::expected (C++23) | [run](https://godbolt.org/z/vMnGr9sEf) |
 | `expected_pipeline.cpp` | monadic std::expected (C++23) | [run](https://godbolt.org/z/8ET69Pexq) |
@@ -61,7 +61,7 @@ Demos that need more than one file or a library godbolt does not provide (`demos
 ## Session 3
 
 | Demo | What it shows | Open |
-|---|---|---|
+|------------------------------|--------------------------------------------------|--------------------|
 | `auto_nttp.cpp` | auto non-type template parameters (C++17) and class-type NTTPs (C++20) | [run](https://godbolt.org/z/xPWv9Y5c5) |
 | `concepts_basics.cpp` | the four ways to constrain a template (C++20) | [run](https://godbolt.org/z/hdr6Gzx91) · [errors](https://godbolt.org/z/6s6sba9fM) |
 | `concepts_vs_sfinae.cpp` | the error messages, side by side (C++11 vs C++20) | [run](https://godbolt.org/z/T9oj4s9Kv) · [errors](https://godbolt.org/z/6MoYa76Mj) |
@@ -82,7 +82,7 @@ Demos that need more than one file or a library godbolt does not provide (`demos
 ## Session 4
 
 | Demo | What it shows | Open |
-|---|---|---|
+|------------------------------|--------------------------------------------------|--------------------|
 | `adaptor_closure.cpp` | storing and composing adaptors; your own adaptor (C++20 / C++23) | [run](https://godbolt.org/z/KTxsPeoEd) |
 | `adaptors_tour.cpp` | the core view adaptors (C++20) | [run](https://godbolt.org/z/Ebane6GcG) |
 | `algorithm_results.cpp` | what constrained algorithms return (C++20) | [run](https://godbolt.org/z/sW8EYha61) |
@@ -108,7 +108,7 @@ Demos that need more than one file or a library godbolt does not provide (`demos
 ## Session 5
 
 | Demo | What it shows | Open |
-|---|---|---|
+|------------------------------|--------------------------------------------------|--------------------|
 | `atomic_shared_ptr.cpp` | std::atomic<std::shared_ptr> (C++20): hot-swappable configuration | [run](https://godbolt.org/z/9eTePexGs) |
 | `atomic_wait.cpp` | atomic wait/notify and atomic_ref (C++20) | [run](https://godbolt.org/z/Wx1Toseo9) |
 | `awaitable.cpp` | co_await and a hand-written awaitable (C++20) | [run](https://godbolt.org/z/YdqGGP7K7) |

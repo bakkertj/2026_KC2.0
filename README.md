@@ -7,7 +7,7 @@ Course material for a five-session, ten-hour course that brings C++98/C++11 engi
 - `slides/` Marp decks, one per session; `slides/theme/course.css` is the theme; `slides/build.sh` exports HTML and PDF to `slides/out/` (decks via Marp; the `*-outline.md` review documents via pandoc and LibreOffice as paged DOCX and PDF)
 - `demos/` one small file per feature shown in class; each is a CMake target and carries a Compiler Explorer link
 - `exercises/` per-session exercises with `starter/`, `solution/`, `tests/`, and an attendee README; the cumulative telemetry processor moves from session to session
-- `handouts/` the feature timeline, cheat sheets, the adoption roadmap worksheet, and the toolchain support matrix
+- `handouts/` the feature timeline, cheat sheets, the adoption roadmap worksheet, the toolchain support matrix, and the Compiler Explorer links index; `handouts/build.sh` exports them all to DOCX and PDF (links stay clickable) in `handouts/out/`
 - `tools/` snippet extractor (keeps slide code in sync with demo files), badge checker, demo scaffolder, Compiler Explorer link generator
 
 ## Build

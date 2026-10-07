@@ -165,7 +165,9 @@ def main() -> int:
                 "(`demos/s05/modules`, `demos/s04/parallel.cpp`) are built from the repo instead.\n\n")
         for session in sorted(rows):
             f.write(f"## Session {session[-1]}\n\n")
-            f.write("| Demo | What it shows | Open |\n|---|---|---|\n")
+            # Long dashed separators: pandoc then gives the columns proportional widths
+            # (30/50/20) and the table spans the page in the DOCX/PDF export.
+            f.write("| Demo | What it shows | Open |\n|" + "-" * 30 + "|" + "-" * 50 + "|" + "-" * 20 + "|\n")
             for name, title, links in rows[session]:
                 cell = " · ".join(f"[{label}]({url})" for label, url in links) or "from the repo"
                 f.write(f"| `{name}` | {title} | {cell} |\n")
