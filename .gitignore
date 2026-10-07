@@ -4,3 +4,4 @@ slides/out/
 compile_commands.json
 .DS_Store
 Claude outputs/
+scripts/out/

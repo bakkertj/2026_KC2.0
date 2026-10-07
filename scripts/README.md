@@ -12,6 +12,8 @@ One spoken script per session, slide by slide, in deck order. They are written f
 
 Each script has: a pace plan with clock checkpoints and the slides to slow down on, a before-class checklist, the per-slide talk track (bold must-say lines, `(pause)` cues, `>> DO` demo steps, `>> ASK` questions, `>> IF AHEAD` / `>> IF BEHIND` flex material), exercise coaching, likely questions with answers, and a **Deck issues found** list at the end.
 
+`scripts/build.sh` exports every script to Word and PDF in `scripts/out/` (pandoc for the .docx, LibreOffice for the .pdf, so the two match).
+
 The talk track is sized at about 170 words per minute. Spoken faster, it runs short by design; the `IF AHEAD` blocks are the reserve.
 
 ## Deck fixes applied (2026-10-02)
