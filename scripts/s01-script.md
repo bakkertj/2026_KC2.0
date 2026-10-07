@@ -42,7 +42,7 @@ Slow down deliberately on these four:
 - Terminal > Run Task > `slides: serve (live reload)`, then Simple Browser at `http://localhost:8080/01-everyday-language.md`, dragged to the left group. Terminal at the bottom, cwd at the repo root.
 - Editor tabs on the right, in this order: `exercises/s01-modernize-syntax/starter/record.h`, `demos/s01/auto_pitfalls.cpp`, `move_does_nothing.cpp`, `escaping_lambda.cpp`, `generic_lambda.cpp`, `structured_bindings.cpp`, `nodiscard.cpp`, `copy_elision.cpp`, `ctad.cpp`, `from_chars.cpp`, `designated_init.cpp`, `spaceship.cpp`, `spaceship_details.cpp`, `range_for_init.cpp`, `small_cpp23.cpp`. Close everything else.
 - The demo files still say `Compiler Explorer: <add short link>`, so build your own tabs. Preload in the godbolt Simple Browser tab, x86-64 GCC 14, flags `-std=c++23 -Wall -Wextra -Wpedantic -Werror`, "Execute the code" output pane on:
-  1. `escaping_lambda.cpp` with `make_logger_bad("boom")();` uncommented and `-fsanitize=address -g` added.
+  1. `escaping_lambda.cpp` with `make_logger_bad("boom")();` uncommented and `-fsanitize=address -g` added **in the Executor pane's own "Compiler options" box**. The course links open two panes, and each has its own flags: the top (assembly) pane's flags do not reach the Executor, so flags typed there compile the asm with ASan and run the program without it, which prints nothing. The report goes to stderr, in red, and `[ok]` from the good logger never appears because ASan aborts before stdout is flushed.
   2. `copy_elision.cpp` as is (you will flip `-std=c++23` to `-std=c++14` live).
   3. `designated_init.cpp` (you will uncomment the wrong-order line live).
   4. `spaceship_details.cpp` with this added to `main`: `Bad x{}, y{}; x.value = 2.0; x.ts = 1; y.value = 1.0; y.ts = 2; std::printf("x<y %d\n", x < y);` Prints `x<y 0`; after swapping the two members of `Bad` it prints `x<y 1`.
@@ -280,7 +280,7 @@ Look at `make_logger_bad`, the first function. It builds a local `tag`, then ret
 
 The second function is identical except for the capture: `[tag]`. Now the closure holds its own copy. Safe.
 
->> DO: Switch to the godbolt tab with `make_logger_bad("boom")();` uncommented and `-fsanitize=address -g`. Expect `ERROR: AddressSanitizer: stack-use-after-return`. Recovery: if godbolt's ASan prints nothing, add `ASAN_OPTIONS=detect_stack_use_after_return=1` in the execution environment, or just say "without the sanitizer it often prints the right thing, which is the scary part" and move on.
+>> DO: Switch to the godbolt tab with `make_logger_bad("boom")();` uncommented and `-fsanitize=address -g`. Expect `ERROR: AddressSanitizer: stack-use-after-return`. Recovery: if godbolt's ASan prints nothing, the flags are in the assembly pane instead of the Executor pane (each has its own options box); fix that, or just say "without the sanitizer it often prints the right thing, which is the scary part" and move on.
 
 There it is. Stack use after return. And note: no compiler warning. Both compilers accept this cleanly under all our flags.
 
