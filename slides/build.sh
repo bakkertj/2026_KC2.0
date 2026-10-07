@@ -13,6 +13,8 @@ done
 for outline in 0*-outline.md; do
   pandoc "$outline" --from gfm --to docx -o "out/${outline%.md}.docx"
 done
-soffice --headless --convert-to pdf --outdir out out/0*-outline.docx >/dev/null
+if SOFFICE="$(../tools/soffice.sh)"; then
+  "$SOFFICE" --headless --convert-to pdf --outdir out out/0*-outline.docx >/dev/null
+fi
 rm -f out/0*-outline.html
 echo "Built: $(ls out)"

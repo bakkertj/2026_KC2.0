@@ -6,5 +6,7 @@ mkdir -p out
 for md in *.md; do
   pandoc "$md" --from markdown-smart --to docx -o "out/${md%.md}.docx"
 done
-soffice --headless --convert-to pdf --outdir out out/*.docx >/dev/null
+if SOFFICE="$(../tools/soffice.sh)"; then
+  "$SOFFICE" --headless --convert-to pdf --outdir out out/*.docx >/dev/null
+fi
 echo "Built: $(ls out)"

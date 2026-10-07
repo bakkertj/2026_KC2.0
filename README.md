@@ -12,7 +12,7 @@ Course material for a five-session, ten-hour course that brings C++98/C++11 engi
 
 ## Build
 
-Requirements: CMake 3.28+, GCC 14 or Clang 18, Ninja (optional), Node 20+ with `npm install -g @marp-team/marp-cli` for slides. A `Dockerfile` pins all of this.
+Requirements: CMake 3.28+, GCC 14 or Clang 18, Ninja (optional), Node 20+ with `npm install -g @marp-team/marp-cli` for slides, and pandoc plus LibreOffice (`brew install pandoc && brew install --cask libreoffice` on macOS) for the DOCX/PDF exports of outlines, scripts and handouts. Without LibreOffice the build scripts still write the DOCX files and skip the PDFs. A `Dockerfile` pins all of this.
 
     cmake -S . -B build -G Ninja
     cmake --build build

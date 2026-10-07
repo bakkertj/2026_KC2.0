@@ -9,5 +9,7 @@ for md in s0?-script.md; do
   pandoc "$md" --from gfm --to docx -o "out/$base.docx"
   echo "wrote out/$base.docx"
 done
-soffice --headless --convert-to pdf --outdir out out/s0?-script.docx >/dev/null
+if SOFFICE="$(../tools/soffice.sh)"; then
+  "$SOFFICE" --headless --convert-to pdf --outdir out out/s0?-script.docx >/dev/null
+fi
 ls -1 out/*.pdf | sed 's/^/wrote /'
