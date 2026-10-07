@@ -48,7 +48,7 @@ HINT_RE = re.compile(r"^// godbolt: (.*)$", re.M)
 TITLE_RE = re.compile(r"^// Demo: (.*)$", re.M)
 
 
-def client_state(source: str, options: str) -> dict:
+def client_state(source: str, options: str, arguments: str = "", stdin: str = "") -> dict:
     """The JSON godbolt reads from /clientstate/ URLs: one editor, one compiler, one executor."""
     return {
         "sessions": [{
@@ -65,7 +65,8 @@ def client_state(source: str, options: str) -> dict:
             "executors": [{
                 "compiler": {"id": COMPILER, "options": options, "libs": []},
                 "compilerVisible": False, "compilerOutputVisible": False,
-                "arguments": "", "argumentsVisible": False, "stdin": "", "stdinVisible": False,
+                "arguments": arguments, "argumentsVisible": bool(arguments),
+                "stdin": stdin, "stdinVisible": bool(stdin),
             }],
         }]
     }
@@ -149,6 +150,32 @@ def main() -> int:
             if new != text:
                 p.write_text(new)
 
+    # The exercise programs: each starter and solution flattened to one file (tools/amalgamate.py),
+    # run with `-` and data/sample.csv on stdin, so the whole telemetry processor runs on godbolt.
+    import subprocess, tempfile
+    exercises: list[tuple[str, str, str]] = []
+    for ex in sorted((ROOT / "exercises").glob("s0*-*")):
+        for variant in ("starter", "solution"):
+            if not (ex / variant / "main.cpp").exists():
+                continue
+            with tempfile.NamedTemporaryFile(suffix=".cpp") as tmp:
+                subprocess.run([sys.executable, str(ROOT / "tools" / "amalgamate.py"), str(ex / variant),
+                                "-o", tmp.name], check=True, capture_output=True)
+                source = pathlib.Path(tmp.name).read_text()
+            std = "11" if (ex.name.startswith("s01") and variant == "starter") else "23"
+            options = BASE_OPTIONS.replace("-std=c++23", f"-std=c++{std}")
+            state = client_state(source, options, arguments="-", stdin=(ex / "data" / "sample.csv").read_text())
+            key = f"exercises/{ex.name}/{variant}"
+            dump[key] = state
+            url = cache.get(key)
+            if args.shorten and not url:
+                try:
+                    url = cache[key] = shorten(state)
+                    print(f"{key}: {url}")
+                except Exception as e:                      # noqa: BLE001
+                    print(f"{key}: shortener failed ({e}); using long link", file=sys.stderr)
+            exercises.append((ex.name, variant, url or long_url(state)))
+
     if args.dump:
         pathlib.Path(args.dump).write_text(json.dumps(dump))
     if args.shorten:
@@ -172,7 +199,20 @@ def main() -> int:
                 cell = " · ".join(f"[{label}]({url})" for label, url in links) or "from the repo"
                 f.write(f"| `{name}` | {title} | {cell} |\n")
             f.write("\n")
-    print(f"wrote {INDEX.relative_to(ROOT)} ({sum(len(v) for v in rows.values())} demos)")
+        f.write("## The exercise programs\n\n")
+        f.write("The whole telemetry processor, one link per starter and solution, flattened to a single "
+                "file with `data/sample.csv` on stdin: the report appears in the output pane. "
+                "The Session 1 starter is compiled as C++11, everything else as C++23. The repo's "
+                "test suites do not run here; use these to read and tweak the program, not to grade it.\n\n")
+        f.write("| Session | Starter | Solution |\n|" + "-" * 40 + "|" + "-" * 30 + "|" + "-" * 30 + "|\n")
+        by_ex: dict[str, dict[str, str]] = {}
+        for name, variant, url in exercises:
+            by_ex.setdefault(name, {})[variant] = url
+        for name, links in by_ex.items():
+            cells = " | ".join(f"[{v}]({links[v]})" if v in links else "" for v in ("starter", "solution"))
+            f.write(f"| `{name}` | {cells} |\n")
+        f.write("\n")
+    print(f"wrote {INDEX.relative_to(ROOT)} ({sum(len(v) for v in rows.values())} demos, {len(exercises)} exercise programs)")
     return 0
 
 

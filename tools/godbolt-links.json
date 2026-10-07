@@ -106,5 +106,15 @@
  "demos/s05/state_machine.cpp#run": "https://godbolt.org/z/xh8jKv6WT",
  "demos/s05/stop_token.cpp#run": "https://godbolt.org/z/dv5YErjs3",
  "demos/s05/tsan_race.cpp#errors": "https://godbolt.org/z/hPo649snv",
- "demos/s05/tsan_race.cpp#run": "https://godbolt.org/z/KabfzKsnE"
+ "demos/s05/tsan_race.cpp#run": "https://godbolt.org/z/KabfzKsnE",
+ "exercises/s01-modernize-syntax/solution": "https://godbolt.org/z/n81o8v3Pj",
+ "exercises/s01-modernize-syntax/starter": "https://godbolt.org/z/84nTnhGxr",
+ "exercises/s02-vocabulary-types/solution": "https://godbolt.org/z/nsadE63nv",
+ "exercises/s02-vocabulary-types/starter": "https://godbolt.org/z/78d7r1a9d",
+ "exercises/s03-compile-time/solution": "https://godbolt.org/z/YW6GTa8nv",
+ "exercises/s03-compile-time/starter": "https://godbolt.org/z/514jEGfKx",
+ "exercises/s04-ranges/solution": "https://godbolt.org/z/3W7GaPah9",
+ "exercises/s04-ranges/starter": "https://godbolt.org/z/aE7W9bEr7",
+ "exercises/s05-concurrency/solution": "https://godbolt.org/z/K7xcW58PG",
+ "exercises/s05-concurrency/starter": "https://godbolt.org/z/sEzGG49cW"
 }

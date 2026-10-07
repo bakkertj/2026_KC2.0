@@ -7,6 +7,8 @@
     cmake -S ../.. -B ../../build && cmake --build ../../build
     ctest --test-dir ../../build -R s05 --output-on-failure
 
+No local toolchain? The whole program also runs on Compiler Explorer as a single file with `data/sample.csv` on stdin: [starter](https://godbolt.org/z/sEzGG49cW) and [solution](https://godbolt.org/z/K7xcW58PG). Edit there to experiment; the tests still need the repo build.
+
 Then, and this is the part that matters today:
 
     cmake -S ../.. -B ../../build-tsan -DCOURSE_SANITIZE=thread

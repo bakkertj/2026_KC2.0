@@ -128,3 +128,15 @@ Demos that need more than one file or a library godbolt does not provide (`demos
 | `stop_token.cpp` | stop_token, stop_source, stop_callback (C++20) | [run](https://godbolt.org/z/dv5YErjs3) |
 | `tsan_race.cpp` | a data race ThreadSanitizer catches (build with -DCOURSE_SANITIZE=thread) | [run](https://godbolt.org/z/KabfzKsnE) · [errors](https://godbolt.org/z/hPo649snv) |
 
+## The exercise programs
+
+The whole telemetry processor, one link per starter and solution, flattened to a single file with `data/sample.csv` on stdin: the report appears in the output pane. The Session 1 starter is compiled as C++11, everything else as C++23. The repo's test suites do not run here; use these to read and tweak the program, not to grade it.
+
+| Session | Starter | Solution |
+|----------------------------------------|------------------------------|------------------------------|
+| `s01-modernize-syntax` | [starter](https://godbolt.org/z/84nTnhGxr) | [solution](https://godbolt.org/z/n81o8v3Pj) |
+| `s02-vocabulary-types` | [starter](https://godbolt.org/z/78d7r1a9d) | [solution](https://godbolt.org/z/nsadE63nv) |
+| `s03-compile-time` | [starter](https://godbolt.org/z/514jEGfKx) | [solution](https://godbolt.org/z/YW6GTa8nv) |
+| `s04-ranges` | [starter](https://godbolt.org/z/aE7W9bEr7) | [solution](https://godbolt.org/z/3W7GaPah9) |
+| `s05-concurrency` | [starter](https://godbolt.org/z/sEzGG49cW) | [solution](https://godbolt.org/z/K7xcW58PG) |
+

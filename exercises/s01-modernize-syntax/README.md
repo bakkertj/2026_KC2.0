@@ -15,6 +15,8 @@ The same program is the exercise for every session of this course. This session 
 
     ctest --test-dir ../../build -R s01 --output-on-failure
 
+No local toolchain? The whole program also runs on Compiler Explorer as a single file with `data/sample.csv` on stdin: [starter](https://godbolt.org/z/84nTnhGxr) and [solution](https://godbolt.org/z/n81o8v3Pj). Edit there to experiment; the tests still need the repo build.
+
 The starter is compiled as C++11 (see `CMakeLists.txt`). Once you start using C++14 or later features you will need to change its standard to 23, or work in a copy of `starter/` registered as its own variant.
 
 ## In class (about 20 minutes)
