@@ -31,7 +31,7 @@ Then straight into the agenda.
 5. C++20 and C++23: small but valuable (15 min)
 6. Guided exercise: modernize the syntax (20 min), then wrap-up (5 min)
 
-Every demo opens in Compiler Explorer, preconfigured for GCC 14: `handouts/compiler-explorer-links.md`
+Every demo opens in Compiler Explorer, preconfigured for GCC 14: `handouts/compiler-explorer-links.pdf`
 
 <!--
 Notes: Point at the exercise README now (exercises/s01-modernize-syntax/README.md) so people can
@@ -50,7 +50,7 @@ the program you modernize today is the one you carry through all five sessions.
 | C++20 | Largest change since C++11 | ~50% |
 | C++23 | Completes C++20, fills library gaps | ~20% |
 
-The important stories cross standards: `constexpr` changed in **every one** of these.
+The important features cross standards: `constexpr` changed in **every one** of these.
 
 <!--
 Notes: constexpr was relaxed in 14, got if-constexpr and lambdas in 17, got allocation and
@@ -67,7 +67,7 @@ those three or four times. So: themes, with badges.
 
 Every feature slide has three parts:
 
-- **The badge** (top right): the standard that introduced it. Also the answer to "can I use this under our flags?"
+- **The badge** (top right): the standard that introduced it. 
 - **The problem line** (italic, under the title): what was wrong before
 - **The code**: an excerpt from a file in `demos/` that compiles under `-Wall -Wextra -Wpedantic -Werror` on GCC 14 and Clang 18
 
@@ -84,9 +84,8 @@ code, one-liners, previews) say so in their notes.
 ## The toolchain
 
 - `-std=c++23` with GCC 14 or Clang 18. Either. Both, ideally.
-- `-Wall -Wextra -Wpedantic -Werror` throughout: the compiler is a course participant
+- `-Wall -Wextra -Wpedantic -Werror` throughout
 - Compiler Explorer (godbolt.org) links in every `demos/` file header: no local setup needed to follow along
-- The repo `Dockerfile` pins the same toolchain if you want it locally
 
 **Two-minute check now:** `cmake -S . -B build && cmake --build build && ctest --test-dir build`
 
