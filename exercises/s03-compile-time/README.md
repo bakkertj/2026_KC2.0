@@ -13,7 +13,7 @@ This session moves the first two to compile time and turns the third into constr
     cmake -S ../.. -B ../../build && cmake --build ../../build
     ctest --test-dir ../../build -R s03 --output-on-failure
 
-No local toolchain? The whole program also runs on Compiler Explorer as a single file with `data/sample.csv` on stdin: [starter](https://godbolt.org/z/oz4o9cMrf) and [solution](https://godbolt.org/z/G6a5Wjzv4). Edit there to experiment; the tests still need the repo build.
+No local toolchain? The whole program also runs on Compiler Explorer as a single file with `data/sample.csv` on stdin: [starter](https://godbolt.org/z/WPa6jhG1z) and [solution](https://godbolt.org/z/cnYdMa17d). Edit there to experiment; the tests still need the repo build.
 
 The target tests are in `solution/tests/`. Most of the new ones are `static_assert`s: if the file compiles, they passed.
 

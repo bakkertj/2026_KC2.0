@@ -17,7 +17,7 @@ Build and test:
     cmake -S ../.. -B ../../build && cmake --build ../../build
     ctest --test-dir ../../build -R s02 --output-on-failure
 
-No local toolchain? The whole program also runs on Compiler Explorer as a single file with `data/sample.csv` on stdin: [starter](https://godbolt.org/z/6Yx4oT3ce) and [solution](https://godbolt.org/z/T14veqEo1). Edit there to experiment; the tests still need the repo build.
+No local toolchain? The whole program also runs on Compiler Explorer as a single file with `data/sample.csv` on stdin: [starter](https://godbolt.org/z/e7Pvo6v15) and [solution](https://godbolt.org/z/G6xEfTEhb). Edit there to experiment; the tests still need the repo build.
 
 Because the interfaces change, the tests change too. `solution/tests/` is the target suite; write toward it. (Clang users: the repo's CMake selects libc++, which is where Clang 18 has `std::expected` and `std::print`.)
 

@@ -7,7 +7,7 @@
     cmake -S ../.. -B ../../build && cmake --build ../../build
     ctest --test-dir ../../build -R s05 --output-on-failure
 
-No local toolchain? The whole program also runs on Compiler Explorer as a single file with `data/sample.csv` on stdin: [starter](https://godbolt.org/z/WvrcxWYqM) and [solution](https://godbolt.org/z/d4soMhKqP). Edit there to experiment; the tests still need the repo build.
+No local toolchain? The whole program also runs on Compiler Explorer as a single file with `data/sample.csv` on stdin: [starter](https://godbolt.org/z/5cKfGvs51) and [solution](https://godbolt.org/z/db9jsTc5M). Edit there to experiment; the tests still need the repo build.
 
 Then, and this is the part that matters today:
 

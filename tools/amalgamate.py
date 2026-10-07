@@ -55,7 +55,10 @@ def main() -> int:
         emit(src)
     emit(a.variant / "main.cpp")
 
-    header = [f"// {a.variant}: single-file amalgamation for Compiler Explorer (tools/amalgamate.py).",
+    root = pathlib.Path(__file__).resolve().parent.parent
+    variant = a.variant.resolve()
+    label = str(variant.relative_to(root)) if variant.is_relative_to(root) else variant.name
+    header = [f"// {label}: single-file amalgamation for Compiler Explorer (tools/amalgamate.py).",
               "// Run with argument `-` and data/sample.csv on stdin.", ""]
     a.output.write_text("\n".join(header + sorted(system) + [""] + body) + "\n")
     print(f"wrote {a.output} ({len(done)} files)")

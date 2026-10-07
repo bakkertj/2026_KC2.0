@@ -134,9 +134,9 @@ The whole telemetry processor, one link per starter and solution, flattened to a
 
 | Session | Starter | Solution |
 |----------------------------------------|------------------------------|------------------------------|
-| `s01-modernize-syntax` | [starter](https://godbolt.org/z/1TrrW1Exa) | [solution](https://godbolt.org/z/Y36ar3qsW) |
-| `s02-vocabulary-types` | [starter](https://godbolt.org/z/6Yx4oT3ce) | [solution](https://godbolt.org/z/T14veqEo1) |
-| `s03-compile-time` | [starter](https://godbolt.org/z/oz4o9cMrf) | [solution](https://godbolt.org/z/G6a5Wjzv4) |
-| `s04-ranges` | [starter](https://godbolt.org/z/Y1xMa7Tx4) | [solution](https://godbolt.org/z/WGKGY4fK7) |
-| `s05-concurrency` | [starter](https://godbolt.org/z/WvrcxWYqM) | [solution](https://godbolt.org/z/d4soMhKqP) |
+| `s01-modernize-syntax` | [starter](https://godbolt.org/z/Tov79e9h1) | [solution](https://godbolt.org/z/bbahdxjPd) |
+| `s02-vocabulary-types` | [starter](https://godbolt.org/z/e7Pvo6v15) | [solution](https://godbolt.org/z/G6xEfTEhb) |
+| `s03-compile-time` | [starter](https://godbolt.org/z/WPa6jhG1z) | [solution](https://godbolt.org/z/cnYdMa17d) |
+| `s04-ranges` | [starter](https://godbolt.org/z/9MqnKePc1) | [solution](https://godbolt.org/z/fvsjoYGzv) |
+| `s05-concurrency` | [starter](https://godbolt.org/z/5cKfGvs51) | [solution](https://godbolt.org/z/db9jsTc5M) |
 
