@@ -2,7 +2,7 @@
 marp: true
 theme: course
 paginate: true
-footer: 'The Evolution of C++ | Session 1: The Everyday Language'
+footer: 'Modern C++ | Session 1: The Everyday Language'
 ---
 
 <!-- _class: lead -->
