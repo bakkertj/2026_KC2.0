@@ -1,6 +1,6 @@
 // Demo: std::jthread (C++20)
 // Session: s05
-// Compiler Explorer: https://godbolt.org/z/WThE4nqbc
+// Compiler Explorer: https://godbolt.org/z/9qe7184Wx
 #include <atomic>
 #include <chrono>
 #include <functional>

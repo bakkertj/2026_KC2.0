@@ -1,6 +1,6 @@
 // Demo: three-way comparison details (C++20)
 // Session: s01
-// Compiler Explorer: https://godbolt.org/z/M3GjExe9T
+// Compiler Explorer: https://godbolt.org/z/K4ezjY9ME
 #include <compare>
 #include <cstdio>
 #include <string>

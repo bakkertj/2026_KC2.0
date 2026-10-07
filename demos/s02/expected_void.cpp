@@ -1,6 +1,6 @@
 // Demo: expected<void, E> (C++23)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/z8o599s5v
+// Compiler Explorer: https://godbolt.org/z/fzdj6x5rz
 #include <cstdio>
 #include <expected>
 #include <string_view>

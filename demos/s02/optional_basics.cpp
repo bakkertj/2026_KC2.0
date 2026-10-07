@@ -1,6 +1,6 @@
 // Demo: std::optional (C++17)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/PMjrPhGxE
+// Compiler Explorer: https://godbolt.org/z/5WGef8znY
 #include <cstdio>
 #include <optional>
 #include <string_view>

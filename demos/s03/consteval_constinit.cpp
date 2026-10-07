@@ -1,6 +1,6 @@
 // Demo: consteval and constinit (C++20)
 // Session: s03
-// Compiler Explorer: https://godbolt.org/z/bKojKTjhz
+// Compiler Explorer: https://godbolt.org/z/Woa45ox9z
 #include <cstdint>
 #include <print>
 #include <string_view>

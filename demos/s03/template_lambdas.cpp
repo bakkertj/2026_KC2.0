@@ -1,6 +1,6 @@
 // Demo: template lambdas and lambdas in unevaluated contexts (C++20)
 // Session: s03
-// Compiler Explorer: https://godbolt.org/z/scxT8x7sd
+// Compiler Explorer: https://godbolt.org/z/7nzM1d8vj
 #include <cstdio>
 #include <memory>
 #include <print>

@@ -1,6 +1,6 @@
 // Demo: std::format and the spec mini-language (C++20)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/sYe8qWjxe
+// Compiler Explorer: https://godbolt.org/z/q377Mr1M9
 #include <cstdio>
 #include <format>
 #include <string>

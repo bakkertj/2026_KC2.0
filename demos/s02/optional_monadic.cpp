@@ -1,6 +1,6 @@
 // Demo: monadic optional (C++23)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/c15fYd4Wb
+// Compiler Explorer: https://godbolt.org/z/j3oKPrYqK
 #include <cstdio>
 #include <optional>
 #include <string>

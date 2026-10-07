@@ -1,6 +1,6 @@
 // Demo: using enum (C++20)
 // Session: s01
-// Compiler Explorer: https://godbolt.org/z/dss7nKs5x
+// Compiler Explorer: https://godbolt.org/z/zdc4zc7rW
 #include <cstdio>
 
 enum class Status { Ok, Suspect, Fault };

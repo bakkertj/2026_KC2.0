@@ -1,6 +1,6 @@
 // Demo: projections (C++20)
 // Session: s04
-// Compiler Explorer: https://godbolt.org/z/o6aKEe4c8
+// Compiler Explorer: https://godbolt.org/z/KnParY39E
 #include <algorithm>
 #include <array>
 #include <print>

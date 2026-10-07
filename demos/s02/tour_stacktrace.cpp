@@ -1,6 +1,6 @@
 // Demo: std::stacktrace (C++23)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/WGTPsY3az
+// Compiler Explorer: https://godbolt.org/z/4hGWj365M
 // godbolt: -lstdc++exp
 // Availability: libstdc++ 12+ with -lstdc++exp (or -lstdc++_libbacktrace); libc++: not yet.
 #include <print>

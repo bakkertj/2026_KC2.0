@@ -1,6 +1,6 @@
 // Demo: C++23 constrained algorithm additions
 // Session: s04
-// Compiler Explorer: https://godbolt.org/z/seabzaPE6
+// Compiler Explorer: https://godbolt.org/z/ofojfcEKv
 #include <algorithm>
 #include <array>
 #include <numeric>

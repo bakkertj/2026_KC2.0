@@ -1,6 +1,6 @@
 // Demo: generic lambdas and init-capture (C++14)
 // Session: s01
-// Compiler Explorer: https://godbolt.org/z/GK48c8asq
+// Compiler Explorer: https://godbolt.org/z/ov3Me8163
 // Slide: slides/01-everyday-language.md
 #include <algorithm>
 #include <cstdio>

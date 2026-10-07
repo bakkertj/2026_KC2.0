@@ -1,6 +1,6 @@
 // Demo: designated initializers (C++20)
 // Session: s01
-// Compiler Explorer: https://godbolt.org/z/rx9nez873
+// Compiler Explorer: https://godbolt.org/z/Yd9ejj8zo
 #include <cstdio>
 
 // [snippet: designated]

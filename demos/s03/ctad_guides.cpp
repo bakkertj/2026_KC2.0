@@ -1,6 +1,6 @@
 // Demo: CTAD and deduction guides (C++17), aggregate CTAD (C++20)
 // Session: s03
-// Compiler Explorer: https://godbolt.org/z/h9dMbjsGM
+// Compiler Explorer: https://godbolt.org/z/8cTWfj389
 #include <print>
 #include <string>
 #include <variant>

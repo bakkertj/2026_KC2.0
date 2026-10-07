@@ -1,6 +1,6 @@
 // Demo: format_to, format_to_n, formatted_size (C++20)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/qMP3r978h
+// Compiler Explorer: https://godbolt.org/z/bhPxKjhna
 #include <array>
 #include <cstdio>
 #include <format>

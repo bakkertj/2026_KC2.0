@@ -1,6 +1,6 @@
 // Demo: a coroutine as a state machine (C++20)
 // Session: s05
-// Compiler Explorer: https://godbolt.org/z/xh8jKv6WT
+// Compiler Explorer: https://godbolt.org/z/Mhjd1odc1
 // A byte-at-a-time frame decoder: [0xAA][len][payload...][checksum]. The switch version keeps the
 // state in an enum and a counter; the coroutine version keeps it in the program counter.
 #include <coroutine>

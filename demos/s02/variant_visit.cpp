@@ -1,6 +1,6 @@
 // Demo: std::variant and std::visit (C++17)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/bM36bnEMG
+// Compiler Explorer: https://godbolt.org/z/M7dG5zK4n
 #include <cstdio>
 #include <string>
 #include <variant>

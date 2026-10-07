@@ -1,6 +1,6 @@
 // Demo: what a generator costs (C++23)
 // Session: s05
-// Compiler Explorer: https://godbolt.org/z/e5Wq5hjvx
+// Compiler Explorer: https://godbolt.org/z/es8cvdaMe
 // Parses N comma-separated integers three ways and times each. Numbers are illustrative; build
 // with -O2 (the repo defaults to Debug: cmake -DCMAKE_BUILD_TYPE=Release for real figures).
 #include <charconv>

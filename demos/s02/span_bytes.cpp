@@ -1,6 +1,6 @@
 // Demo: span<const std::byte> for raw memory (C++20, std::byte C++17)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/GTrasnanc
+// Compiler Explorer: https://godbolt.org/z/8EEPh3bEh
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>

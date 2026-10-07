@@ -1,6 +1,6 @@
 // Demo: a string_view is not a C string (C++17)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/rbPd8jY1T
+// Compiler Explorer: https://godbolt.org/z/5zMh8eEKr
 #include <cstdio>
 #include <cstdlib>
 #include <string>

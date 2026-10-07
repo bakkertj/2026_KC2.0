@@ -1,6 +1,6 @@
 // Demo: atomic wait/notify and atomic_ref (C++20)
 // Session: s05
-// Compiler Explorer: https://godbolt.org/z/Wx1Toseo9
+// Compiler Explorer: https://godbolt.org/z/qqbYb4xnM
 #include <atomic>
 #include <print>
 #include <thread>

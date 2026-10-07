@@ -1,6 +1,6 @@
 // Demo: the error messages, side by side (C++11 vs C++20)
 // Session: s03
-// Compiler Explorer: https://godbolt.org/z/T9oj4s9Kv
+// Compiler Explorer: https://godbolt.org/z/fGqGxEoE9
 #include <concepts>
 #include <print>
 #include <type_traits>

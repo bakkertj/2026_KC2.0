@@ -1,6 +1,6 @@
 // Demo: the same computation under each standard's constexpr rules
 // Session: s03
-// Compiler Explorer: https://godbolt.org/z/c7b5cW96v
+// Compiler Explorer: https://godbolt.org/z/q4rjPMxfa
 #include <array>
 #include <cstdint>
 #include <print>

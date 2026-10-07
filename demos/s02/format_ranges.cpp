@@ -1,6 +1,6 @@
 // Demo: formatting ranges (C++23)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/P84GqaoPj
+// Compiler Explorer: https://godbolt.org/z/Kev8sbe83
 // Availability: libc++ 17+; libstdc++ 15 (GCC 14 lacks it). Feature-test macro: __cpp_lib_format_ranges.
 #include <map>
 #include <print>

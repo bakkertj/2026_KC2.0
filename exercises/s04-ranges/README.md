@@ -9,7 +9,7 @@ This session replaces them with constrained algorithms (with projections) and vi
     cmake -S ../.. -B ../../build && cmake --build ../../build
     ctest --test-dir ../../build -R s04 --output-on-failure
 
-No local toolchain? The whole program also runs on Compiler Explorer as a single file with `data/sample.csv` on stdin: [starter](https://godbolt.org/z/aE7W9bEr7) and [solution](https://godbolt.org/z/3W7GaPah9). Edit there to experiment; the tests still need the repo build.
+No local toolchain? The whole program also runs on Compiler Explorer as a single file with `data/sample.csv` on stdin: [starter](https://godbolt.org/z/Y1xMa7Tx4) and [solution](https://godbolt.org/z/WGKGY4fK7). Edit there to experiment; the tests still need the repo build.
 
 Target tests: `solution/tests/`. Clang users are on libc++, where a few C++23 views are missing (`views::enumerate` among them); the solution avoids those, and `handouts/toolchain-support-matrix.md` lists the rest.
 

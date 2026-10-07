@@ -1,6 +1,6 @@
 // Demo: [[nodiscard]] (C++17), [[maybe_unused]] and [[fallthrough]] (C++17)
 // Session: s01
-// Compiler Explorer: https://godbolt.org/z/saPebMT1b
+// Compiler Explorer: https://godbolt.org/z/TKxaGdqTv
 #include <cstdio>
 #include <string>
 

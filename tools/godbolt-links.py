@@ -64,7 +64,10 @@ def client_state(source: str, options: str, arguments: str = "", stdin: str = ""
             }],
             "executors": [{
                 "compiler": {"id": COMPILER, "options": options, "libs": []},
-                "compilerVisible": False, "compilerOutputVisible": False,
+                # compilerVisible: show the executor's own compiler and flags row, so adding
+                # -fsanitize=address or -DSHOW_ERRORS there is obvious (the assembly pane's flags
+                # do not reach the executor).
+                "compilerVisible": True, "compilerOutputVisible": False,
                 "arguments": arguments, "argumentsVisible": bool(arguments),
                 "stdin": stdin, "stdinVisible": bool(stdin),
             }],

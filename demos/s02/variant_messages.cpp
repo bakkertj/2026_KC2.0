@@ -1,6 +1,6 @@
 // Demo: variant as a closed message set (C++17)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/vE7388Eqh
+// Compiler Explorer: https://godbolt.org/z/xddzaM467
 #include <cstdint>
 #include <cstdio>
 #include <string>

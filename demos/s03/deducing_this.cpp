@@ -1,6 +1,6 @@
 // Demo: deducing this (C++23)
 // Session: s03
-// Compiler Explorer: https://godbolt.org/z/WEqn8dKM4
+// Compiler Explorer: https://godbolt.org/z/G8baW1GMh
 #include <print>
 #include <string>
 #include <utility>

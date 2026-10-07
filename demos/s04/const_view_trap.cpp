@@ -1,6 +1,6 @@
 // Demo: the const view trap (C++20)
 // Session: s04
-// Compiler Explorer: https://godbolt.org/z/s1519cTPq
+// Compiler Explorer: https://godbolt.org/z/a6vTKTY3K
 #include <print>
 #include <ranges>
 #include <vector>

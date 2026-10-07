@@ -1,6 +1,6 @@
 // Demo: what constrained algorithms return (C++20)
 // Session: s04
-// Compiler Explorer: https://godbolt.org/z/sW8EYha61
+// Compiler Explorer: https://godbolt.org/z/ab8e93bW9
 #include <algorithm>
 #include <print>
 #include <vector>

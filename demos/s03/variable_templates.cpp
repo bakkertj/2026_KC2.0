@@ -1,6 +1,6 @@
 // Demo: variable templates (C++14) and _v/_t aliases (C++17)
 // Session: s03
-// Compiler Explorer: https://godbolt.org/z/echPG1WKr
+// Compiler Explorer: https://godbolt.org/z/cz8aW5jxn
 #include <array>
 #include <print>
 #include <type_traits>
