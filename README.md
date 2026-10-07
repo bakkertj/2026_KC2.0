@@ -1,6 +1,6 @@
 # The Evolution of C++: C++14 through C++23
 
-Course material for a five-session, ten-hour course that brings C++98/C++11 engineers up to C++23. See `syllabus/` for the syllabus and `PLAN.md` for how the material is produced.
+Course material for a five-session, ten-hour course that brings C++98/C++11 engineers up to C++23. See `syllabus/` for the syllabus (markdown, DOCX and PDF) and `PLAN.md` for how the material is produced.
 
 ## Layout
 
@@ -8,7 +8,8 @@ Course material for a five-session, ten-hour course that brings C++98/C++11 engi
 - `demos/` one small file per feature shown in class; each is a CMake target and carries a Compiler Explorer link
 - `exercises/` per-session exercises with `starter/`, `solution/`, `tests/`, and an attendee README; the cumulative telemetry processor moves from session to session
 - `handouts/` the feature timeline, cheat sheets, the adoption roadmap worksheet, the toolchain support matrix, and the Compiler Explorer links index; `handouts/build.sh` exports them all to DOCX and PDF (links stay clickable) in `handouts/out/`
-- `tools/` snippet extractor (keeps slide code in sync with demo files), badge checker, demo scaffolder, Compiler Explorer link generator
+- `tools/` snippet extractor (keeps slide code in sync with demo files), badge checker, demo scaffolder, Compiler Explorer link generator, and `package.sh` (zips what attendees get for a session: deck PDF, demo sources, exercise starter, handouts; never the scripts, outlines or syllabus)
+- `syllabus/` the syllabus; `syllabus/build.sh` regenerates its DOCX and PDF from the markdown
 
 ## Build
 

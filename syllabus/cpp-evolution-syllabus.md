@@ -70,7 +70,7 @@ Before Session 1, attendees should:
 **Standards covered:** C++14 (nearly all of it), C++17 core syntax, C++20 and C++23 small features.
 
 | Time | Segment | Content |
-|---|---|---|
+|----------|----------------------|------------------------------------------------------------|
 | 0:00 | Course overview | Why thematic rather than chronological; the timeline handout; how to read the compiler support table |
 | 0:10 | C++11 calibration | Quick check of the features this course assumes: `auto`, move semantics, lambdas, smart pointers, `constexpr` (C++11 form), `enum class`, uniform initialization. Common misconceptions: when `std::move` does nothing, `auto` and references, capture by reference in escaping lambdas |
 | 0:30 | C++14: the polish release | Generic lambdas (`auto` parameters); lambda init-capture `[p = std::move(p)]`; return type deduction for functions; `decltype(auto)`; `std::make_unique`; binary literals and digit separators; `[[deprecated]]`; standard user-defined literals (`"abc"s`, `10ms`); `std::exchange`; `std::integer_sequence`; relaxed `constexpr` (preview, covered fully in Session 3); removal of `gets` |
@@ -89,7 +89,7 @@ Before Session 1, attendees should:
 **Standards covered:** C++17 library, C++20 library, C++23 library.
 
 | Time | Segment | Content |
-|---|---|---|
+|----------|----------------------|------------------------------------------------------------|
 | 0:00 | Recap and framing | The "vocabulary type" idea: types that appear in interfaces so callers and callees agree on meaning without documentation |
 | 0:10 | Views over data (non-owning) | `std::string_view` (C++17) and `std::span` (C++20): what they replace (`const char*` + length, `const std::vector<T>&` when you did not need a vector), lifetime rules and the dangling-view trap, when to still take `const std::string&`. C++23: `std::string::contains`, `std::mdspan` for multidimensional views (preview) |
 | 0:35 | Maybe, either, and anything | `std::optional` (C++17) replacing sentinel values and `bool` out-parameters; C++23 monadic operations (`and_then`, `transform`, `or_else`). `std::variant` and `std::visit` (C++17) replacing tagged unions and `void*`; the overload-set visitor idiom. `std::any` and why you will rarely want it |
@@ -109,7 +109,7 @@ Before Session 1, attendees should:
 **Standards covered:** The `constexpr` thread through C++14/17/20/23; C++17 template features; C++20 concepts; C++23 deducing `this`.
 
 | Time | Segment | Content |
-|---|---|---|
+|----------|----------------------|------------------------------------------------------------|
 | 0:00 | Recap and framing | Why compile-time programming matters for embedded and high-assurance code: tables, checks, and configuration with zero runtime cost and no initialization-order problems |
 | 0:10 | The `constexpr` story | C++11's single-return-statement functions. C++14: loops, locals, and mutation allowed. C++17: `constexpr` lambdas, `if constexpr`, `constexpr` `std::array` usability. C++20: `constexpr` dynamic allocation, `std::vector` and `std::string` at compile time, `constexpr` virtual functions and `try`/`catch`, `consteval` (immediate functions), `constinit` (guaranteed static initialization), `std::is_constant_evaluated`. C++23: `if consteval`, non-literal variables and `static`/`thread_local` in `constexpr` functions, `constexpr std::unique_ptr`, `static operator()`. Demo: a compile-time CRC table and a compile-time-validated configuration struct |
 | 0:40 | C++17 template quality of life | Fold expressions (replacing recursive variadic templates); `if constexpr` replacing tag dispatch and overload tricks; `auto` non-type template parameters; CTAD and deduction guides; variable templates (C++14) and `_v`/`_t` trait aliases |
@@ -128,7 +128,7 @@ Before Session 1, attendees should:
 **Standards covered:** C++17 parallel algorithms, C++20 ranges, C++23 ranges completion.
 
 | Time | Segment | Content |
-|---|---|---|
+|----------|----------------------|------------------------------------------------------------|
 | 0:00 | Recap and framing | The iterator-pair problem: verbosity, mismatched pairs, no composition, no lazy evaluation |
 | 0:10 | The C++20 ranges foundation | Range concepts (`input_range` through `contiguous_range`); sentinels replacing end iterators; `std::ranges::begin`/`end` customization point objects; the constrained algorithms in `std::ranges::` (why they exist alongside `std::`); projections (the feature people miss most) |
 | 0:35 | Views and pipelines | Lazy evaluation; `std::views::filter`, `transform`, `take`, `drop`, `reverse`, `iota`, `split`, `join`, `keys`/`values`; the pipe syntax; view semantics and lifetime (`borrowed_range`, the dangling iterator problem, `std::ranges::dangling`); why `const` views are tricky; cost model and when a plain loop is still right |
@@ -148,7 +148,7 @@ Before Session 1, attendees should:
 **Standards covered:** C++14/17/20/23 concurrency, C++20 coroutines, C++20/23 modules.
 
 | Time | Segment | Content |
-|---|---|---|
+|----------|----------------------|------------------------------------------------------------|
 | 0:00 | Recap and framing | The three "big four" features not yet covered (concepts and ranges were Sessions 3 and 4) and why they are last: they change build systems, control flow, and program structure, not just syntax |
 | 0:10 | Concurrency, C++14 to C++23 | C++14: `shared_timed_mutex`. C++17: `shared_mutex`, `scoped_lock` (deadlock-free multi-lock), `hardware_destructive_interference_size`. C++20: `std::jthread` and cooperative cancellation with `stop_token`/`stop_source`; `std::latch`, `std::barrier`, `std::counting_semaphore`; `atomic::wait`/`notify`; `std::atomic_ref`; `std::atomic<std::shared_ptr>`; `std::osyncstream` for sane multi-threaded logging. C++23: `std::move_only_function` for task queues. What is still missing (executors) and where it is headed |
 | 0:40 | Coroutines | The C++20 language feature vs. the (absent in C++20) library: `co_await`, `co_yield`, `co_return`; promise types and awaiters at a high level; why you should not hand-write a coroutine type in production; `std::generator` (C++23) as the first standard coroutine type; where coroutines pay off (async I/O, state machines, lazy sequences) and where they do not (hot loops, hard real-time). Demo: a `std::generator`-based lazy parser |
