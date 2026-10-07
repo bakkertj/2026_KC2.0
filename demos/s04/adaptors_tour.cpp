@@ -1,6 +1,6 @@
 // Demo: the core view adaptors (C++20)
 // Session: s04
-// Compiler Explorer: https://godbolt.org/z/hhYz9cMn9
+// Compiler Explorer: https://godbolt.org/z/rr9b931Eq
 #include <map>
 #include <print>
 #include <ranges>

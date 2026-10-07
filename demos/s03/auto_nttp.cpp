@@ -1,6 +1,6 @@
 // Demo: auto non-type template parameters (C++17) and class-type NTTPs (C++20)
 // Session: s03
-// Compiler Explorer: https://godbolt.org/z/6hh1GKExo
+// Compiler Explorer: https://godbolt.org/z/qh6W6M1c7
 #include <algorithm>
 #include <array>
 #include <print>

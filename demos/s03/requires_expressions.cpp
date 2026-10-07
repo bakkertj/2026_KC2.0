@@ -1,6 +1,6 @@
 // Demo: requires expressions (C++20)
 // Session: s03
-// Compiler Explorer: https://godbolt.org/z/9vdx1ocd3
+// Compiler Explorer: https://godbolt.org/z/Mf39d1f7s
 #include <concepts>
 #include <print>
 #include <string>

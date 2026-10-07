@@ -1,6 +1,6 @@
 // Demo: deprecations and removals, C++14 through C++23
 // Session: s05
-// Compiler Explorer: https://godbolt.org/z/5WaYPo31h
+// Compiler Explorer: https://godbolt.org/z/771d4sd84
 // Each block under SHOW_ERRORS uses something that a later standard deprecated or removed, next to
 // its replacement. Build with -DSHOW_ERRORS -std=c++23 -Wdeprecated and read the diagnostics.
 // libstdc++ keeps the removed names available with a deprecation warning; libc++ removes them

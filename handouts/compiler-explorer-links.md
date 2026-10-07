@@ -8,125 +8,125 @@ Demos that need more than one file or a library godbolt does not provide (`demos
 
 | Demo | What it shows | Open |
 |------------------------------|--------------------------------------------------|--------------------|
-| `auto_pitfalls.cpp` | auto pitfalls (C++11 calibration) | [run](https://godbolt.org/z/vK655KbjE) |
-| `copy_elision.cpp` | guaranteed copy elision (C++17) | [run](https://godbolt.org/z/ceTc9WhP6) |
-| `ctad.cpp` | class template argument deduction (C++17) | [run](https://godbolt.org/z/3ehcezz7o) |
-| `designated_init.cpp` | designated initializers (C++20) | [run](https://godbolt.org/z/Yd9ejj8zo) |
-| `escaping_lambda.cpp` | lambdas that outlive their captures (C++11 calibration) | [run](https://godbolt.org/z/ehnEafvq8) |
-| `from_chars.cpp` | std::from_chars replacing strtod (C++17) | [run](https://godbolt.org/z/879GqY3Y8) |
-| `generic_lambda.cpp` | generic lambdas and init-capture (C++14) | [run](https://godbolt.org/z/ov3Me8163) |
-| `inline_variable.cpp` | inline variables (C++17) | [run](https://godbolt.org/z/jPexqh3GY) |
-| `move_does_nothing.cpp` | when std::move does nothing (C++11 calibration) | [run](https://godbolt.org/z/T5Ms859rc) · [errors](https://godbolt.org/z/nqexWYfcY) |
-| `nodiscard.cpp` | [[nodiscard]] (C++17), [[maybe_unused]] and [[fallthrough]] (C++17) | [run](https://godbolt.org/z/TKxaGdqTv) · [errors](https://godbolt.org/z/6h8hjeneK) |
-| `range_for_init.cpp` | range-for with initializer (C++20) | [run](https://godbolt.org/z/acraorzK7) |
-| `small_cpp23.cpp` | the small C++23 features (C++23) | [run](https://godbolt.org/z/c9q3cW4zY) |
-| `spaceship.cpp` | three-way comparison and defaulted comparisons (C++20) | [run](https://godbolt.org/z/v3Whenj9E) |
-| `spaceship_details.cpp` | three-way comparison details (C++20) | [run](https://godbolt.org/z/K4ezjY9ME) |
-| `structured_bindings.cpp` | structured bindings and if-with-initializer (C++17) | [run](https://godbolt.org/z/Ysbq9zd6v) |
-| `using_enum.cpp` | using enum (C++20) | [run](https://godbolt.org/z/zdc4zc7rW) |
+| `auto_pitfalls.cpp` | auto pitfalls (C++11 calibration) | [run](https://godbolt.org/z/Tqbvqr7WW) |
+| `copy_elision.cpp` | guaranteed copy elision (C++17) | [run](https://godbolt.org/z/fhE6jPGh6) |
+| `ctad.cpp` | class template argument deduction (C++17) | [run](https://godbolt.org/z/Tb85EMdT3) |
+| `designated_init.cpp` | designated initializers (C++20) | [run](https://godbolt.org/z/K9Pfqbfrc) |
+| `escaping_lambda.cpp` | lambdas that outlive their captures (C++11 calibration) | [run](https://godbolt.org/z/e7hns9dWW) |
+| `from_chars.cpp` | std::from_chars replacing strtod (C++17) | [run](https://godbolt.org/z/vsb1ed6q6) |
+| `generic_lambda.cpp` | generic lambdas and init-capture (C++14) | [run](https://godbolt.org/z/8eWhn1coW) |
+| `inline_variable.cpp` | inline variables (C++17) | [run](https://godbolt.org/z/Ga3KTGccG) |
+| `move_does_nothing.cpp` | when std::move does nothing (C++11 calibration) | [run](https://godbolt.org/z/64dKeG8jj) · [errors](https://godbolt.org/z/on6j4ocoj) |
+| `nodiscard.cpp` | [[nodiscard]] (C++17), [[maybe_unused]] and [[fallthrough]] (C++17) | [run](https://godbolt.org/z/7hxo9Gado) · [errors](https://godbolt.org/z/P8s7be3Pc) |
+| `range_for_init.cpp` | range-for with initializer (C++20) | [run](https://godbolt.org/z/Gfb7odbP1) |
+| `small_cpp23.cpp` | the small C++23 features (C++23) | [run](https://godbolt.org/z/4ofefxc1h) |
+| `spaceship.cpp` | three-way comparison and defaulted comparisons (C++20) | [run](https://godbolt.org/z/bWzfTG1eP) |
+| `spaceship_details.cpp` | three-way comparison details (C++20) | [run](https://godbolt.org/z/KndWoTP93) |
+| `structured_bindings.cpp` | structured bindings and if-with-initializer (C++17) | [run](https://godbolt.org/z/fqGdfWzKG) |
+| `using_enum.cpp` | using enum (C++20) | [run](https://godbolt.org/z/MPP6hcjWE) |
 
 ## Session 2
 
 | Demo | What it shows | Open |
 |------------------------------|--------------------------------------------------|--------------------|
-| `any.cpp` | std::any (C++17) | [run](https://godbolt.org/z/YTM8YdMjf) |
-| `expected_basics.cpp` | std::expected (C++23) | [run](https://godbolt.org/z/TP3bEhdsz) |
-| `expected_pipeline.cpp` | monadic std::expected (C++23) | [run](https://godbolt.org/z/Pbojss8xd) |
-| `expected_void.cpp` | expected<void, E> (C++23) | [run](https://godbolt.org/z/fzdj6x5rz) |
-| `format_ranges.cpp` | formatting ranges (C++23) | [run](https://godbolt.org/z/Kev8sbe83) |
-| `format_specs.cpp` | std::format and the spec mini-language (C++20) | [run](https://godbolt.org/z/q377Mr1M9) |
-| `format_to_buffer.cpp` | format_to, format_to_n, formatted_size (C++20) | [run](https://godbolt.org/z/bhPxKjhna) |
-| `formatter_custom.cpp` | std::formatter for your own types (C++20) | [run](https://godbolt.org/z/ra6PWsWE8) |
-| `formatter_spec.cpp` | a formatter that accepts its own format spec (C++20) | [run](https://godbolt.org/z/jefW7WGYx) |
-| `optional_basics.cpp` | std::optional (C++17) | [run](https://godbolt.org/z/5WGef8znY) |
-| `optional_monadic.cpp` | monadic optional (C++23) | [run](https://godbolt.org/z/j3oKPrYqK) |
-| `print.cpp` | std::print and std::println (C++23) | [run](https://godbolt.org/z/db6q4Ea8b) |
-| `span_basics.cpp` | std::span (C++20) | [run](https://godbolt.org/z/WxTjYvfeo) |
-| `span_bytes.cpp` | span<const std::byte> for raw memory (C++20, std::byte C++17) | [run](https://godbolt.org/z/8EEPh3bEh) |
-| `string_view_basics.cpp` | std::string_view (C++17) | [run](https://godbolt.org/z/sMneTbzKT) |
-| `string_view_dangling.cpp` | the four ways a string_view dangles (C++17) | [run](https://godbolt.org/z/rvnqr83sj) · [errors](https://godbolt.org/z/TWPvcM8nr) |
-| `string_view_not_cstring.cpp` | a string_view is not a C string (C++17) | [run](https://godbolt.org/z/5zMh8eEKr) |
-| `tour_bit.cpp` | <bit> and std::source_location (C++20) | [run](https://godbolt.org/z/P8z77EK7z) |
-| `tour_chrono.cpp` | <chrono> calendars and time zones (C++20) | [run](https://godbolt.org/z/q5Mo1xP5E) |
-| `tour_cpp17.cpp` | C++17 library odds and ends | [run](https://godbolt.org/z/Y854GMq1v) |
-| `tour_cpp20.cpp` | C++20 library odds and ends | [run](https://godbolt.org/z/WMo3a4TjT) |
-| `tour_cpp23.cpp` | C++23 library odds and ends | [run](https://godbolt.org/z/17hj8Wf5f) |
-| `tour_filesystem.cpp` | std::filesystem (C++17) | [run](https://godbolt.org/z/K8jsoe7dv) |
-| `tour_flat_map.cpp` | std::flat_map (C++23) | [run](https://godbolt.org/z/n5rh7b6nx) |
-| `tour_stacktrace.cpp` | std::stacktrace (C++23) | [run](https://godbolt.org/z/4hGWj365M) |
-| `transparent_compare.cpp` | transparent comparators and heterogeneous lookup (C++14 map, C++20 unordered_map) | [run](https://godbolt.org/z/rY65KdWdG) |
-| `variant_messages.cpp` | variant as a closed message set (C++17) | [run](https://godbolt.org/z/xddzaM467) |
-| `variant_visit.cpp` | std::variant and std::visit (C++17) | [run](https://godbolt.org/z/M7dG5zK4n) |
+| `any.cpp` | std::any (C++17) | [run](https://godbolt.org/z/8PTWj5rbb) |
+| `expected_basics.cpp` | std::expected (C++23) | [run](https://godbolt.org/z/MEn6ojqdz) |
+| `expected_pipeline.cpp` | monadic std::expected (C++23) | [run](https://godbolt.org/z/77Y1GPfxa) |
+| `expected_void.cpp` | expected<void, E> (C++23) | [run](https://godbolt.org/z/f5bx1nj9P) |
+| `format_ranges.cpp` | formatting ranges (C++23) | [run](https://godbolt.org/z/eEjqb7vdb) |
+| `format_specs.cpp` | std::format and the spec mini-language (C++20) | [run](https://godbolt.org/z/T61MYrzd7) |
+| `format_to_buffer.cpp` | format_to, format_to_n, formatted_size (C++20) | [run](https://godbolt.org/z/Te6Y5PqWP) |
+| `formatter_custom.cpp` | std::formatter for your own types (C++20) | [run](https://godbolt.org/z/jz6YYdM83) |
+| `formatter_spec.cpp` | a formatter that accepts its own format spec (C++20) | [run](https://godbolt.org/z/hYz3Yq8YM) |
+| `optional_basics.cpp` | std::optional (C++17) | [run](https://godbolt.org/z/ePsYsjMTG) |
+| `optional_monadic.cpp` | monadic optional (C++23) | [run](https://godbolt.org/z/M496axWTa) |
+| `print.cpp` | std::print and std::println (C++23) | [run](https://godbolt.org/z/EzETe3Pzz) |
+| `span_basics.cpp` | std::span (C++20) | [run](https://godbolt.org/z/T369vxaWv) |
+| `span_bytes.cpp` | span<const std::byte> for raw memory (C++20, std::byte C++17) | [run](https://godbolt.org/z/GbqP6ern7) |
+| `string_view_basics.cpp` | std::string_view (C++17) | [run](https://godbolt.org/z/G8nccjYbW) |
+| `string_view_dangling.cpp` | the four ways a string_view dangles (C++17) | [run](https://godbolt.org/z/q8hEPf5xr) · [errors](https://godbolt.org/z/K86z3GGMP) |
+| `string_view_not_cstring.cpp` | a string_view is not a C string (C++17) | [run](https://godbolt.org/z/4GhThM5Mh) |
+| `tour_bit.cpp` | <bit> and std::source_location (C++20) | [run](https://godbolt.org/z/M9M1KvTMP) |
+| `tour_chrono.cpp` | <chrono> calendars and time zones (C++20) | [run](https://godbolt.org/z/rGfKhTe5j) |
+| `tour_cpp17.cpp` | C++17 library odds and ends | [run](https://godbolt.org/z/6qETr93qP) |
+| `tour_cpp20.cpp` | C++20 library odds and ends | [run](https://godbolt.org/z/38r68GsvG) |
+| `tour_cpp23.cpp` | C++23 library odds and ends | [run](https://godbolt.org/z/rqcfM8rqv) |
+| `tour_filesystem.cpp` | std::filesystem (C++17) | [run](https://godbolt.org/z/zxPxsje3M) |
+| `tour_flat_map.cpp` | std::flat_map (C++23) | [run](https://godbolt.org/z/KfhEWMa7P) |
+| `tour_stacktrace.cpp` | std::stacktrace (C++23) | [run](https://godbolt.org/z/TjjxxTG3s) |
+| `transparent_compare.cpp` | transparent comparators and heterogeneous lookup (C++14 map, C++20 unordered_map) | [run](https://godbolt.org/z/4E1adqY76) |
+| `variant_messages.cpp` | variant as a closed message set (C++17) | [run](https://godbolt.org/z/jcPcxav5e) |
+| `variant_visit.cpp` | std::variant and std::visit (C++17) | [run](https://godbolt.org/z/zTTPrro18) |
 
 ## Session 3
 
 | Demo | What it shows | Open |
 |------------------------------|--------------------------------------------------|--------------------|
-| `auto_nttp.cpp` | auto non-type template parameters (C++17) and class-type NTTPs (C++20) | [run](https://godbolt.org/z/6hh1GKExo) |
-| `concepts_basics.cpp` | the four ways to constrain a template (C++20) | [run](https://godbolt.org/z/3bKdM7K9G) · [errors](https://godbolt.org/z/v6bzWhGEb) |
-| `concepts_vs_sfinae.cpp` | the error messages, side by side (C++11 vs C++20) | [run](https://godbolt.org/z/fGqGxEoE9) · [errors](https://godbolt.org/z/nsehb1a9n) |
-| `consteval_constinit.cpp` | consteval and constinit (C++20) | [run](https://godbolt.org/z/Woa45ox9z) |
-| `constexpr_alloc.cpp` | compile-time std::vector and std::string (C++20) | [run](https://godbolt.org/z/MozqM6T9d) |
-| `constexpr_evolution.cpp` | the same computation under each standard's constexpr rules | [run](https://godbolt.org/z/q4rjPMxfa) |
-| `constexpr_limits.cpp` | what a constant expression refuses (and why that is a feature) | [run](https://godbolt.org/z/s6o87bend) · [errors](https://godbolt.org/z/Tbaqa1bxc) |
-| `ctad_guides.cpp` | CTAD and deduction guides (C++17), aggregate CTAD (C++20) | [run](https://godbolt.org/z/8cTWfj389) |
-| `deducing_this.cpp` | deducing this (C++23) | [run](https://godbolt.org/z/G8baW1GMh) |
-| `fold_expressions.cpp` | fold expressions (C++17) | [run](https://godbolt.org/z/bEn8PjWPe) |
-| `if_constexpr_dispatch.cpp` | if constexpr replacing tag dispatch and enable_if (C++17) | [run](https://godbolt.org/z/KMKPoxPYa) |
-| `is_constant_evaluated.cpp` | std::is_constant_evaluated (C++20) and if consteval (C++23) | [run](https://godbolt.org/z/37PeGbMdq) · [errors](https://godbolt.org/z/81ozevaoG) |
-| `requires_expressions.cpp` | requires expressions (C++20) | [run](https://godbolt.org/z/9vdx1ocd3) |
-| `subsumption.cpp` | subsumption, how the more constrained overload wins (C++20) | [run](https://godbolt.org/z/drzjqnvnb) |
-| `template_lambdas.cpp` | template lambdas and lambdas in unevaluated contexts (C++20) | [run](https://godbolt.org/z/7nzM1d8vj) |
-| `variable_templates.cpp` | variable templates (C++14) and _v/_t aliases (C++17) | [run](https://godbolt.org/z/cz8aW5jxn) |
+| `auto_nttp.cpp` | auto non-type template parameters (C++17) and class-type NTTPs (C++20) | [run](https://godbolt.org/z/qh6W6M1c7) |
+| `concepts_basics.cpp` | the four ways to constrain a template (C++20) | [run](https://godbolt.org/z/o673e66sb) · [errors](https://godbolt.org/z/Kahnahcq6) |
+| `concepts_vs_sfinae.cpp` | the error messages, side by side (C++11 vs C++20) | [run](https://godbolt.org/z/6bezcWq96) · [errors](https://godbolt.org/z/4KxdGzW1P) |
+| `consteval_constinit.cpp` | consteval and constinit (C++20) | [run](https://godbolt.org/z/7h41P7v1K) |
+| `constexpr_alloc.cpp` | compile-time std::vector and std::string (C++20) | [run](https://godbolt.org/z/Ps1eWxG1G) |
+| `constexpr_evolution.cpp` | the same computation under each standard's constexpr rules | [run](https://godbolt.org/z/s1zcofKKT) |
+| `constexpr_limits.cpp` | what a constant expression refuses (and why that is a feature) | [run](https://godbolt.org/z/3jMzxM4zM) · [errors](https://godbolt.org/z/EWPhM3zE8) |
+| `ctad_guides.cpp` | CTAD and deduction guides (C++17), aggregate CTAD (C++20) | [run](https://godbolt.org/z/fPxbhsvTT) |
+| `deducing_this.cpp` | deducing this (C++23) | [run](https://godbolt.org/z/31741YWzh) |
+| `fold_expressions.cpp` | fold expressions (C++17) | [run](https://godbolt.org/z/dznM5q9v3) |
+| `if_constexpr_dispatch.cpp` | if constexpr replacing tag dispatch and enable_if (C++17) | [run](https://godbolt.org/z/zfndx4TWs) |
+| `is_constant_evaluated.cpp` | std::is_constant_evaluated (C++20) and if consteval (C++23) | [run](https://godbolt.org/z/n8ncxzxKK) · [errors](https://godbolt.org/z/z7vhvYzcf) |
+| `requires_expressions.cpp` | requires expressions (C++20) | [run](https://godbolt.org/z/Mf39d1f7s) |
+| `subsumption.cpp` | subsumption, how the more constrained overload wins (C++20) | [run](https://godbolt.org/z/nn13eTdfE) |
+| `template_lambdas.cpp` | template lambdas and lambdas in unevaluated contexts (C++20) | [run](https://godbolt.org/z/cv3hvjPeb) |
+| `variable_templates.cpp` | variable templates (C++14) and _v/_t aliases (C++17) | [run](https://godbolt.org/z/azcGh7P3h) |
 
 ## Session 4
 
 | Demo | What it shows | Open |
 |------------------------------|--------------------------------------------------|--------------------|
-| `adaptor_closure.cpp` | storing and composing adaptors; your own adaptor (C++20 / C++23) | [run](https://godbolt.org/z/TKdvWzP67) |
-| `adaptors_tour.cpp` | the core view adaptors (C++20) | [run](https://godbolt.org/z/hhYz9cMn9) |
-| `algorithm_results.cpp` | what constrained algorithms return (C++20) | [run](https://godbolt.org/z/ab8e93bW9) |
-| `chunk_by.cpp` | views::chunk_by, the group-by (C++23) | [run](https://godbolt.org/z/7v8cza533) |
-| `const_view_trap.cpp` | the const view trap (C++20) | [run](https://godbolt.org/z/a6vTKTY3K) · [errors](https://godbolt.org/z/TE45feP1E) |
-| `constrained_algorithms.cpp` | std::ranges:: algorithms vs std:: algorithms (C++20) | [run](https://godbolt.org/z/drh3jKoz6) |
-| `cost_model.cpp` | the cost model of views (C++20) | [run](https://godbolt.org/z/6YvsjPPfa) |
-| `cpp23_algorithms.cpp` | C++23 constrained algorithm additions | [run](https://godbolt.org/z/ofojfcEKv) |
-| `dangling.cpp` | borrowed ranges and dangling (C++20) | [run](https://godbolt.org/z/rGheaqfbP) |
-| `fold.cpp` | ranges::fold_left and friends (C++23) | [run](https://godbolt.org/z/KTxaYM193) |
-| `lazy.cpp` | views are lazy (C++20) | [run](https://godbolt.org/z/TbhrM99fE) |
-| `numeric17.cpp` | C++17 numeric algorithms | [run](https://godbolt.org/z/3aMKdsxrW) |
+| `adaptor_closure.cpp` | storing and composing adaptors; your own adaptor (C++20 / C++23) | [run](https://godbolt.org/z/h5ecMfcEa) |
+| `adaptors_tour.cpp` | the core view adaptors (C++20) | [run](https://godbolt.org/z/rr9b931Eq) |
+| `algorithm_results.cpp` | what constrained algorithms return (C++20) | [run](https://godbolt.org/z/ovhGdWMTb) |
+| `chunk_by.cpp` | views::chunk_by, the group-by (C++23) | [run](https://godbolt.org/z/4fz5z8bW8) |
+| `const_view_trap.cpp` | the const view trap (C++20) | [run](https://godbolt.org/z/f68bWdbce) · [errors](https://godbolt.org/z/K1shfMEYd) |
+| `constrained_algorithms.cpp` | std::ranges:: algorithms vs std:: algorithms (C++20) | [run](https://godbolt.org/z/eKbKbY1eW) |
+| `cost_model.cpp` | the cost model of views (C++20) | [run](https://godbolt.org/z/4aevT9Mf5) |
+| `cpp23_algorithms.cpp` | C++23 constrained algorithm additions | [run](https://godbolt.org/z/s956q1x57) |
+| `dangling.cpp` | borrowed ranges and dangling (C++20) | [run](https://godbolt.org/z/drxbn1a74) |
+| `fold.cpp` | ranges::fold_left and friends (C++23) | [run](https://godbolt.org/z/z3T8PP988) |
+| `lazy.cpp` | views are lazy (C++20) | [run](https://godbolt.org/z/d4z46YYf9) |
+| `numeric17.cpp` | C++17 numeric algorithms | [run](https://godbolt.org/z/vxM3neq3j) |
 | `parallel.cpp` | parallel algorithms (C++17 execution policies) | from the repo |
-| `projections.cpp` | projections (C++20) | [run](https://godbolt.org/z/KnParY39E) |
-| `range_concepts.cpp` | the range concept hierarchy (C++20) | [run](https://godbolt.org/z/MPe39sEac) |
-| `ranges_to.cpp` | std::ranges::to (C++23) | [run](https://godbolt.org/z/h9jKjzK9b) |
-| `same_task_three_ways.cpp` | the same task in C++11, C++20, and C++23 | [run](https://godbolt.org/z/b6YddecKn) |
-| `sentinels.cpp` | sentinels (C++20) | [run](https://godbolt.org/z/bYoEqPf98) |
-| `windows.cpp` | chunk, slide, stride, adjacent (C++23) | [run](https://godbolt.org/z/qo97P1GsY) |
-| `zip_enumerate.cpp` | zip, enumerate, and iota for indexing (C++23) | [run](https://godbolt.org/z/sWvW1bjqf) |
-| `zip_family.cpp` | cartesian_product, repeat, join_with, as_rvalue (C++23) | [run](https://godbolt.org/z/r1Mnvq136) |
+| `projections.cpp` | projections (C++20) | [run](https://godbolt.org/z/r95e9TbcM) |
+| `range_concepts.cpp` | the range concept hierarchy (C++20) | [run](https://godbolt.org/z/zrET8zxqE) |
+| `ranges_to.cpp` | std::ranges::to (C++23) | [run](https://godbolt.org/z/srYzjr1qK) |
+| `same_task_three_ways.cpp` | the same task in C++11, C++20, and C++23 | [run](https://godbolt.org/z/1exMMccPe) |
+| `sentinels.cpp` | sentinels (C++20) | [run](https://godbolt.org/z/nb84TorE5) |
+| `windows.cpp` | chunk, slide, stride, adjacent (C++23) | [run](https://godbolt.org/z/GqEcdhbMr) |
+| `zip_enumerate.cpp` | zip, enumerate, and iota for indexing (C++23) | [run](https://godbolt.org/z/5ocqrx6qq) |
+| `zip_family.cpp` | cartesian_product, repeat, join_with, as_rvalue (C++23) | [run](https://godbolt.org/z/q6es6Yjad) |
 
 ## Session 5
 
 | Demo | What it shows | Open |
 |------------------------------|--------------------------------------------------|--------------------|
-| `atomic_shared_ptr.cpp` | std::atomic<std::shared_ptr> (C++20): hot-swappable configuration | [run](https://godbolt.org/z/jTzo1d5T6) |
-| `atomic_wait.cpp` | atomic wait/notify and atomic_ref (C++20) | [run](https://godbolt.org/z/qqbYb4xnM) |
-| `awaitable.cpp` | co_await and a hand-written awaitable (C++20) | [run](https://godbolt.org/z/57dj9dr3j) |
-| `coroutine_machinery.cpp` | what the compiler generates for a coroutine (C++20) | [run](https://godbolt.org/z/1zYqGe1E9) |
-| `deprecated.cpp` | deprecations and removals, C++14 through C++23 | [run](https://godbolt.org/z/5WaYPo31h) · [errors](https://godbolt.org/z/4q44sP1G1) |
-| `false_sharing.cpp` | hardware_destructive_interference_size (C++17) and false sharing | [run](https://godbolt.org/z/ffG7nPnxf) |
-| `generator_basics.cpp` | std::generator (C++23) | [run](https://godbolt.org/z/PPdnW6e4Y) |
-| `generator_perf.cpp` | what a generator costs (C++23) | [run](https://godbolt.org/z/es8cvdaMe) |
-| `jthread.cpp` | std::jthread (C++20) | [run](https://godbolt.org/z/9qe7184Wx) |
-| `latch_barrier.cpp` | std::latch and std::barrier (C++20) | [run](https://godbolt.org/z/xd6qxYPY8) |
-| `move_only_function_queue.cpp` | a task queue with std::move_only_function (C++23) | [run](https://godbolt.org/z/91es3xfrx) |
-| `osyncstream.cpp` | std::osyncstream (C++20) | [run](https://godbolt.org/z/7hc7rh7vo) |
-| `scoped_lock.cpp` | std::scoped_lock (C++17) | [run](https://godbolt.org/z/h3rsPqY6c) |
-| `semaphore_queue.cpp` | a bounded queue, C++11 vs C++20 (counting_semaphore) | [run](https://godbolt.org/z/rqa3h9GhM) |
-| `shared_mutex.cpp` | shared_timed_mutex (C++14), shared_mutex (C++17): reader/writer locks | [run](https://godbolt.org/z/ex9zGPGvY) |
-| `state_machine.cpp` | a coroutine as a state machine (C++20) | [run](https://godbolt.org/z/Mhjd1odc1) |
-| `stop_token.cpp` | stop_token, stop_source, stop_callback (C++20) | [run](https://godbolt.org/z/Kfsxar6en) |
-| `tsan_race.cpp` | a data race ThreadSanitizer catches (build with -DCOURSE_SANITIZE=thread) | [run](https://godbolt.org/z/achff5eo9) · [errors](https://godbolt.org/z/fj3WhdnGo) |
+| `atomic_shared_ptr.cpp` | std::atomic<std::shared_ptr> (C++20): hot-swappable configuration | [run](https://godbolt.org/z/c8oeGEWGn) |
+| `atomic_wait.cpp` | atomic wait/notify and atomic_ref (C++20) | [run](https://godbolt.org/z/Wzsq54h6P) |
+| `awaitable.cpp` | co_await and a hand-written awaitable (C++20) | [run](https://godbolt.org/z/fo1WxW93K) |
+| `coroutine_machinery.cpp` | what the compiler generates for a coroutine (C++20) | [run](https://godbolt.org/z/ex7vnhjjP) |
+| `deprecated.cpp` | deprecations and removals, C++14 through C++23 | [run](https://godbolt.org/z/771d4sd84) · [errors](https://godbolt.org/z/6ar771MEd) |
+| `false_sharing.cpp` | hardware_destructive_interference_size (C++17) and false sharing | [run](https://godbolt.org/z/bd16fbz3W) |
+| `generator_basics.cpp` | std::generator (C++23) | [run](https://godbolt.org/z/bcYPbcz7r) |
+| `generator_perf.cpp` | what a generator costs (C++23) | [run](https://godbolt.org/z/zfW5rvh3Y) |
+| `jthread.cpp` | std::jthread (C++20) | [run](https://godbolt.org/z/eMMKMKoxs) |
+| `latch_barrier.cpp` | std::latch and std::barrier (C++20) | [run](https://godbolt.org/z/P1vzqMbY6) |
+| `move_only_function_queue.cpp` | a task queue with std::move_only_function (C++23) | [run](https://godbolt.org/z/qK8dssq7j) |
+| `osyncstream.cpp` | std::osyncstream (C++20) | [run](https://godbolt.org/z/hjrfYe3Ef) |
+| `scoped_lock.cpp` | std::scoped_lock (C++17) | [run](https://godbolt.org/z/dTW6exYEY) |
+| `semaphore_queue.cpp` | a bounded queue, C++11 vs C++20 (counting_semaphore) | [run](https://godbolt.org/z/vh4fbzbnx) |
+| `shared_mutex.cpp` | shared_timed_mutex (C++14), shared_mutex (C++17): reader/writer locks | [run](https://godbolt.org/z/sjvr9de5q) |
+| `state_machine.cpp` | a coroutine as a state machine (C++20) | [run](https://godbolt.org/z/j9vavKjME) |
+| `stop_token.cpp` | stop_token, stop_source, stop_callback (C++20) | [run](https://godbolt.org/z/x9Eh8d8Pd) |
+| `tsan_race.cpp` | a data race ThreadSanitizer catches (build with -DCOURSE_SANITIZE=thread) | [run](https://godbolt.org/z/G5MjTfEc9) · [errors](https://godbolt.org/z/G4qoYsf8f) |
 
 ## The exercise programs
 

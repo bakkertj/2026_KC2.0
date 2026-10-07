@@ -1,6 +1,6 @@
 // Demo: <bit> and std::source_location (C++20)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/P8z77EK7z
+// Compiler Explorer: https://godbolt.org/z/M9M1KvTMP
 #include <bit>
 #include <cstdint>
 #include <cstring>

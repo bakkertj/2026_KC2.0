@@ -1,6 +1,6 @@
 // Demo: std::scoped_lock (C++17)
 // Session: s05
-// Compiler Explorer: https://godbolt.org/z/h3rsPqY6c
+// Compiler Explorer: https://godbolt.org/z/dTW6exYEY
 #include <mutex>
 #include <print>
 

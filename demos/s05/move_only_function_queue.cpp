@@ -1,6 +1,6 @@
 // Demo: a task queue with std::move_only_function (C++23)
 // Session: s05
-// Compiler Explorer: https://godbolt.org/z/91es3xfrx
+// Compiler Explorer: https://godbolt.org/z/qK8dssq7j
 #include <functional>
 #include <memory>
 #include <print>

@@ -1,6 +1,6 @@
 // Demo: shared_timed_mutex (C++14), shared_mutex (C++17): reader/writer locks
 // Session: s05
-// Compiler Explorer: https://godbolt.org/z/ex9zGPGvY
+// Compiler Explorer: https://godbolt.org/z/sjvr9de5q
 #include <map>
 #include <mutex>
 #include <print>

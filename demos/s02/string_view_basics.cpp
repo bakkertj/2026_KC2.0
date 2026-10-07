@@ -1,6 +1,6 @@
 // Demo: std::string_view (C++17)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/sMneTbzKT
+// Compiler Explorer: https://godbolt.org/z/G8nccjYbW
 #include <cstdio>
 #include <string>
 #include <string_view>

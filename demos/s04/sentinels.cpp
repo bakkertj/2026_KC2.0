@@ -1,6 +1,6 @@
 // Demo: sentinels (C++20)
 // Session: s04
-// Compiler Explorer: https://godbolt.org/z/bYoEqPf98
+// Compiler Explorer: https://godbolt.org/z/nb84TorE5
 #include <algorithm>
 #include <cstring>
 #include <iterator>

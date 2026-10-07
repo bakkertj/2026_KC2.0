@@ -1,6 +1,6 @@
 // Demo: std::any (C++17)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/YTM8YdMjf
+// Compiler Explorer: https://godbolt.org/z/8PTWj5rbb
 #include <any>
 #include <cstdio>
 #include <map>

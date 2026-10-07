@@ -1,6 +1,6 @@
 // Demo: C++17 library odds and ends
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/Y854GMq1v
+// Compiler Explorer: https://godbolt.org/z/6qETr93qP
 #include <algorithm>
 #include <functional>
 #include <map>

@@ -1,6 +1,6 @@
 // Demo: hardware_destructive_interference_size (C++17) and false sharing
 // Session: s05
-// Compiler Explorer: https://godbolt.org/z/ffG7nPnxf
+// Compiler Explorer: https://godbolt.org/z/bd16fbz3W
 #include <atomic>
 #include <chrono>
 #include <cstddef>

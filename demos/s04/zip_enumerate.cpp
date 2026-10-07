@@ -1,6 +1,6 @@
 // Demo: zip, enumerate, and iota for indexing (C++23)
 // Session: s04
-// Compiler Explorer: https://godbolt.org/z/sWvW1bjqf
+// Compiler Explorer: https://godbolt.org/z/5ocqrx6qq
 #include <print>
 #include <ranges>
 #include <string>

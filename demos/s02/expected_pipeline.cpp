@@ -1,6 +1,6 @@
 // Demo: monadic std::expected (C++23)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/Pbojss8xd
+// Compiler Explorer: https://godbolt.org/z/77Y1GPfxa
 #include <cstdio>
 #include <expected>
 #include <string>

@@ -1,6 +1,6 @@
 // Demo: the cost model of views (C++20)
 // Session: s04
-// Compiler Explorer: https://godbolt.org/z/6YvsjPPfa
+// Compiler Explorer: https://godbolt.org/z/4aevT9Mf5
 #include <print>
 #include <ranges>
 #include <vector>

@@ -1,6 +1,6 @@
 // Demo: if constexpr replacing tag dispatch and enable_if (C++17)
 // Session: s03
-// Compiler Explorer: https://godbolt.org/z/KMKPoxPYa
+// Compiler Explorer: https://godbolt.org/z/zfndx4TWs
 #include <print>
 #include <string>
 #include <type_traits>

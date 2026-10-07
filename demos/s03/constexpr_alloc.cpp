@@ -1,6 +1,6 @@
 // Demo: compile-time std::vector and std::string (C++20)
 // Session: s03
-// Compiler Explorer: https://godbolt.org/z/MozqM6T9d
+// Compiler Explorer: https://godbolt.org/z/Ps1eWxG1G
 #include <algorithm>
 #include <array>
 #include <print>

@@ -1,6 +1,6 @@
 // Demo: guaranteed copy elision (C++17)
 // Session: s01
-// Compiler Explorer: https://godbolt.org/z/ceTc9WhP6
+// Compiler Explorer: https://godbolt.org/z/fhE6jPGh6
 #include <cstdio>
 #include <mutex>
 

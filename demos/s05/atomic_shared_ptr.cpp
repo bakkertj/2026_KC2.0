@@ -1,6 +1,6 @@
 // Demo: std::atomic<std::shared_ptr> (C++20): hot-swappable configuration
 // Session: s05
-// Compiler Explorer: https://godbolt.org/z/jTzo1d5T6
+// Compiler Explorer: https://godbolt.org/z/c8oeGEWGn
 #include <atomic>
 #include <map>
 #include <memory>

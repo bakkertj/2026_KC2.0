@@ -1,6 +1,6 @@
 // Demo: class template argument deduction (C++17)
 // Session: s01
-// Compiler Explorer: https://godbolt.org/z/3ehcezz7o
+// Compiler Explorer: https://godbolt.org/z/Tb85EMdT3
 #include <cstdio>
 #include <mutex>
 #include <utility>

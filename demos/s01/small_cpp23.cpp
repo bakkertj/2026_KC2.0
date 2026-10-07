@@ -1,6 +1,6 @@
 // Demo: the small C++23 features (C++23)
 // Session: s01
-// Compiler Explorer: https://godbolt.org/z/c9q3cW4zY
+// Compiler Explorer: https://godbolt.org/z/4ofefxc1h
 #include <cstddef>
 #include <cstdio>
 #include <string>

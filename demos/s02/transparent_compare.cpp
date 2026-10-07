@@ -1,6 +1,6 @@
 // Demo: transparent comparators and heterogeneous lookup (C++14 map, C++20 unordered_map)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/rY65KdWdG
+// Compiler Explorer: https://godbolt.org/z/4E1adqY76
 #include <cstdio>
 #include <map>
 #include <string>

@@ -1,6 +1,6 @@
 // Demo: std::formatter for your own types (C++20)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/ra6PWsWE8
+// Compiler Explorer: https://godbolt.org/z/jz6YYdM83
 #include <format>
 #include <print>
 #include <string>

@@ -1,6 +1,6 @@
 // Demo: std::latch and std::barrier (C++20)
 // Session: s05
-// Compiler Explorer: https://godbolt.org/z/xd6qxYPY8
+// Compiler Explorer: https://godbolt.org/z/P1vzqMbY6
 #include <barrier>
 #include <latch>
 #include <print>

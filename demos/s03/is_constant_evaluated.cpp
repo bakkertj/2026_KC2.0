@@ -1,6 +1,6 @@
 // Demo: std::is_constant_evaluated (C++20) and if consteval (C++23)
 // Session: s03
-// Compiler Explorer: https://godbolt.org/z/37PeGbMdq
+// Compiler Explorer: https://godbolt.org/z/n8ncxzxKK
 #include <cmath>
 #include <print>
 #include <type_traits>

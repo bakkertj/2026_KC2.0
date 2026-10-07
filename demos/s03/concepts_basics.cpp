@@ -1,6 +1,6 @@
 // Demo: the four ways to constrain a template (C++20)
 // Session: s03
-// Compiler Explorer: https://godbolt.org/z/3bKdM7K9G
+// Compiler Explorer: https://godbolt.org/z/o673e66sb
 #include <concepts>
 #include <print>
 #include <string>

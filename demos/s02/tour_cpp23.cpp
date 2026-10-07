@@ -1,6 +1,6 @@
 // Demo: C++23 library odds and ends
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/17hj8Wf5f
+// Compiler Explorer: https://godbolt.org/z/rqcfM8rqv
 #include <bit>
 #include <cstdint>
 #include <functional>

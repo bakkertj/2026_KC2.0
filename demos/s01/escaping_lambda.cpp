@@ -1,6 +1,6 @@
 // Demo: lambdas that outlive their captures (C++11 calibration)
 // Session: s01
-// Compiler Explorer: https://godbolt.org/z/ehnEafvq8
+// Compiler Explorer: https://godbolt.org/z/e7hns9dWW
 #include <cstdio>
 #include <functional>
 #include <string>

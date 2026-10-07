@@ -1,6 +1,6 @@
 // Demo: std::expected (C++23)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/TP3bEhdsz
+// Compiler Explorer: https://godbolt.org/z/MEn6ojqdz
 #include <charconv>
 #include <cstdio>
 #include <expected>

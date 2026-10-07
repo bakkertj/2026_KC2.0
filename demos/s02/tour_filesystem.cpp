@@ -1,6 +1,6 @@
 // Demo: std::filesystem (C++17)
 // Session: s02
-// Compiler Explorer: https://godbolt.org/z/K8jsoe7dv
+// Compiler Explorer: https://godbolt.org/z/zxPxsje3M
 #include <filesystem>
 #include <fstream>
 #include <print>

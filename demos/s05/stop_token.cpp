@@ -1,6 +1,6 @@
 // Demo: stop_token, stop_source, stop_callback (C++20)
 // Session: s05
-// Compiler Explorer: https://godbolt.org/z/Kfsxar6en
+// Compiler Explorer: https://godbolt.org/z/x9Eh8d8Pd
 #include <chrono>
 #include <print>
 #include <stop_token>

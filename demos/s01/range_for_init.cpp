@@ -1,6 +1,6 @@
 // Demo: range-for with initializer (C++20)
 // Session: s01
-// Compiler Explorer: https://godbolt.org/z/acraorzK7
+// Compiler Explorer: https://godbolt.org/z/Gfb7odbP1
 #include <cstdio>
 #include <string>
 #include <vector>

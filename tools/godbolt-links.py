@@ -127,13 +127,13 @@ def main() -> int:
         title = (TITLE_RE.search(text) or [None, p.stem])[1]
         links = []
         for label, options in variants(p):
-            # The source in the link is the file with the header lines dropped and
-            # the snippet markers removed, so students see clean code.
-            src = "\n".join(l for l in text.splitlines()
-                            if not l.startswith("// Compiler Explorer:")
-                            and not l.startswith("// Session:")
-                            and "[snippet:" not in l and "[/snippet]" not in l
-                            and not HINT_RE.match(l)) + "\n"
+            # The source in the link is the file with the header lines and snippet markers
+            # blanked (not removed), so students see clean code AND line numbers on godbolt
+            # match the file in the editor and the scripts' "point at line N" cues.
+            def visible(l: str) -> bool:
+                return not (l.startswith("// Compiler Explorer:") or l.startswith("// Session:")
+                            or "[snippet:" in l or "[/snippet]" in l or HINT_RE.match(l))
+            src = "\n".join(l if visible(l) else "" for l in text.splitlines()) + "\n"
             state = client_state(src, options)
             key = f"{p.relative_to(ROOT)}#{label}"
             dump[key] = state

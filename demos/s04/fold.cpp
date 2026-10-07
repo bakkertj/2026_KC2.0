@@ -1,6 +1,6 @@
 // Demo: ranges::fold_left and friends (C++23)
 // Session: s04
-// Compiler Explorer: https://godbolt.org/z/KTxaYM193
+// Compiler Explorer: https://godbolt.org/z/z3T8PP988
 #include <algorithm>
 #include <functional>
 #include <numeric>

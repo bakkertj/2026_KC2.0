@@ -1,6 +1,6 @@
 // Demo: a bounded queue, C++11 vs C++20 (counting_semaphore)
 // Session: s05
-// Compiler Explorer: https://godbolt.org/z/rqa3h9GhM
+// Compiler Explorer: https://godbolt.org/z/vh4fbzbnx
 #include <condition_variable>
 #include <mutex>
 #include <optional>

@@ -1,6 +1,6 @@
 // Demo: structured bindings and if-with-initializer (C++17)
 // Session: s01
-// Compiler Explorer: https://godbolt.org/z/Ysbq9zd6v
+// Compiler Explorer: https://godbolt.org/z/fqGdfWzKG
 // Slide: slides/01-everyday-language.md
 #include <cstdio>
 #include <map>

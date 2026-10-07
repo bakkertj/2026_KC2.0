@@ -1,6 +1,6 @@
 // Demo: std::ranges:: algorithms vs std:: algorithms (C++20)
 // Session: s04
-// Compiler Explorer: https://godbolt.org/z/drh3jKoz6
+// Compiler Explorer: https://godbolt.org/z/eKbKbY1eW
 #include <algorithm>
 #include <print>
 #include <string>

@@ -14,6 +14,8 @@ Each script has: a pace plan with clock checkpoints and the slides to slow down 
 
 `scripts/build.sh` exports every script to Word and PDF in `scripts/out/` (pandoc for the .docx, LibreOffice for the .pdf, so the two match).
 
+"Line N" cues in the `>> DO` steps refer to the demo file as it is in the repo. The Compiler Explorer copies keep the same numbering (the header, snippet-marker and `// godbolt:` lines appear as blank lines there), so the cues work whether you demo from the editor or from the link.
+
 The talk track is sized at about 170 words per minute. Spoken faster, it runs short by design; the `IF AHEAD` blocks are the reserve.
 
 ## Deck fixes applied (2026-10-02)
