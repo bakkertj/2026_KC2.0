@@ -970,7 +970,7 @@ Left side. A `Version` struct with three ints, and six hand-written operators. E
 
 This is exactly what the starter's `Record` has: six operators over four members. That's exercise task 2.
 
->> ASK: "Count the ways to get the left side wrong." Give them 15 seconds in chat. Expect: "forget a member in ==," "compare members in a different order in < than in ==," "copy-paste error in one of the derived ones."
+>> ASK: "The left side is correct as written. How many ways could the next edit break it?" Give them 15 seconds in chat. Expect: "forget a member in == when a field is added," "compare members in a different order in < than in ==," "copy-paste error in one of the derived ones." (If someone starts hunting for a bug on the slide, say so: there isn't one; the question is what the code lets you get wrong.)
 
 (pause)
 

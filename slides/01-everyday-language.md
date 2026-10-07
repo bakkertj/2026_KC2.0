@@ -1118,7 +1118,7 @@ struct Version20 {
 
 <!--
 Notes: The starter's Record has exactly the left side, six operators over four members (exercise
-task 2). Count the ways to get the left wrong: forget a member in ==, order members differently
+task 2). The left is correct as written; the question is how the next edit could break it: forget a member in ==, order members differently
 in < and ==, write !(a < b) for <= when the type is only partially ordered. The right side cannot
 be inconsistent. Demo file: demos/s01/spaceship.cpp
 -->
