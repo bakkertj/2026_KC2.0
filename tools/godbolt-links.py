@@ -44,6 +44,13 @@ COMPILER = "g142"                       # x86-64 gcc 14.2 on godbolt.org
 BASE_OPTIONS = "-std=c++23 -O2 -Wall -Wextra -Wpedantic"
 PLACEHOLDER = "<add short link>"
 HEADER_RE = re.compile(r"^// Compiler Explorer: .*$", re.M)
+EXERCISE_TASKS = {
+    "s01-modernize-syntax": "the telemetry processor in careful C++11; modernize the syntax without changing the report",
+    "s02-vocabulary-types": "replace out-parameters and nullable pointers with optional, expected, string_view and span",
+    "s03-compile-time": "move the CRC table and the sensor-config checks to compile time; constrain the templates",
+    "s04-ranges": "replace the hand-written loops with constrained algorithms and views; the report stays byte-identical",
+    "s05-concurrency": "split loading and statistics across a producer and a consumer thread; then a generator",
+}
 HINT_RE = re.compile(r"^// godbolt: (.*)$", re.M)
 TITLE_RE = re.compile(r"^// Demo: (.*)$", re.M)
 
@@ -207,13 +214,16 @@ def main() -> int:
                 "file with `data/sample.csv` on stdin: the report appears in the output pane. "
                 "The Session 1 starter is compiled as C++11, everything else as C++23. The repo's "
                 "test suites do not run here; use these to read and tweak the program, not to grade it.\n\n")
-        f.write("| Session | Starter | Solution |\n|" + "-" * 40 + "|" + "-" * 30 + "|" + "-" * 30 + "|\n")
+        # The description column is also what makes older pandoc (2.x) give this table
+        # proportional widths: it only does so when a cell is wider than its text width,
+        # and without that LibreOffice drops the link columns from the PDF.
+        f.write("| Exercise | What it asks | Open |\n|" + "-" * 30 + "|" + "-" * 50 + "|" + "-" * 20 + "|\n")
         by_ex: dict[str, dict[str, str]] = {}
         for name, variant, url in exercises:
             by_ex.setdefault(name, {})[variant] = url
         for name, links in by_ex.items():
-            cells = " | ".join(f"[{v}]({links[v]})" if v in links else "" for v in ("starter", "solution"))
-            f.write(f"| `{name}` | {cells} |\n")
+            cells = " · ".join(f"[{v}]({links[v]})" for v in ("starter", "solution") if v in links)
+            f.write(f"| `{name}` | {EXERCISE_TASKS.get(name, '')} | {cells} |\n")
         f.write("\n")
     print(f"wrote {INDEX.relative_to(ROOT)} ({sum(len(v) for v in rows.values())} demos, {len(exercises)} exercise programs)")
     return 0

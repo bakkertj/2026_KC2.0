@@ -132,11 +132,11 @@ Demos that need more than one file or a library godbolt does not provide (`demos
 
 The whole telemetry processor, one link per starter and solution, flattened to a single file with `data/sample.csv` on stdin: the report appears in the output pane. The Session 1 starter is compiled as C++11, everything else as C++23. The repo's test suites do not run here; use these to read and tweak the program, not to grade it.
 
-| Session | Starter | Solution |
-|----------------------------------------|------------------------------|------------------------------|
-| `s01-modernize-syntax` | [starter](https://godbolt.org/z/Tov79e9h1) | [solution](https://godbolt.org/z/bbahdxjPd) |
-| `s02-vocabulary-types` | [starter](https://godbolt.org/z/e7Pvo6v15) | [solution](https://godbolt.org/z/G6xEfTEhb) |
-| `s03-compile-time` | [starter](https://godbolt.org/z/WPa6jhG1z) | [solution](https://godbolt.org/z/cnYdMa17d) |
-| `s04-ranges` | [starter](https://godbolt.org/z/9MqnKePc1) | [solution](https://godbolt.org/z/fvsjoYGzv) |
-| `s05-concurrency` | [starter](https://godbolt.org/z/5cKfGvs51) | [solution](https://godbolt.org/z/db9jsTc5M) |
+| Exercise | What it asks | Open |
+|------------------------------|--------------------------------------------------|--------------------|
+| `s01-modernize-syntax` | the telemetry processor in careful C++11; modernize the syntax without changing the report | [starter](https://godbolt.org/z/Tov79e9h1) · [solution](https://godbolt.org/z/bbahdxjPd) |
+| `s02-vocabulary-types` | replace out-parameters and nullable pointers with optional, expected, string_view and span | [starter](https://godbolt.org/z/e7Pvo6v15) · [solution](https://godbolt.org/z/G6xEfTEhb) |
+| `s03-compile-time` | move the CRC table and the sensor-config checks to compile time; constrain the templates | [starter](https://godbolt.org/z/WPa6jhG1z) · [solution](https://godbolt.org/z/cnYdMa17d) |
+| `s04-ranges` | replace the hand-written loops with constrained algorithms and views; the report stays byte-identical | [starter](https://godbolt.org/z/9MqnKePc1) · [solution](https://godbolt.org/z/fvsjoYGzv) |
+| `s05-concurrency` | split loading and statistics across a producer and a consumer thread; then a generator | [starter](https://godbolt.org/z/5cKfGvs51) · [solution](https://godbolt.org/z/db9jsTc5M) |
 
