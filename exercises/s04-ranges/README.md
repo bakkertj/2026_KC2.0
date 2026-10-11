@@ -13,7 +13,7 @@ No local toolchain? The whole program also runs on Compiler Explorer as a single
 
 Target tests: `solution/tests/`. Clang users are on libc++, where a few C++23 views are missing (`views::enumerate` among them); the solution avoids those, and `handouts/toolchain-support-matrix.md` lists the rest.
 
-## In class (about 10 minutes; finish at home if needed)
+## At home, first (these were the in-class tasks; the session's labs 4.1, 4.2 and 4.4 rehearse them on a small file)
 
 1. **Projections.** In `stats.cpp`, replace the min/max loop in `value_range` with one call: `std::ranges::minmax(records, {}, &Record::value)` returns the min and max **records**, compared by value. Replace the comparator lambda in `first_at_or_after` with `std::ranges::lower_bound(records, ts, {}, &Record::ts)`. In `config.h`, `find_sensor` becomes `std::ranges::find(kSensors, name, &SensorConfig::name)`. Note what disappeared: every comparator lambda.
 
@@ -21,7 +21,7 @@ Target tests: `solution/tests/`. Clang users are on libc++, where a few C++23 vi
 
 3. **`views::split`.** `split` becomes `text | std::views::split(delimiter) | std::views::transform([](auto&& part) { return std::string_view(part); }) | std::ranges::to<std::vector>()`. Run the tests. One fails: `views::split` of an empty string yields zero pieces, the loop yielded one empty field. Decide which contract you want, and make the tests say so. (The solution keeps the loop's contract with an early return; the point is that the tests, not the pipeline, define the behavior.)
 
-## At home
+## At home, after that
 
 4. **`std::ranges::input_range`.** Replace the hand-written `SerializableRange` concept's `begin()`/`end()` requirement with `std::ranges::input_range<T>`. Then try `serialize(v | std::views::filter(...))`. It fails to compile: a `const filter_view` cannot be iterated, because `filter` caches its first element in `begin()`. Change the overload to take `R&&` and iterate with `auto&&`. That is how the standard algorithms take ranges, and why.
 

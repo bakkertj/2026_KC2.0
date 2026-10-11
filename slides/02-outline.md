@@ -1,6 +1,21 @@
 # Session 2 deck outline: Vocabulary Types and the Standard Library
 
-One line per slide. Badge in brackets; "2col" is before/after; "demo" is live; "evo" is a timeline slide. Target: 59 slides: 56 content slides for 100 minutes, then the exercise segment (3 slides, 20 minutes). Every "from the exercise" slide pulls its code from `exercises/s02-vocabulary-types/` starter and solution.
+One line per slide. Badge in brackets; "2col" is before/after; "demo" is live; "evo" is a timeline slide. Originally 59 slides for 100 minutes of lecture plus a 20-minute exercise; now 64 slides: 50 presented in four lecture-plus-lab blocks and 13 in a Further reading appendix (see the block table).
+
+## Block structure (current deck)
+
+The deck now runs as four blocks of about twenty minutes of lecture and a ten-minute Compiler Explorer lab (`docs/session-format.md`). The sections below are the original design, one line per slide, and still describe every slide's content; this table says where each one ended up. Deck numbers are the current ones.
+
+| Block | Deck slides | Lab |
+|---|---|---|
+| 1. Views (0:00) | 1 to 11: opening (1 to 5), `string_view` (6), the dangling rule (7), `const std::string&` (8), `span` (9, 10), takeaway (11) | 12. Lab 2.1 `labs/s02/lab1_views.cpp` (0:20) |
+| 2. Maybe, either, anything (0:30) | 13 to 22: `optional` (13 to 16), `variant` (17 to 19), `any` (20), choosing (21), takeaway (22) | 23. Lab 2.2 `lab2_optional_variant.cpp` (0:50) |
+| 3. `expected` and formatting (1:00) | 24 to 36: `expected` (24 to 30), `format`/`print`/`formatter` (31 to 36) | 37. Lab 2.3 `lab3_expected_format.cpp` (1:20) |
+| 4. Library tour and checklist (1:30) | 38 to 47: tour (38 to 44), deprecated (45), support matrix (46), checklist (47) | 48. Lab 2.4 `lab4_interface_checklist.cpp` (1:42) |
+| Close | 49 at-home exercise, 50 takeaway | |
+| Further reading (not presented) | 51 divider; 52 `string_view` operations, 53 not a C string, 54 `span` mechanics, 55 `mdspan`, 56 transparent comparators, 57 pointer-to-member trap, 58 `variant` details, 59 where these came from, 60 `expected<void>`, 61 formatter with its own spec, 62 formatting ranges, 63 formatting without allocating, 64 migration | |
+
+The telemetry exercise is at-home work; its former in-class tasks 1 to 3 are the first at-home tasks.
 
 ## 0. Opening (0:00, 5 slides)
 

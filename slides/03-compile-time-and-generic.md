@@ -15,26 +15,30 @@ Moving work to compile time, and writing templates a human can read
 
 <!--
 Notes: Two halves: making the compiler compute (constexpr, consteval) and making it check
-(concepts). The exercise has one target for each half plus deducing this.
+(concepts). Four blocks, four labs; the at-home exercise has one target for each half plus
+deducing this.
 -->
 
 ---
 
 ## Agenda
 
-1. Recap and framing (10 min)
-2. The `constexpr` story, C++11 to C++26 (30 min)
-3. C++17 template quality of life (15 min)
-4. C++20 concepts (25 min)
-5. C++23: deducing `this` (15 min)
-6. Guided exercise (22 min, including the live diagnostics)
-7. Wrap-up (3 min)
+Four blocks. Each one is about twenty minutes of slides, then a ten-minute lab you do on Compiler Explorer.
 
-Every demo opens in Compiler Explorer, preconfigured for GCC 14: `handouts/compiler-explorer-links.md`
+| | Lecture | Lab |
+|---|---|---|
+| 1. `constexpr`, `consteval` and where constants live | 0:00 | 0:20 |
+| 2. C++17 templates: folds, `if constexpr`, CTAD | 0:30 | 0:45 |
+| 3. Concepts | 1:00 | 1:20 |
+| 4. Deducing `this`, and reading diagnostics | 1:30 | 1:45 |
+
+The telemetry exercise is at-home work this time; the last slide launches it. Slides we skip live are in a **Further reading** appendix at the end of the PDF.
 
 <!--
-Notes: Exercise README: exercises/s03-compile-time/README.md. The starter is the Session 2
-solution.
+Notes: Say the rhythm out loud once: "twenty minutes of me, ten minutes of you, four times."
+Block 2 is short on purpose; its spare five minutes are the buffer for block 1 running long.
+Each lab is one file with three TODOs; the slide that launches it has the link. People who
+build locally: the same files are under labs/ (ctest -R lab_s03).
 -->
 
 ---
@@ -67,29 +71,17 @@ Three things in the starter do work at runtime that never changes:
 
 **Zero runtime cost, no static-initialization order, and one class of bug that cannot reach a running program.**
 
+Two halves today: making the compiler **compute** (`constexpr`, `consteval`) and making it **check** (concepts). C++17 templates are the bridge.
+
 <!--
 Notes: The embedded framing: startup code and configuration tables are exactly where these
-features pay. Every row is a task in the exercise.
+features pay. Every row is a task in the exercise. The last line is the old "two halves"
+slide (now appendix slide 47) in one sentence; say it and move on.
 -->
 
 ---
 
-## The two halves of today
-
-**Making the compiler compute:** `constexpr` (may run at compile time), `consteval` (must), `constinit` (initialized at compile time). Result: tables, checks, hashes, and configuration that cost nothing at runtime, and `static_assert` as a unit test.
-
-**Making the compiler check:** concepts. Result: templates whose requirements are in the signature, and error messages that name what went wrong.
-
-**The bridge:** templates got readable in C++17 (fold expressions, `if constexpr`) before concepts made them checkable in C++20, and deducing `this` (C++23) removes the last of the boilerplate.
-
-<!--
-Notes: Sixty seconds. Then the constexpr timeline, which is the longest single story in the
-course.
--->
-
----
-
-<!-- SEGMENT: constexpr (0:10) -->
+<!-- SEGMENT: Block 1, constexpr (0:06; lab at 0:20) -->
 
 <!-- _class: feature -->
 
@@ -194,7 +186,7 @@ constexpr std::array<int, 6> factorials17() {
 inline constexpr auto kFactorials = factorials17();   // computed once, at compile time, in the header
 ```
 
-Lambdas are implicitly `constexpr` when they can be. `if constexpr` is covered in the templates segment.
+Lambdas are implicitly `constexpr` when they can be. `if constexpr` is covered in block 2.
 
 <!--
 Notes: The `constexpr` keyword on the lambda is optional (implicit since C++17); it is there to
@@ -235,64 +227,6 @@ an immediate. Hand-typed excerpt of the solution.
 
 <!-- _class: feature -->
 
-## What a constant expression refuses <span class="badge cpp11">C++11</span>
-
-<p class="problem">Undefined behavior is not allowed in a constant expression. The compiler is a sanitizer that costs nothing.</p>
-
-<!-- snippet: demos/s03/constexpr_limits.cpp#ub -->
-```cpp
-constexpr int overflow(int x) { return x + 1; }
-constexpr int at(const std::array<int, 3>& a, std::size_t i) { return a[i]; }
-
-#ifdef SHOW_ERRORS
-constexpr int uninit() { int x; return x; }       // (Clang rejects the read even before constant evaluation)
-static_assert(overflow(INT_MAX) == INT_MIN);      // error: overflow in constant expression
-static_assert(at({1, 2, 3}, 5) == 0);             // error: array subscript out of bounds
-static_assert(uninit() == 0);                     // error: read of uninitialized object
-#endif
-// A constant expression cannot contain undefined behavior. The compiler is a sanitizer
-// for every constexpr call it evaluates, with no runtime cost.
-```
-
-<!--
-Notes: The argument that converts embedded engineers: every constexpr call the compiler
-evaluates is checked for overflow, out-of-bounds, uninitialized reads, and lifetime errors, at
-build time. Write your lookup tables and protocol constants constexpr and you get this for free.
-Demo file: demos/s03/constexpr_limits.cpp (errors under SHOW_ERRORS)
--->
-
----
-
-<!-- _class: feature -->
-
-## Also refused: `reinterpret_cast` <span class="badge cpp11">C++11</span>
-
-<p class="problem">The snag from the exercise: std::as_bytes is not constexpr because it is a reinterpret_cast.</p>
-
-<!-- snippet: demos/s03/constexpr_limits.cpp#reinterpret -->
-```cpp
-constexpr std::uint16_t first_two_bytes(std::span<const char> s) {
-#ifdef SHOW_ERRORS
-    return *reinterpret_cast<const std::uint16_t*>(s.data());   // error: reinterpret_cast is never constexpr
-#else
-    return static_cast<std::uint16_t>((static_cast<unsigned char>(s[1]) << 8) | static_cast<unsigned char>(s[0]));
-#endif
-}
-// This is why std::as_bytes is not constexpr, and why the exercise's crc16 uses static_cast per byte.
-```
-
-Also refused when evaluated: `goto`, `asm`, non-literal variables (since C++20/23 they may appear in a `constexpr` function, as long as the evaluated path avoids them), calls to non-`constexpr` functions (`std::to_string` until C++26; integral `std::to_chars` is `constexpr` since C++23).
-
-<!--
-Notes: Exercise task 1 hits this. The fix in the solution: a template over the byte type with
-static_cast per byte. reinterpret_cast is the one cast that reinterprets memory; a constant
-expression has no memory to reinterpret, only values. Demo file: demos/s03/constexpr_limits.cpp
--->
-
----
-
-<!-- _class: feature -->
-
 ## Dynamic allocation at compile time <span class="badge cpp20">C++20</span>
 
 <p class="problem">std::vector and std::string in a constant expression, as long as they are freed before it ends.</p>
@@ -323,49 +257,6 @@ demos/s03/constexpr_alloc.cpp
 
 ---
 
-<!-- _class: feature dense -->
-
-## The rest of C++20 `constexpr` <span class="badge cpp20">C++20</span>
-
-<p class="problem">Virtual calls, try/catch, dynamic_cast, unions, and knowing which mode you are in.</p>
-
-<!-- snippet: demos/s03/is_constant_evaluated.cpp#ice -->
-```cpp
-// One function, two implementations: exact at compile time, fast at runtime
-constexpr double power(double base, int exp) {
-    if (std::is_constant_evaluated()) {              // C++20 (C++23 spells it `if consteval`)
-        double r = 1.0;
-        for (int i = 0; i < exp; ++i) r *= base;     // constexpr-friendly loop
-        return r;
-    } else {
-        return std::pow(base, exp);                  // libm; not constexpr everywhere
-    }
-}
-static_assert(power(2.0, 10) == 1024.0);
-```
-
-<!-- snippet: demos/s03/is_constant_evaluated.cpp#trap -->
-```cpp
-constexpr int trap() {
-#ifdef SHOW_ERRORS   // GCC 14 warns: always true in 'if constexpr'
-    if constexpr (std::is_constant_evaluated()) {    // WRONG: the condition is itself
-        return 1;                                    // constant-evaluated: always true
-    }
-#endif
-    if (std::is_constant_evaluated()) return 1;      // C++20: a plain if. C++23: `if consteval`.
-    return 2;
-}
-```
-
-<!--
-Notes: The pattern: exact-but-slow at compile time, fast at runtime, one function. The trap:
-inside `if constexpr` the condition is itself constant-evaluated, so is_constant_evaluated() is
-always true there; GCC 14 warns. C++23's `if consteval` cannot be misused that way. Demo file:
-demos/s03/is_constant_evaluated.cpp
--->
-
----
-
 <!-- _class: feature -->
 
 ## `consteval`: must run at compile time <span class="badge cpp20">C++20</span>
@@ -387,114 +278,13 @@ constexpr auto kRpmId = fnv1a("rpm");          // fine: a constant
 // misused to do so.
 ```
 
+Two relatives in the appendix: a `consteval` validator that returns the reason (slide 51), and `constinit` for mutable globals initialized at compile time (slide 52).
+
 <!--
-Notes: Use consteval for things that should NEVER cost runtime: hashes of literals, table
+Notes: One sentence on the appendix line: the exercise's validator and constinit are there
+for the PDF. Use consteval for things that should NEVER cost runtime: hashes of literals, table
 generation, validation. The compile-time hash is a classic: string switch-cases by hash, with
 no hash computed at runtime. Demo file: demos/s03/consteval_constinit.cpp
--->
-
----
-
-<!-- _class: feature -->
-
-## `consteval` with a message <span class="badge cpp20">C++20</span>
-
-<p class="problem">The exercise's config validator: return why it failed, and let static_assert print it.</p>
-
-<!-- snippet: demos/s03/consteval_constinit.cpp#validate -->
-```cpp
-// consteval with a message: return why it failed, and let static_assert print it.
-struct Limit { std::string_view name; double lo, hi; };
-consteval std::string_view validate(const Limit& l) {
-    if (l.name.empty()) return "limit has no name";
-    if (!(l.lo < l.hi)) return "limit has lo >= hi";
-    return {};
-}
-constexpr Limit kRpm{"rpm", 0.0, 12000.0};
-static_assert(validate(kRpm).empty(), "sensor limit is invalid");
-```
-
-In the exercise: `validate(std::span<const SensorConfig>)` checks names, units, ranges, and duplicates, and `static_assert(validate(kSensors).empty(), "sensor configuration table is invalid");` guards the table.
-
-<!--
-Notes: Exercise task 2. Break the table live and read the error: GCC 13 and Clang 18 print only
-the static_assert message and the failed expression, not the returned string_view (Clang in
--std=c++2c can print it as the message, P2741). C++26 lets static_assert take a constexpr string
-directly. Demo file: demos/s03/consteval_constinit.cpp
--->
-
----
-
-<!-- _class: feature -->
-
-## `constinit`: initialized at compile time, mutable at runtime <span class="badge cpp20">C++20</span>
-
-<p class="problem">The static initialization order fiasco, ended: a global whose initializer is guaranteed to be a constant.</p>
-
-<!-- snippet: demos/s03/consteval_constinit.cpp#constinit -->
-```cpp
-// constinit: initialized at compile time, mutable at runtime. No static-init-order fiasco.
-struct Counters { std::uint32_t parsed = 0; std::uint32_t rejected = 0; };
-constinit Counters g_counters{};                        // zero-initialized before any code runs, guaranteed
-
-// constinit int bad = fnv1a_runtime("x");             // error if the initializer is not a constant
-// A constexpr global would be immutable; a plain global might be dynamically initialized
-// after something else already used it. constinit is the third option.
-```
-
-<!--
-Notes: Three kinds of global: constexpr (immutable, constant-initialized), constinit
-(mutable, constant-initialized), plain (mutable, maybe dynamically initialized, in an order you
-do not control across translation units). Embedded startup code wants the middle one. Demo
-file: demos/s03/consteval_constinit.cpp
--->
-
----
-
-<!-- _class: feature -->
-
-## Almost nothing left <span class="badge cpp23">C++23</span>
-
-<p class="problem">if consteval, static locals, non-literal variables, constexpr std::unique_ptr.</p>
-
-<!-- snippet: demos/s03/constexpr_evolution.cpp#cpp23 -->
-```cpp
-// C++23: a static local in a constexpr function (as long as it is not touched during constant evaluation).
-constexpr int cached_or_computed(int n) {
-    if consteval {
-        return factorial14(n);                          // constant evaluation: just compute
-    } else {
-        static std::array<int, 13> cache{};             // runtime: memoize
-        if (cache[static_cast<std::size_t>(n)] == 0) cache[static_cast<std::size_t>(n)] = factorial14(n);
-        return cache[static_cast<std::size_t>(n)];
-    }
-}
-```
-
-Still not `constexpr` in C++23: exceptions being thrown (C++26), placement `new` (C++26), `std::to_string` (C++26), most of `<cmath>` (C++26), `reinterpret_cast` (never).
-
-<!--
-Notes: C++23 removed the "all paths must be constant-evaluable" restriction: a function may be
-constexpr as long as SOME call could be a constant expression. The static local is fine as long
-as the compile-time path does not touch it. Demo file: demos/s03/constexpr_evolution.cpp
--->
-
----
-
-## The full timeline
-
-<div class="evo">
-<div class="step"><b>C++11</b> single return statement, recursion; array bounds and little else</div>
-<div class="step"><b>C++14</b> loops, locals, if, mutation: normal-looking functions <span style="color:var(--muted)">(the CRC loop)</span></div>
-<div class="step"><b>C++17</b> lambdas, <code>if constexpr</code>, <code>std::array</code>, <code>inline constexpr</code> variables <span style="color:var(--muted)">(the CRC table)</span></div>
-<div class="step"><b>C++20</b> allocation, <code>vector</code>/<code>string</code>, virtual, try/catch, <code>consteval</code>, <code>constinit</code>, <code>is_constant_evaluated</code> <span style="color:var(--muted)">(the config validator, find_sensor, parse_status)</span></div>
-<div class="step"><b>C++23</b> <code>if consteval</code>, static locals, non-literal variables, <code>unique_ptr</code>, integral <code>to_chars</code></div>
-<div class="step"><b>C++26</b> exceptions, placement new, <code>to_string</code>, <code>&lt;cmath&gt;</code>, static_assert with a computed message</div>
-</div>
-
-<!--
-Notes: The evolution slide. Twelve years from "a glorified macro" to "the whole language at
-compile time". Point at where each exercise function sits.
 -->
 
 ---
@@ -510,12 +300,36 @@ compile time". Point at where each exercise function sits.
 **Monday morning:** find one lookup table built at startup and make it `inline constexpr`.
 
 <!--
-Notes: 0:40. Templates next; shorter segment.
+Notes: 0:20. Lab 3.1 next, ten minutes. Block 2 is the short one; templates at 0:30.
 -->
 
 ---
 
-<!-- SEGMENT: C++17 templates (0:40) -->
+<!-- _class: lab -->
+
+## Lab 3.1: work that belongs at compile time <span class="clock">10 minutes</span>
+
+Open [`labs/s03/lab1_constexpr.cpp`](https://godbolt.org/z/Mqv7hP6PK) on Compiler Explorer. Three TODOs, in order; build after each. Each one ends with a `static_assert` you uncomment.
+
+1. `make_crc8_table` runs at every start-up: make it `constexpr`, make `kCrc8` `constexpr`, uncomment the `static_assert`
+2. `validate` is a runtime check nobody calls: make it `consteval`, make `kSensors` `constexpr`, uncomment the `static_assert`; then give two sensors the same id and read the error
+3. `parse_hex` is plain runtime code: make it `constexpr` and uncomment the `static_assert` (no change to the body)
+
+At seven minutes: [solution](https://godbolt.org/z/48G96s5Kn). Locally: `ctest -R lab_s03_lab1`.
+
+<!--
+Notes: Stay quiet for the first five minutes. TODO 1: people make the function constexpr and
+leave kCrc8 as const; the static_assert says "kCrc8 is not usable in a constant expression".
+Both halves are needed. TODO 2: with validate consteval and kSensors still const, the error
+lands on the call in main, not on the static_assert. Once kSensors is constexpr the call in
+main still compiles, because its arguments are constants; people expect it to fail. TODO 3
+is the slide-7 point: one function, both worlds. Debrief: show the solution, ask "what runs
+at start-up now?" (nothing: two tables and two checks moved into the compiler).
+-->
+
+---
+
+<!-- SEGMENT: Block 2, C++17 templates (0:30; lab at 0:45) -->
 
 ## The problem with C++11 templates
 
@@ -538,7 +352,7 @@ Nine candidates (seven overloads, two templates), no reason. And that is the **s
 
 <!--
 Notes: This is the real error from the Session 2 starter. Keep it on screen while introducing
-the fixes; it returns on the concepts segment with the C++20 version.
+the fixes; it returns at the start of block 3 with the C++20 version.
 -->
 
 ---
@@ -659,8 +473,8 @@ std::string describe(T v) {
 
 <!--
 Notes: The untaken branch is discarded, not instantiated: code in it may not even compile for
-the other type. This is what tag dispatch and enable_if overload pairs were for. Concepts (next
-segment) are the other half: if constexpr for branching inside one function, concepts for
+the other type. This is what tag dispatch and enable_if overload pairs were for. Concepts (block
+3) are the other half: if constexpr for branching inside one function, concepts for
 choosing between functions. Demo file: demos/s03/if_constexpr_dispatch.cpp
 -->
 
@@ -742,7 +556,7 @@ static_assert(Constant<42>::value == 42);      // int
 static_assert(Constant<'x'>::value == 'x');    // char
 ```
 
-Preview: C++20 allows class-type values too (coming up in the concepts segment).
+Preview: C++20 allows class-type values too (appendix slide 56, `FixedString`).
 
 <!--
 Notes: Short. `template <auto N>` replaces the C++11 dance of `template <typename T, T N>`.
@@ -762,12 +576,37 @@ Templates stopped being a specialist skill in C++17. C++20 makes them **checkabl
 **Monday morning:** find one recursive variadic template and fold it.
 
 <!--
-Notes: 0:55. Concepts: the biggest segment after constexpr.
+Notes: 0:45. Lab 3.2, then concepts at 1:00. The five minutes between are the buffer for block 1 running long; do not fill them.
 -->
 
 ---
 
-<!-- SEGMENT: Concepts (0:55) -->
+<!-- _class: lab -->
+
+## Lab 3.2: C++17 templates <span class="clock">10 minutes</span>
+
+Open [`labs/s03/lab2_templates17.cpp`](https://godbolt.org/z/8rvn4TTcs). Three TODOs, in order; the output must not change.
+
+1. `sum` and `count_true` are C++11 recursive pairs: replace each pair with one fold expression
+2. `describe` is tag dispatch over three `describe_impl` overloads: fold it into one function template with `if constexpr`
+3. In `main`, delete `<int, double>` on the `pair` and `<double>` on the `Range`; the `Range` needs a deduction guide picking `std::common_type_t<A, B>`
+
+At seven minutes: [solution](https://godbolt.org/z/4M5cnvbzc). Locally: `ctest -R lab_s03_lab2`.
+
+<!--
+Notes: TODO 1: the sum fold is in the comment; count_true is the one to think about. A
+unary fold over + works on bools (they promote to int) but fails on an empty pack ("fold of
+empty expansion over operator+"); the binary form (0 + ... + (bs ? 1 : 0)) does not. TODO 2:
+anyone who writes a plain if instead of if constexpr gets errors from to_string(const char*)
+and string(int): both branches were instantiated. TODO 3: without the guide GCC says
+"deduced conflicting types for parameter 'T' ('int' and 'double')"; the guide is in the
+comment. Debrief: the three diffs, then ask "which of the three could you not have done in
+C++11?" (all three; C++14 gave none of them either).
+-->
+
+---
+
+<!-- SEGMENT: Block 3, Concepts (1:00; lab at 1:20) -->
 
 <!-- _class: demo -->
 
@@ -1041,79 +880,6 @@ still be a meaningful one with a complete set of operations (T.20, T.21).
 
 ---
 
-<!-- _class: feature -->
-
-## Template lambdas and unevaluated lambdas <span class="badge cpp20">C++20</span>
-
-<p class="problem">Name a lambda's parameter types, and use a lambda where only a type is wanted.</p>
-
-<!-- snippet: demos/s03/template_lambdas.cpp#template_lambda -->
-```cpp
-// C++14 generic lambda: `auto` gives you a type you cannot name inside the body.
-auto sum14 = [](const auto& s) { double t = 0; for (auto x : s) t += x; return t; };
-
-// C++20 template lambda: name the parameter types, constrain them, use them in the body.
-auto sum20 = []<typename T>(std::span<const T> s) {
-    T t{};                                          // T is nameable now
-    for (auto x : s) t += x;
-    return t;
-};
-std::vector<int> v{1, 2, 3};
-std::println("{} {}", sum14(v), sum20(std::span<const int>{v}));
-```
-
-<!-- snippet: demos/s03/template_lambdas.cpp#unevaluated -->
-```cpp
-// C++20: a lambda may appear in decltype, so a stateless comparator needs no named type.
-auto less_by_size = [](const std::string& a, const std::string& b) { return a.size() < b.size(); };
-std::set<std::string, decltype(less_by_size)> by_size;   // default-constructible closure (C++20)
-by_size.insert("ccc"); by_size.insert("a");
-std::unique_ptr<FILE, decltype([](FILE* f) { if (f) std::fclose(f); })> file{std::fopen("/dev/null", "r")};
-std::println("{} {}", *by_size.begin(), file != nullptr);
-```
-
-<!--
-Notes: The unique_ptr-with-lambda-deleter line is the practical one: a RAII wrapper for any C
-handle in one declaration, no named deleter struct, no std::function overhead. Demo file:
-demos/s03/template_lambdas.cpp
--->
-
----
-
-<!-- _class: feature -->
-
-## Class types as template arguments <span class="badge cpp20">C++20</span>
-
-<p class="problem">A compile-time string as a template parameter, and why the exercise's SensorConfig cannot be one.</p>
-
-<!-- snippet: demos/s03/auto_nttp.cpp#fixed_string -->
-```cpp
-// C++20: a class type as a template argument, if it is "structural" (all public members, no
-// private state, and every member is itself structural). A string_view is NOT (private pointer).
-template <std::size_t N>
-struct FixedString {
-    char data[N]{};
-    constexpr FixedString(const char (&s)[N]) { std::copy_n(s, N, data); }
-    constexpr std::string_view view() const { return {data, N - 1}; }
-};
-
-template <FixedString Name>                    // a compile-time string as a template argument
-struct Sensor {
-    static constexpr std::string_view name = Name.view();
-};
-static_assert(Sensor<"rpm">::name == "rpm");
-// Why the exercise's SensorConfig cannot be an NTTP: its string_view members are not structural.
-```
-
-<!--
-Notes: "Structural type": all public members, each itself structural. std::string_view has a
-private pointer, so a struct holding one cannot be an NTTP; FixedString holds a char array and
-can. The FixedString idiom is in every modern reflection-ish library. Demo file:
-demos/s03/auto_nttp.cpp
--->
-
----
-
 <!-- _class: twocol -->
 
 ## Concepts vs SFINAE: the error messages <span class="badge cpp20">C++20</span>
@@ -1171,12 +937,37 @@ SHOW_ERRORS; GCC 14 output quoted)
 **Monday morning:** replace one `enable_if` with a concept and compare the two error messages.
 
 <!--
-Notes: 1:20. Deducing this: fifteen minutes.
+Notes: 1:20. Lab 3.3, then deducing this at 1:30.
 -->
 
 ---
 
-<!-- SEGMENT: Deducing this (1:20) -->
+<!-- _class: lab -->
+
+## Lab 3.3: concepts <span class="clock">10 minutes</span>
+
+Open [`labs/s03/lab3_concepts.cpp`](https://godbolt.org/z/h4Kabrb5Y). Three TODOs, in order.
+
+1. Write a concept `Serializable`: `serialize(t)` is valid for a `const T&` and yields something convertible to `std::string`; uncomment the `static_assert`s
+2. `to_json` accepts anything and fails deep inside: constrain it with the concept, then uncomment `to_json(Opaque{1})` once, read the error, compare it with the one before the constraint, re-comment
+3. Add a second `to_json` overload constrained by `SerializableRange` (`std::ranges::range<R> && Serializable<std::ranges::range_value_t<R>>`) that produces a JSON array
+
+At seven minutes: [solution](https://godbolt.org/z/a4xY5sa9f). Locally: `ctest -R lab_s03_lab3`.
+
+<!--
+Notes: TODO 1 is in the comment; the stumble is writing it before the serialize overloads
+(then nothing satisfies it). TODO 2: have people do the Opaque call BEFORE constraining,
+too: the old error is "no matching function for call to serialize(const Opaque&)" inside
+to_json, "required from here"; the new one is "constraints not satisfied" on the call itself,
+naming Serializable. That comparison is the block. TODO 3: the concept is in the comment;
+the loop needs a separator variable. vector<Reading> is not Serializable, so there is no
+ambiguity to resolve; say why (the solution's comment does). Debrief: ask "where did the
+error move to?" (from inside the template to the call site, with the requirement's name).
+-->
+
+---
+
+<!-- SEGMENT: Block 4, Deducing this and the diagnostics (1:30; lab at 1:45) -->
 
 ## Three problems, one feature <span class="badge cpp23">C++23</span>
 
@@ -1344,18 +1135,16 @@ Declare the object as a parameter (`this Self&& self`) and the member function k
 **Monday morning:** find one `const`/non-`const` accessor pair and merge it.
 
 <!--
-Notes: 1:35. Exercise.
+Notes: 1:43. Reading the diagnostics next, two minutes, then lab 3.4 at 1:45.
 -->
 
 ---
-
-<!-- SEGMENT: Exercise (1:35) -->
 
 <!-- _class: demo -->
 
 ## Reading the diagnostics
 
-Before the exercise, one live comparison:
+Before the last lab, one live comparison:
 
 ```
 serialize(ParseError::EmptyLine);
@@ -1366,32 +1155,60 @@ in the **starter** (seven overloads, two templates) and the **solution** (five c
 Then break the sensor table (`.min_valid = 500.0`) and rebuild.
 
 <!--
-Notes: Two minutes. The serialize comparison is a ten-second reprise of slide 29; the table
-break is the new part. This primes task 2 and task 8.
+Notes: Two minutes. The serialize comparison is a ten-second reprise of slide 23; the table
+break is the new part. This primes at-home tasks 2 and 8; lab 3.4 follows.
 -->
 
 ---
 
-## Exercise: compile time and concepts
+<!-- _class: lab -->
 
-Open `exercises/s03-compile-time/README.md`
+## Lab 3.4: deducing this <span class="clock">10 minutes</span>
 
-**In class (20 minutes):**
+Open [`labs/s03/lab4_deducing_this.cpp`](https://godbolt.org/z/jorfr6M1v). Three TODOs, in order; the output must not change until TODO 3 adds a line.
 
-1. `make_crc_table()` as `constexpr`, `inline constexpr auto kCrcTable`, `crc16` `constexpr`; then `static_assert(crc16("123456789") == 0x29B1)`. You will hit `std::as_bytes`.
+1. `Buffer::at` is two overloads that differ only in `const`: replace both with one `at(this Self&& self, std::size_t i)`
+2. `fib` can only call itself through a `std::function`: rewrite it as a lambda with `this auto&& self`
+3. `Builder`'s setters return `Builder&`, so `FrameBuilder{}.id(1).payload("x").build()` fails: make them return `Self&&`, then uncomment the chained call in `main`
+
+At seven minutes: [solution](https://godbolt.org/z/15Maa46WP). Locally: `ctest -R lab_s03_lab4`.
+
+<!--
+Notes: TODO 1: the signature is in the comment; the stumble is writing this->items_ inside
+it ("'this' is unavailable for explicit object member functions"). TODO 2: dropping the
+-> int gives "use of ... before deduction of 'auto'"; the body calls self before the return
+type is known. TODO 3: the chaining trick is Self&& return plus std::forward<Self>(self);
+returning Self& fails on the temporary ("cannot bind non-const lvalue reference ... to an
+rvalue"). The temporary FrameBuilder{} lives to the end of the full expression, so the chain
+is safe; binding a reference to its result would not be. Debrief: ask "what type does
+self have in the chained call?" (FrameBuilder&&, at every step).
+-->
+
+---
+
+## At home: the telemetry exercise
+
+Open `exercises/s03-compile-time/README.md`. The starter is last session's solution.
+
+1. `make_crc_table()` as `constexpr`, `inline constexpr auto kCrcTable`, `crc16` `constexpr`; then `static_assert(crc16("123456789") == 0x29B1)`. You will hit `std::as_bytes` (appendix slide 49)
 2. `consteval std::string_view validate(std::span<const SensorConfig>)` and a `static_assert` on the table
 3. `serialize(std::integral auto)`, `serialize(std::floating_point auto)`, a `StringLike` concept
+4. Then tasks 4 to 8: `Serializable`, folds, `constexpr` lookups, deducing `this`, the diagnostics
 
 ```
 cmake --build build && ctest --test-dir build -R s03 --output-on-failure
 ```
 
-**At home:** tasks 4 to 8 (`Serializable`, folds, `constexpr` lookups, deducing `this`, the diagnostics). `solution/` is next session's starter.
+`s03_report_identical` diffs your report against the starter's; most other new tests are `static_assert`s. `solution/` is next session's starter.
 
 <!--
-Notes: Walk the room. Task 1's as_bytes snag is deliberate; let them find it, then point at the
-"reinterpret_cast is never constexpr" slide. Task 2: only the static_assert message and the failed
-expression are in the error; the returned string is not printed (GCC 13, Clang 18).
+Notes: One minute. Tasks 1 to 3 are today's labs 3.1, 3.3 and the serialize comparison
+applied to the real program; say so. No toolchain at home: the README has Compiler Explorer
+links for the whole program, starter and solution. Task 1's as_bytes snag is deliberate: let them find it,
+the appendix slide on reinterpret_cast explains it. Task 2: only the static_assert message
+and the failed expression are in the error; the returned string is not printed (GCC 13,
+Clang 18). Mention the solution is next week's starter, so finishing is optional but reading
+it is not.
 -->
 
 ---
@@ -1408,4 +1225,315 @@ Three functions ran at startup or per call and now run at build time. One class 
 
 <!--
 Notes: Point at the timeline handout: the constexpr row is the longest on it.
+-->
+
+---
+
+<!-- _class: lead -->
+
+# Further reading
+
+## Slides not covered live
+
+Each one stands on its own. The demo files are in the repo and on Compiler Explorer (`handouts/compiler-explorer-links.md`), and the scripts' `IF AHEAD` material points here.
+
+<!--
+Notes: Nothing after this slide is presented. Stop at the takeaway.
+-->
+
+---
+
+<!-- _class: appendix -->
+
+## The two halves of today
+
+**Making the compiler compute:** `constexpr` (may run at compile time), `consteval` (must), `constinit` (initialized at compile time). Result: tables, checks, hashes, and configuration that cost nothing at runtime, and `static_assert` as a unit test.
+
+**Making the compiler check:** concepts. Result: templates whose requirements are in the signature, and error messages that name what went wrong.
+
+**The bridge:** templates got readable in C++17 (fold expressions, `if constexpr`) before concepts made them checkable in C++20, and deducing `this` (C++23) removes the last of the boilerplate.
+
+<!--
+Notes: Sixty seconds. Then the constexpr timeline, which is the longest single story in the
+course.
+-->
+
+---
+
+<!-- _class: feature appendix -->
+
+## What a constant expression refuses <span class="badge cpp11">C++11</span>
+
+<p class="problem">Undefined behavior is not allowed in a constant expression. The compiler is a sanitizer that costs nothing.</p>
+
+<!-- snippet: demos/s03/constexpr_limits.cpp#ub -->
+```cpp
+constexpr int overflow(int x) { return x + 1; }
+constexpr int at(const std::array<int, 3>& a, std::size_t i) { return a[i]; }
+
+#ifdef SHOW_ERRORS
+constexpr int uninit() { int x; return x; }       // (Clang rejects the read even before constant evaluation)
+static_assert(overflow(INT_MAX) == INT_MIN);      // error: overflow in constant expression
+static_assert(at({1, 2, 3}, 5) == 0);             // error: array subscript out of bounds
+static_assert(uninit() == 0);                     // error: read of uninitialized object
+#endif
+// A constant expression cannot contain undefined behavior. The compiler is a sanitizer
+// for every constexpr call it evaluates, with no runtime cost.
+```
+
+<!--
+Notes: The argument that converts embedded engineers: every constexpr call the compiler
+evaluates is checked for overflow, out-of-bounds, uninitialized reads, and lifetime errors, at
+build time. Write your lookup tables and protocol constants constexpr and you get this for free.
+Demo file: demos/s03/constexpr_limits.cpp (errors under SHOW_ERRORS)
+-->
+
+---
+
+<!-- _class: feature appendix -->
+
+## Also refused: `reinterpret_cast` <span class="badge cpp11">C++11</span>
+
+<p class="problem">The snag from the exercise: std::as_bytes is not constexpr because it is a reinterpret_cast.</p>
+
+<!-- snippet: demos/s03/constexpr_limits.cpp#reinterpret -->
+```cpp
+constexpr std::uint16_t first_two_bytes(std::span<const char> s) {
+#ifdef SHOW_ERRORS
+    return *reinterpret_cast<const std::uint16_t*>(s.data());   // error: reinterpret_cast is never constexpr
+#else
+    return static_cast<std::uint16_t>((static_cast<unsigned char>(s[1]) << 8) | static_cast<unsigned char>(s[0]));
+#endif
+}
+// This is why std::as_bytes is not constexpr, and why the exercise's crc16 uses static_cast per byte.
+```
+
+Also refused when evaluated: `goto`, `asm`, non-literal variables (since C++20/23 they may appear in a `constexpr` function, as long as the evaluated path avoids them), calls to non-`constexpr` functions (`std::to_string` until C++26; integral `std::to_chars` is `constexpr` since C++23).
+
+<!--
+Notes: Exercise task 1 hits this. The fix in the solution: a template over the byte type with
+static_cast per byte. reinterpret_cast is the one cast that reinterprets memory; a constant
+expression has no memory to reinterpret, only values. Demo file: demos/s03/constexpr_limits.cpp
+-->
+
+---
+
+<!-- _class: feature dense appendix -->
+
+## The rest of C++20 `constexpr` <span class="badge cpp20">C++20</span>
+
+<p class="problem">Virtual calls, try/catch, dynamic_cast, unions, and knowing which mode you are in.</p>
+
+<!-- snippet: demos/s03/is_constant_evaluated.cpp#ice -->
+```cpp
+// One function, two implementations: exact at compile time, fast at runtime
+constexpr double power(double base, int exp) {
+    if (std::is_constant_evaluated()) {              // C++20 (C++23 spells it `if consteval`)
+        double r = 1.0;
+        for (int i = 0; i < exp; ++i) r *= base;     // constexpr-friendly loop
+        return r;
+    } else {
+        return std::pow(base, exp);                  // libm; not constexpr everywhere
+    }
+}
+static_assert(power(2.0, 10) == 1024.0);
+```
+
+<!-- snippet: demos/s03/is_constant_evaluated.cpp#trap -->
+```cpp
+constexpr int trap() {
+#ifdef SHOW_ERRORS   // GCC 14 warns: always true in 'if constexpr'
+    if constexpr (std::is_constant_evaluated()) {    // WRONG: the condition is itself
+        return 1;                                    // constant-evaluated: always true
+    }
+#endif
+    if (std::is_constant_evaluated()) return 1;      // C++20: a plain if. C++23: `if consteval`.
+    return 2;
+}
+```
+
+<!--
+Notes: The pattern: exact-but-slow at compile time, fast at runtime, one function. The trap:
+inside `if constexpr` the condition is itself constant-evaluated, so is_constant_evaluated() is
+always true there; GCC 14 warns. C++23's `if consteval` cannot be misused that way. Demo file:
+demos/s03/is_constant_evaluated.cpp
+-->
+
+---
+
+<!-- _class: feature appendix -->
+
+## `consteval` with a message <span class="badge cpp20">C++20</span>
+
+<p class="problem">The exercise's config validator: return why it failed, and let static_assert print it.</p>
+
+<!-- snippet: demos/s03/consteval_constinit.cpp#validate -->
+```cpp
+// consteval with a message: return why it failed, and let static_assert print it.
+struct Limit { std::string_view name; double lo, hi; };
+consteval std::string_view validate(const Limit& l) {
+    if (l.name.empty()) return "limit has no name";
+    if (!(l.lo < l.hi)) return "limit has lo >= hi";
+    return {};
+}
+constexpr Limit kRpm{"rpm", 0.0, 12000.0};
+static_assert(validate(kRpm).empty(), "sensor limit is invalid");
+```
+
+In the exercise: `validate(std::span<const SensorConfig>)` checks names, units, ranges, and duplicates, and `static_assert(validate(kSensors).empty(), "sensor configuration table is invalid");` guards the table.
+
+<!--
+Notes: Exercise task 2. Break the table live and read the error: GCC 13 and Clang 18 print only
+the static_assert message and the failed expression, not the returned string_view (Clang in
+-std=c++2c can print it as the message, P2741). C++26 lets static_assert take a constexpr string
+directly. Demo file: demos/s03/consteval_constinit.cpp
+-->
+
+---
+
+<!-- _class: feature appendix -->
+
+## `constinit`: initialized at compile time, mutable at runtime <span class="badge cpp20">C++20</span>
+
+<p class="problem">The static initialization order fiasco, ended: a global whose initializer is guaranteed to be a constant.</p>
+
+<!-- snippet: demos/s03/consteval_constinit.cpp#constinit -->
+```cpp
+// constinit: initialized at compile time, mutable at runtime. No static-init-order fiasco.
+struct Counters { std::uint32_t parsed = 0; std::uint32_t rejected = 0; };
+constinit Counters g_counters{};                        // zero-initialized before any code runs, guaranteed
+
+// constinit int bad = fnv1a_runtime("x");             // error if the initializer is not a constant
+// A constexpr global would be immutable; a plain global might be dynamically initialized
+// after something else already used it. constinit is the third option.
+```
+
+<!--
+Notes: Three kinds of global: constexpr (immutable, constant-initialized), constinit
+(mutable, constant-initialized), plain (mutable, maybe dynamically initialized, in an order you
+do not control across translation units). Embedded startup code wants the middle one. Demo
+file: demos/s03/consteval_constinit.cpp
+-->
+
+---
+
+<!-- _class: feature appendix -->
+
+## Almost nothing left <span class="badge cpp23">C++23</span>
+
+<p class="problem">if consteval, static locals, non-literal variables, constexpr std::unique_ptr.</p>
+
+<!-- snippet: demos/s03/constexpr_evolution.cpp#cpp23 -->
+```cpp
+// C++23: a static local in a constexpr function (as long as it is not touched during constant evaluation).
+constexpr int cached_or_computed(int n) {
+    if consteval {
+        return factorial14(n);                          // constant evaluation: just compute
+    } else {
+        static std::array<int, 13> cache{};             // runtime: memoize
+        if (cache[static_cast<std::size_t>(n)] == 0) cache[static_cast<std::size_t>(n)] = factorial14(n);
+        return cache[static_cast<std::size_t>(n)];
+    }
+}
+```
+
+Still not `constexpr` in C++23: exceptions being thrown (C++26), placement `new` (C++26), `std::to_string` (C++26), most of `<cmath>` (C++26), `reinterpret_cast` (never).
+
+<!--
+Notes: C++23 removed the "all paths must be constant-evaluable" restriction: a function may be
+constexpr as long as SOME call could be a constant expression. The static local is fine as long
+as the compile-time path does not touch it. Demo file: demos/s03/constexpr_evolution.cpp
+-->
+
+---
+
+<!-- _class: appendix -->
+
+## The full timeline
+
+<div class="evo">
+<div class="step"><b>C++11</b> single return statement, recursion; array bounds and little else</div>
+<div class="step"><b>C++14</b> loops, locals, if, mutation: normal-looking functions <span style="color:var(--muted)">(the CRC loop)</span></div>
+<div class="step"><b>C++17</b> lambdas, <code>if constexpr</code>, <code>std::array</code>, <code>inline constexpr</code> variables <span style="color:var(--muted)">(the CRC table)</span></div>
+<div class="step"><b>C++20</b> allocation, <code>vector</code>/<code>string</code>, virtual, try/catch, <code>consteval</code>, <code>constinit</code>, <code>is_constant_evaluated</code> <span style="color:var(--muted)">(the config validator, find_sensor, parse_status)</span></div>
+<div class="step"><b>C++23</b> <code>if consteval</code>, static locals, non-literal variables, <code>unique_ptr</code>, integral <code>to_chars</code></div>
+<div class="step"><b>C++26</b> exceptions, placement new, <code>to_string</code>, <code>&lt;cmath&gt;</code>, static_assert with a computed message</div>
+</div>
+
+<!--
+Notes: The evolution slide. Twelve years from "a glorified macro" to "the whole language at
+compile time". Point at where each exercise function sits.
+-->
+
+---
+
+<!-- _class: feature appendix -->
+
+## Template lambdas and unevaluated lambdas <span class="badge cpp20">C++20</span>
+
+<p class="problem">Name a lambda's parameter types, and use a lambda where only a type is wanted.</p>
+
+<!-- snippet: demos/s03/template_lambdas.cpp#template_lambda -->
+```cpp
+// C++14 generic lambda: `auto` gives you a type you cannot name inside the body.
+auto sum14 = [](const auto& s) { double t = 0; for (auto x : s) t += x; return t; };
+
+// C++20 template lambda: name the parameter types, constrain them, use them in the body.
+auto sum20 = []<typename T>(std::span<const T> s) {
+    T t{};                                          // T is nameable now
+    for (auto x : s) t += x;
+    return t;
+};
+std::vector<int> v{1, 2, 3};
+std::println("{} {}", sum14(v), sum20(std::span<const int>{v}));
+```
+
+<!-- snippet: demos/s03/template_lambdas.cpp#unevaluated -->
+```cpp
+// C++20: a lambda may appear in decltype, so a stateless comparator needs no named type.
+auto less_by_size = [](const std::string& a, const std::string& b) { return a.size() < b.size(); };
+std::set<std::string, decltype(less_by_size)> by_size;   // default-constructible closure (C++20)
+by_size.insert("ccc"); by_size.insert("a");
+std::unique_ptr<FILE, decltype([](FILE* f) { if (f) std::fclose(f); })> file{std::fopen("/dev/null", "r")};
+std::println("{} {}", *by_size.begin(), file != nullptr);
+```
+
+<!--
+Notes: The unique_ptr-with-lambda-deleter line is the practical one: a RAII wrapper for any C
+handle in one declaration, no named deleter struct, no std::function overhead. Demo file:
+demos/s03/template_lambdas.cpp
+-->
+
+---
+
+<!-- _class: feature appendix -->
+
+## Class types as template arguments <span class="badge cpp20">C++20</span>
+
+<p class="problem">A compile-time string as a template parameter, and why the exercise's SensorConfig cannot be one.</p>
+
+<!-- snippet: demos/s03/auto_nttp.cpp#fixed_string -->
+```cpp
+// C++20: a class type as a template argument, if it is "structural" (all public members, no
+// private state, and every member is itself structural). A string_view is NOT (private pointer).
+template <std::size_t N>
+struct FixedString {
+    char data[N]{};
+    constexpr FixedString(const char (&s)[N]) { std::copy_n(s, N, data); }
+    constexpr std::string_view view() const { return {data, N - 1}; }
+};
+
+template <FixedString Name>                    // a compile-time string as a template argument
+struct Sensor {
+    static constexpr std::string_view name = Name.view();
+};
+static_assert(Sensor<"rpm">::name == "rpm");
+// Why the exercise's SensorConfig cannot be an NTTP: its string_view members are not structural.
+```
+
+<!--
+Notes: "Structural type": all public members, each itself structural. std::string_view has a
+private pointer, so a struct holding one cannot be an NTTP; FixedString holds a char array and
+can. The FixedString idiom is in every modern reflection-ish library. Demo file:
+demos/s03/auto_nttp.cpp
 -->

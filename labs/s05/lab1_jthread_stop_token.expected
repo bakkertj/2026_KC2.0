@@ -1,0 +1,3 @@
+sampled: yes
+balances: 80 120 (sum 200)
+worker ready

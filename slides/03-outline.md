@@ -1,6 +1,21 @@
 # Session 3 deck outline: Compile-Time and Generic Programming
 
-One line per slide. Badge in brackets; "2col" is before/after; "evo" is a timeline slide; "demo" is live. Target: 51 slides as built (this list has 48 entries; items 11, 14, 20, and 32 each became two slides in the deck, and item 37 was cut) for 95 minutes, then the exercise. "From the exercise" slides pull code from `exercises/s03-compile-time/` starter and solution.
+One line per slide. Badge in brackets; "2col" is before/after; "evo" is a timeline slide; "demo" is live. Originally 51 slides as built (this list has 48 entries; items 11, 14, 20, and 32 each became two slides in the deck, and item 37 was cut) for 95 minutes of lecture plus a 20-minute exercise; now 56 slides: 45 presented in four lecture-plus-lab blocks and 10 in a Further reading appendix after a divider (see the block table). "From the exercise" slides pull code from `exercises/s03-compile-time/` starter and solution.
+
+## Block structure (current deck)
+
+The deck now runs as four blocks of about twenty minutes of lecture and a ten-minute Compiler Explorer lab (`docs/session-format.md`). The sections below are the original design, one line per slide, and still describe every slide's content; this table says where each one ended up. Deck numbers are the current ones.
+
+| Block | Deck slides | Lab |
+|---|---|---|
+| 1. `constexpr` (0:00) | 1 to 12: opening (1 to 4; the old "two halves" slide is folded into 4), `constexpr` in C++11 (5), relaxed `constexpr` (6), where values live (7), lambdas (8), `std::array` (9), allocation (10), `consteval` (11), takeaway (12) | 13. Lab 3.1 `labs/s03/lab1_constexpr.cpp` (0:20) |
+| 2. C++17 templates (0:30) | 14 to 21: the problem (14), folds (15, 16), `if constexpr` (17), variable templates (18), CTAD (19), `auto` NTTPs (20), takeaway (21) | 22. Lab 3.2 `lab2_templates17.cpp` (0:45; the five minutes before 1:00 are the buffer) |
+| 3. Concepts (1:00) | 23 to 34: the problem (23), a named predicate (24), four ways (25), abbreviated (26), `requires` (27), standard concepts (28), subsumption (29, 30), concepts as questions (31), design guidance (32), concepts vs SFINAE (33), takeaway (34) | 35. Lab 3.3 `lab3_concepts.cpp` (1:20) |
+| 4. Deducing `this` and the diagnostics (1:30) | 36 to 42: three problems (36), explicit object parameter (37), `const` dedup (38), CRTP (39), recursive lambdas (40), takeaway (41), reading the diagnostics (42) | 43. Lab 3.4 `lab4_deducing_this.cpp` (1:45) |
+| Close | 44 at-home exercise, 45 takeaway | |
+| Further reading (not presented) | 46 divider; 47 the two halves of today, 48 what a constant expression refuses, 49 `reinterpret_cast`, 50 the rest of C++20 `constexpr`, 51 `consteval` with a message, 52 `constinit`, 53 almost nothing left (C++23), 54 the full timeline, 55 template lambdas, 56 class types as template arguments | |
+
+The telemetry exercise is at-home work; its former in-class tasks 1 to 3 are the first at-home tasks.
 
 ## 0. Opening (0:00, 5 slides)
 

@@ -77,6 +77,17 @@ section.demo { background: #eef2f8; }
 section.demo h2::before { content: 'DEMO  '; color: var(--c20); font-size: 0.7em; letter-spacing: 0.1em; }
 section.demo a { font-size: 22px; }
 
+/* Lab slides: ten minutes of hands-on after each lecture block (Sessions 2 to 5) */
+section.lab { background: #f1f7ec; }
+section.lab h2::before { content: 'LAB  '; color: var(--c23); font-size: 0.7em; letter-spacing: 0.1em; }
+section.lab a { font-size: 24px; }
+section.lab ol li { font-size: 24px; margin-bottom: 6px; }
+section.lab .clock { float: right; color: var(--muted); font-size: 22px; margin-top: 8px; }
+
+/* Appendix: slides kept in the PDF but skipped live */
+section.appendix { background: #f6f6f6; }
+section.appendix h2::before { content: 'FURTHER READING  '; color: var(--muted); font-size: 0.6em; letter-spacing: 0.1em; }
+
 /* Takeaway slides */
 section.takeaway { background: var(--accent); color: #fff; justify-content: center; }
 section.takeaway h2 { color: #fff; }

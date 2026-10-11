@@ -1,6 +1,21 @@
 # Session 4 deck outline: Ranges and Algorithms
 
-One line per slide. Badge in brackets; "2col" is before/after; "demo" is live. Target: 49 slides, 90 minutes of content, then the exercise. "From the exercise" slides pull code from `exercises/s04-ranges/` starter and solution.
+One line per slide. Badge in brackets; "2col" is before/after; "demo" is live. Originally 49 slides for 90 minutes of lecture plus a 20-minute exercise; now 54 slides: 43 presented in four lecture-plus-lab blocks (four of them lab launches) and 10 in a Further reading appendix after a divider (see the block table). "From the exercise" slides pull code from `exercises/s04-ranges/` starter and solution.
+
+## Block structure (current deck)
+
+The deck now runs as four blocks of about twenty minutes of lecture and a ten-minute Compiler Explorer lab (`docs/session-format.md`). The sections below are the original design, one line per slide, and still describe every slide's content; this table says where each one ended up. Deck numbers are the current ones.
+
+| Block | Deck slides | Lab |
+|---|---|---|
+| 1. Foundation (0:00) | 1 to 12: opening (1 to 5), range concepts (6), constrained algorithms (7), projections (8), what the algorithms return (9), sentinels (10), borrowed ranges and `dangling` (11), takeaway (12) | 13. Lab 4.1 `labs/s04/lab1_constrained_algorithms.cpp` (0:20) |
+| 2. Views (0:30) | 14 to 23: views are lazy (14), the pipe syntax (15), the core adaptors (16), the `const` view trap (17), dangling with views (18), the cost model (19), composable pieces (20), `ranges::to` (21), `zip`/`enumerate` (22), takeaway (23) | 24. Lab 4.2 `lab2_views.cpp` (0:50) |
+| 3. C++23 ranges and parallel algorithms (1:00) | 25 to 33: what C++20 was missing (25), `chunk_by` (26), windows (27), `fold_left` (28), `contains`/`starts_with`/`find_last`/`iota` (29), execution policies (30), what runs in parallel (31), your responsibilities (32), parallel takeaway (33) | 34. Lab 4.3 `lab3_cpp23_ranges.cpp` (1:20) |
+| 4. Algorithms by standard, and the same task three ways (1:30) | 35 to 40: C++17 numerics (35), C++20 additions (36), C++23 and what comes next (37), support matrix (38), guidance (39), the same task three ways (40) | 41. Lab 4.4 `lab4_three_ways.cpp` (1:42; the lab is the three-ways task) |
+| Close | 42 at-home exercise, 43 takeaway | |
+| Further reading (not presented) | 44 divider; 45 customization point objects, 46 range-for and ranges, 47 `std::ranges::` or `std::`, 48 the concepts with one type each, 49 constrained algorithms with new behavior, 50 `views::split` and the edge case, 51 view semantics, 52 `cartesian_product`/`repeat`/`join_with`/`as_rvalue`, 53 formatting and generating ranges, 54 C++17 searchers and `for_each_n` | |
+
+The telemetry exercise is at-home work; its former in-class tasks 1 to 3 are the first at-home tasks.
 
 ## 0. Opening (0:00, 5 slides)
 
@@ -69,7 +84,7 @@ One line per slide. Badge in brackets; "2col" is before/after; "demo" is live. T
 
 46. Guidance for production (feature): constrained algorithms and projections now; views in code you own, consumed once; `to` at boundaries; never store a view; take ranges by `R&&`; measure `join`/`split`; the clang-tidy `modernize-use-ranges` check [libc++/GCC]
 47. Demo: the same task in C++11, C++20, and C++23 (demo): the report's group-and-rank in three files side by side on Compiler Explorer, with the generated code
-48. The exercise: `exercises/s04-ranges/README.md`, in-class tasks 1 to 3 (projections, the `top_n` pipeline, `views::split` and the test that fails), the report-diff test
+48. The exercise (now the at-home launch, deck slide 42): `exercises/s04-ranges/README.md`, tasks 1 to 3 (projections, the `top_n` pipeline, `views::split` and the test that fails), the report-diff test
 49. Session takeaway and preview of Session 5 (concurrency, coroutines with `std::generator` as a range, modules, and the adoption roadmap)
 
 ## Demo files needed (`demos/s04/`)

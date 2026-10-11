@@ -13,7 +13,7 @@ Slides, code, and terminal in a single VS Code window, so a Teams share never ne
 1. Terminal > Run Task > `slides: serve (live reload)`. This runs `marp -s` on `slides/`, serving each deck as HTML at `http://localhost:8080/`. Edits to the Markdown reload the page.
 2. Command Palette > `Simple Browser: Show` > `http://localhost:8080/01-everyday-language.md`. The deck renders full-frame in an editor tab. Click inside it once; arrow keys, space, and Page Up/Down move between slides.
 3. Drag that tab to the left editor group (or `View: Move Editor into New Group` and arrange). Open the session's demo file on the right (`demos/s01/...`). Open the terminal (Ctrl+`) at the bottom.
-4. Optional: a second `Simple Browser: Show` with `https://godbolt.org` in the same group as the slides, so Compiler Explorer demos are a tab switch, not a window switch.
+4. Optional: a second `Simple Browser: Show` with `https://godbolt.org` in the same group as the slides, so Compiler Explorer demos are a tab switch, not a window switch. From Session 2 on, open the session's four lab starters there before class (links on the lab slides, or `handouts/compiler-explorer-links.md` under "The in-class labs"); you will share one of them at each lab launch and its solution seven minutes later.
 5. In Teams, share the **VS Code window**, not the screen. The layout is restored the next time you open the folder.
 
 ## Speaker notes

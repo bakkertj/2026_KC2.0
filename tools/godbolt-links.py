@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compiler Explorer links for every demo.
+"""Compiler Explorer links for every demo, lab and exercise program.
 
 Two kinds of link:
 
@@ -37,6 +37,7 @@ import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DEMOS = ROOT / "demos"
+LABS = ROOT / "labs"
 INDEX = ROOT / "handouts" / "compiler-explorer-links.md"
 CACHE = ROOT / "tools" / "godbolt-links.json"
 
@@ -52,7 +53,7 @@ EXERCISE_TASKS = {
     "s05-concurrency": "split loading and statistics across a producer and a consumer thread; then a generator",
 }
 HINT_RE = re.compile(r"^// godbolt: (.*)$", re.M)
-TITLE_RE = re.compile(r"^// Demo: (.*)$", re.M)
+TITLE_RE = re.compile(r"^// (?:Demo|Lab [0-9.]+(?: solution)?): (.*)$", re.M)
 
 
 def client_state(source: str, options: str, arguments: str = "", stdin: str = "") -> dict:
@@ -120,15 +121,17 @@ def main() -> int:
 
     cache = json.loads(CACHE.read_text()) if CACHE.exists() else {}
     demos = sorted(DEMOS.glob("s0*/*.cpp"))
+    labs = sorted(LABS.glob("s0*/*.cpp"))
 
     if args.check:
-        missing = [p for p in demos if PLACEHOLDER in p.read_text() and variants(p)]
+        missing = [p for p in demos + labs if PLACEHOLDER in p.read_text() and variants(p)]
         for p in missing:
             print(f"{p.relative_to(ROOT)}: no Compiler Explorer link", file=sys.stderr)
         return 1 if missing else 0
 
     rows: dict[str, list[tuple[str, str, list[tuple[str, str]]]]] = {}
-    for p in demos:
+    lab_links: dict[str, list[tuple[str, str]]] = {}      # "labs/s02/lab1_views.cpp" -> [(label, url)]
+    for p in demos + labs:
         session = p.parent.name
         text = p.read_text()
         title = (TITLE_RE.search(text) or [None, p.stem])[1]
@@ -152,7 +155,10 @@ def main() -> int:
                 except Exception as e:                      # noqa: BLE001
                     print(f"{key}: shortener failed ({e}); using long link", file=sys.stderr)
             links.append((label, url or long_url(state)))
-        rows.setdefault(session, []).append((p.name, title, links))
+        if p.is_relative_to(LABS):
+            lab_links[str(p.relative_to(ROOT))] = links
+        else:
+            rows.setdefault(session, []).append((p.name, title, links))
 
         # Write the "run" link into the header comment when it is short enough to read.
         if links and links[0][1].startswith("https://godbolt.org/z/"):
@@ -209,6 +215,23 @@ def main() -> int:
                 cell = " · ".join(f"[{label}]({url})" for label, url in links) or "from the repo"
                 f.write(f"| `{name}` | {title} | {cell} |\n")
             f.write("\n")
+        f.write("## The in-class labs\n\n")
+        f.write("Sessions 2 to 5 run as four blocks of about twenty minutes of lecture followed by a "
+                "ten-minute lab. Each lab is one file with numbered TODOs; **starter** is what you work "
+                "in, **solution** is the finished version to compare against afterwards. They are also in "
+                "the session package under `labs/`.\n\n")
+        for session in sorted({k.split("/")[1] for k in lab_links}):
+            f.write(f"### Session {session[-1]}\n\n")
+            f.write("| Lab | What it covers | Open |\n|" + "-" * 30 + "|" + "-" * 50 + "|" + "-" * 20 + "|\n")
+            for key in sorted(k for k in lab_links if k.split("/")[1] == session and not k.endswith("_solution.cpp")):
+                path = ROOT / key
+                title = (TITLE_RE.search(path.read_text()) or [None, path.stem])[1]
+                cells = [f"[starter]({lab_links[key][0][1]})"]
+                sol = key.replace(".cpp", "_solution.cpp")
+                if sol in lab_links:
+                    cells.append(f"[solution]({lab_links[sol][0][1]})")
+                f.write(f"| `{path.name}` | {title} | {' · '.join(cells)} |\n")
+            f.write("\n")
         f.write("## The exercise programs\n\n")
         f.write("The whole telemetry processor, one link per starter and solution, flattened to a single "
                 "file with `data/sample.csv` on stdin: the report appears in the output pane. "
@@ -225,7 +248,8 @@ def main() -> int:
             cells = " · ".join(f"[{v}]({links[v]})" for v in ("starter", "solution") if v in links)
             f.write(f"| `{name}` | {EXERCISE_TASKS.get(name, '')} | {cells} |\n")
         f.write("\n")
-    print(f"wrote {INDEX.relative_to(ROOT)} ({sum(len(v) for v in rows.values())} demos, {len(exercises)} exercise programs)")
+    print(f"wrote {INDEX.relative_to(ROOT)} ({sum(len(v) for v in rows.values())} demos, "
+          f"{len(lab_links)} lab files, {len(exercises)} exercise programs)")
     return 0
 
 

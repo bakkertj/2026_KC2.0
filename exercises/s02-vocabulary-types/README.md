@@ -21,7 +21,7 @@ No local toolchain? The whole program also runs on Compiler Explorer as a single
 
 Because the interfaces change, the tests change too. `solution/tests/` is the target suite; write toward it. (Clang users: the repo's CMake selects libc++, which is where Clang 18 has `std::expected` and `std::print`.)
 
-## In class (about 15 minutes)
+## At home, first (these were the in-class tasks; the session's labs 2.2 and 2.3 rehearse them on a small file)
 
 1. **`std::expected` for the parser.** Change `parse_record` to `std::expected<Record, ParseError> parse_record(std::string_view line)` and delete `ParseError::None` (an error enum no longer needs a "not an error" value). Each early `return false` becomes `return std::unexpected(Reason)`. Update `load_stream`: `if (auto parsed = parse_record(line))` then `parsed.error()` on the else branch.
 
@@ -29,7 +29,7 @@ Because the interfaces change, the tests change too. `solution/tests/` is the ta
 
 3. **`std::print` in the report.** Replace every `fprintf` in `report.cpp` with `std::println(out, ...)`. Translate the format specs: `%-16s` is `{:<16}`, `%.3f` is `{:.3f}`, `%04X` is `{:04X}`, `%lu` is just `{}` (no more casts to `unsigned long`). Run the diff test after this one; a single spacing difference will fail it, which is the point.
 
-## At home
+## At home, after that
 
 4. **`std::formatter` specializations.** Add `std::formatter<Status>`, `std::formatter<ParseError>` (both can inherit from `std::formatter<std::string_view>`), and `std::formatter<Record>` producing `{ts,"sensor",value,status}`. Then `serialize(const Record&)` is one line: `std::format("{}", v)`. Make the `format` member a template on the context type; libc++ requires it and the standard allows any `basic_format_context`.
 

@@ -8,46 +8,58 @@
 - `>> DO:` lines are actions (terminal, editor, Compiler Explorer). `>> ASK:` lines are questions to the room, with the answer you expect and what to say next.
 - `>> IF AHEAD:` is 60 to 120 seconds of real extra depth. `>> IF BEHIND:` is the one sentence to say instead of the talk track.
 - Last session: the close wraps up the whole course, not just today. Protect the last ten minutes.
+- Slide numbers count the title slide as 1. The deck has 57 slides: 45 presented (three of them lab launches, plus the worksheet, which is block 4's lab), a Further reading divider, and 11 appendix slides that are in the PDF and not presented.
 
 ## Pace plan for a fast speaker
 
+Four blocks: about twenty minutes of slides, then a ten-minute lab, four times. The lab is the checkpoint; if the lecture runs long, the lab still starts on time and the slides you did not reach are covered in the lab debrief or skipped (they are all in the deck's Further reading appendix for the PDF). Block 4 is different: five minutes of slides, then the roadmap worksheet, which is the block's lab and starts at 1:35, then the capstone, C++26, and the course close by 1:55.
+
 | Checkpoint | Target clock |
 |---|---|
-| Slide 6, What C++11 gave (Concurrency segment starts) | 0:10 |
-| Slide 20, ThreadSanitizer as a test | 0:35 |
-| Slide 22, What a coroutine is (Coroutines segment starts) | 0:40 |
-| Slide 27, Awaitables and `co_await` | 0:52 |
-| Slide 34, What modules fix (Modules segment starts) | 1:05 |
-| Slide 43, Deprecated and removed (Deprecations starts) | 1:25 |
-| Slide 46, Three tiers (Roadmap workshop starts) | 1:30 |
-| Slide 49, The worksheet (attendees start writing) | 1:35 |
-| Slide 51, What is coming in C++26 (Close starts) | 1:50 |
-| Slide 53 finished | 2:00 |
+| 1. Title | 0:00 |
+| 6. What C++11 gave (block 1, Concurrency) | 0:05 |
+| 10. Cooperative cancellation | 0:11 |
+| 13. ThreadSanitizer as a test | 0:17 |
+| 15. Lab 5.1 launched | 0:20 |
+| 16. What a coroutine is (block 2, Coroutines) | 0:30 |
+| 19. Generator mechanics | 0:36 |
+| 22. A coroutine as a state machine | 0:45 |
+| 25. Lab 5.2 launched | 0:50 |
+| 26. What modules fix (block 3, Modules and deprecations) | 1:00 |
+| 30. Build systems | 1:09 |
+| 34. Deprecated and removed | 1:16 |
+| 37. Lab 5.3 launched | 1:20 |
+| 38. Three tiers (block 4, Roadmap and close) | 1:30 |
+| 41. The worksheet (the lab; attendees start writing) | 1:35 |
+| 42. The capstone (at-home exercise launched here) | 1:45 |
+| 43. What is coming in C++26 | 1:46 |
+| 45. Course takeaway | 1:51 |
+| Done | 1:55 |
 
-If you hit a checkpoint more than 3 minutes early, use the IF AHEAD material in the next segment rather than speeding on.
+If you hit a lab launch more than 2 minutes early, use the IF AHEAD material in the slide before it rather than starting the lab early; people need the clock to be predictable. If you are late, cut the slide before the takeaway, never the lab. The opening is tight now: slides 3, 4 and 5 are three minutes together, so read their bold lines, skip their ASKs unless you are ahead, and be on slide 6 at 0:05. Block 3 carries both modules and deprecations in nineteen minutes; the build-systems demo (slide 30) is two minutes, build and run only, the `.ddi` files are IF AHEAD.
 
 Slow down deliberately on these four:
 
-- **Slide 11, cooperative cancellation.** Three types, a callback that runs on somebody else's thread, and forwarding across two layers. People nod here and then get the exercise's `stop_callback` wrong.
-- **Slide 25, generator mechanics.** The `take(2)` lookahead and "destroyed while suspended, never finishes" are the two coroutine facts that cause real bugs. Both need a pause before the answer.
-- **Slide 26, what the compiler generates.** The rewrite of the function body is the first time most of the room sees the promise type. Walk it line by line.
-- **Slide 27, awaitables.** The demo's punchline (the second half of the function runs on a different thread) is the whole async model. Let the two thread ids sit on screen.
+- **Slide 10, cooperative cancellation.** Three types, a callback that runs on somebody else's thread, and forwarding across two layers. People nod here and then get the exercise's `stop_callback` wrong.
+- **Slide 19, generator mechanics.** The `take(2)` lookahead and "destroyed while suspended, never finishes" are the two coroutine facts that cause real bugs. Both need a pause before the answer, and lab 5.2's TODOs 2 and 3 then make them type both.
+- **Slide 20, what the compiler generates.** The rewrite of the function body is the first time most of the room sees the promise type. Walk it line by line.
+- **Slide 21, awaitables.** The demo's punchline (the second half of the function runs on a different thread) is the whole async model. Let the two thread ids sit on screen.
 
 ## Before class checklist
 
-- Build, from the repo root:
-  - `cmake -S . -B build -G Ninja && cmake --build build && ctest --test-dir build -R s05 --output-on-failure`
+- Build, from the repo root, labs included:
+  - `cmake -S . -B build -G Ninja && cmake --build build && ctest --test-dir build -R "s05|lab_s05" --output-on-failure`
   - `cmake -S . -B build-tsan -DCOURSE_SANITIZE=thread && cmake --build build-tsan && ctest --test-dir build-tsan -R s05 --output-on-failure` (slow; do it before class, confirm the solution is clean)
-  - `cmake -S . -B build-mod -G Ninja -DCOURSE_MODULES=ON` (configure only; build it live on slide 39)
-  - Optional for slide 30: `cmake -S . -B build-rel -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build build-rel --target demo_s05_generator_perf`
-- Check TSan actually runs on this machine: build the race once by hand (command on slide 20) and see the report. On newer Ubuntu kernels TSan can die at startup with `FATAL: ThreadSanitizer: unexpected memory mapping`; the fix is `sudo sysctl vm.mmap_rnd_bits=28`. Find out now, not live.
-- Make sure `build/compile_commands.json` exists (configure with `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON` if not). Run the two clang-tidy counts for slide 44 ahead of time and write both numbers on a sticky note as a backup.
-- Editor tabs on the right, in this order: `demos/s05/false_sharing.cpp`, `stop_token.cpp`, `semaphore_queue.cpp`, `latch_barrier.cpp`, `atomic_wait.cpp`, `tsan_race.cpp`, `generator_basics.cpp`, `coroutine_machinery.cpp`, `awaitable.cpp`, `state_machine.cpp`, `generator_perf.cpp`, `modules/crc.cppm`, `modules/main.cpp`, `deprecated.cpp`, then `handouts/adoption-roadmap-template.md`.
-- Compiler Explorer tabs (the demo headers still say `<add short link>`, so paste the code): (1) `generator_basics.cpp` with x86-64 GCC 14 `-std=c++23` next to Clang 18 `-std=c++23 -stdlib=libc++`, so one prints Fibonacci and the other prints "not available"; (2) `deprecated.cpp` with `-DSHOW_ERRORS -std=c++23` on GCC 14 and on Clang 18 with libc++, as the backup for slide 44.
-- Have the roadmap template ready to paste into the Teams chat, and the path `handouts/adoption-roadmap-template.md` typed in a scratch buffer.
-- Read your own notes for slides 15, 17, and 43 below: each has a small correction to the deck you should say out loud.
-
----
+  - `cmake -S . -B build-mod -G Ninja -DCOURSE_MODULES=ON` (configure only; build it live on slide 30)
+  - Optional, only for the appendix's allocation slide (A9) if you expect to use its IF AHEAD: `cmake -S . -B build-rel -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build build-rel --target demo_s05_generator_perf`
+- Open the three lab starters on Compiler Explorer in three tabs, from the links on slides 15, 25 and 37, and do each lab yourself once: `lab1_jthread_stop_token`, `lab2_generator`, `lab3_deprecations`. Keep the three solution links ready to paste at the seven-minute mark of each lab. Lab 5.1: run the starter and the solution and confirm the execution pane runs real threads (the `sampled: yes` line). Lab 5.2 needs GCC 14 on Compiler Explorer (libc++ 18 has no `<generator>`); the preset is GCC 14.2, so check it is still that. Lab 5.3: confirm the starter compiles with six warnings under GCC 14 `-std=c++23 -Wdeprecated`, and switch the compiler to Clang 18 `-stdlib=libc++` once to see it refuse to compile, which is the closing point of that lab.
+- Check TSan actually runs on this machine: build the race once by hand (command on slide 13) and see the report. On newer Ubuntu kernels TSan can die at startup with `FATAL: ThreadSanitizer: unexpected memory mapping`; the fix is `sudo sysctl vm.mmap_rnd_bits=28`. Find out now, not live.
+- Make sure `build/compile_commands.json` exists (configure with `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON` if not). Run the two clang-tidy counts for slide 35 ahead of time and write both numbers on a sticky note as a backup.
+- Editor tabs on the right, in this order: `demos/s05/stop_token.cpp`, `semaphore_queue.cpp`, `tsan_race.cpp`, `generator_basics.cpp`, `coroutine_machinery.cpp`, `awaitable.cpp`, `state_machine.cpp`, `modules/crc.cppm`, `modules/main.cpp`, `deprecated.cpp`, then `handouts/adoption-roadmap-template.md`. Optional, for the appendix slides' IF AHEAD material only: `false_sharing.cpp`, `latch_barrier.cpp`, `atomic_wait.cpp`, `generator_perf.cpp`.
+- Compiler Explorer tabs besides the labs (the demo headers still say `<add short link>`, so paste the code): (1) `deprecated.cpp` with `-DSHOW_ERRORS -std=c++23` on GCC 14 and on Clang 18 with libc++, as the backup for slide 35. Optional: (2) `generator_basics.cpp` with x86-64 GCC 14 `-std=c++23` next to Clang 18 `-std=c++23 -stdlib=libc++`, for the appendix's availability slide (A10) if asked.
+- Have the roadmap template ready to paste into the Teams chat, and the path `handouts/adoption-roadmap-template.md` typed in a scratch buffer. The worksheet is block 4's lab: seven minutes of writing, three volunteers, ten minutes on the clock.
+- Exercise: `exercises/s05-concurrency/README.md` is launched as homework in one sentence on the capstone slide (42); have it open in a background tab.
+- Read your own notes for slides 34 and A3 below: each has a small correction to the deck you should say out loud (A5 too, if the osyncstream question comes up).
 
 ## The script
 
@@ -57,27 +69,25 @@ Welcome back. Last session. (beat)
 
 Today is different from the first four. **Everything before today changed how a line of code is written; today changes what a program is.** Concurrency changes who owns a thread and how it stops. Coroutines change control flow. Modules change the build.
 
-And the last forty minutes are about you, not the language: what you actually do on Monday with your own code. (pause)
+And the last half hour is about you, not the language: what you actually do on Monday with your own code. (pause)
 
-Same deal as always: the exercise program grows two threads and a coroutine today, and it still prints the Session 1 report, byte for byte.
+Same deal as always: the exercise program grows two threads and a coroutine today, and it still prints the Session 1 report, byte for byte. That one is at-home work; in class you get three labs and a worksheet.
 
 Here's the plan.
 
 ### 2. Agenda · target 0:01, ~1 min
 
-Seven pieces. Ten minutes of recap and framing. Thirty on concurrency, which is the part you can adopt the soonest. Twenty-five on coroutines. Twenty on modules. Five on what got deprecated and removed while all this was being added.
+Four blocks. **Twenty minutes of me, ten minutes of you, four times.** Block one is concurrency: what C++14 through C++23 added on top of C++11 threads, and the part you can adopt the soonest. Block two is coroutines and `std::generator`. Block three is modules, and then what got deprecated and removed while all this was being added. Block four is your adoption roadmap, and its lab is the worksheet: **the only exercise in this course without a solution, because the answer is your codebase.** (pause)
 
-Then twenty minutes of workshop. **The roadmap worksheet is the only exercise in this course without a solution, because the answer is your codebase.** (pause)
+Each lab is one file on Compiler Explorer with the TODOs that block just taught. The slide that launches it has the link; you need nothing installed. If you built the repo, the same files are under `labs/`. Block three's lab is the deprecations file, not modules, because a module is two files and a build system and cannot run as one Compiler Explorer file.
 
-Ten minutes at the end for C++26 and to close out the course.
-
-The exercise README for today has in-class tasks on the bounded queue and the `jthread` pipeline. We won't have a separate block for them; I'll point at them as we go, and they're the first thing to do after class.
+The telemetry exercise is at-home work this time. Its first three tasks, the bounded queue, the `jthread` pipeline, and the TSan run, are the first thing to do after class; lab 5.1 is the rehearsal. Then the capstone and C++26 close the course.
 
 First, where Session 4 left us.
 
->> IF BEHIND: "Concurrency, coroutines, modules, deprecations, then your roadmap. Let's go."
+>> IF BEHIND: "Concurrency, coroutines, modules and deprecations, then your roadmap; a lab after each. Let's go."
 
-### 3. Session 4 recap · target 0:02, ~3 min
+### 3. Session 4 recap · target 0:02, ~1 min
 
 The Session 4 solution: projections everywhere, `top_n_by_value` as a `filter` piped into `to<vector>`, `split` as a pipeline, `chunk_by` in the report, and `records()` returning an `input_range`.
 
@@ -91,13 +101,15 @@ Third, `views::enumerate` isn't in libc++ 18. The portable spelling is `zip` of 
 
 Two of those three are the lesson for today too. **The standard library is ahead of at least one of your compilers, and a feature-test macro is how you write code that builds on both.** (beat) The support matrix handout is the reference. Today adds a row for nearly everything we show.
 
->> ASK: "Who finished the Session 4 take-home tasks?" Expect a few hands. Say: "Good. If you didn't, the Session 5 starter is the Session 4 solution, so you start from a clean place either way."
+>> ASK: Only if ahead: "Who finished the Session 4 take-home tasks?" Expect a few hands. Say: "Good. If you didn't, the Session 5 starter is the Session 4 solution, so you start from a clean place either way."
 
 That's the past. Here's why today's three topics come last.
 
+>> IF BEHIND: "Three stumbles last time: `split("")`, the `const filter_view`, `enumerate` on libc++. Two of them are today's lesson too: the library is ahead of one of your compilers; gate with a feature-test macro."
+
 >> IF AHEAD: The `const filter_view` issue shows up in code review as "I made the parameter `const auto&` and now it doesn't compile." The review heuristic: a function template that takes a range it only iterates should take `R&&` and constrain it with `std::ranges::input_range`. Taking `const R&` silently rejects every caching view: `filter`, `drop_while`, and `split` on some implementations. If you see `const auto&` on a range parameter in a generic function, ask whether it ever gets a view.
 
-### 4. Why these three are last · target 0:05, ~3 min
+### 4. Why these three are last · target 0:03, ~1 min
 
 Look at the right-hand column of the table, "cost of adopting." That's the column I want you to read.
 
@@ -117,7 +129,7 @@ One slide on how we got here.
 
 >> IF BEHIND: "Concurrency is a design review, coroutines are a mental model, modules are a build change. That's why they're last."
 
-### 5. The course so far, in one program · target 0:08, ~2 min
+### 5. The course so far, in one program · target 0:04, ~1 min
 
 Thirty seconds of history, because it's the argument for the whole course.
 
@@ -133,11 +145,11 @@ Session 5, today: one thread becomes a producer and consumer on `jthread` with s
 
 **Same input, same report, every session: `report_identical` has passed five times.** That's the point. Modernization is incremental and behavior-preserving, or it's a rewrite. And rewrites of long-lived code are how programs slip.
 
-Now the concurrency segment, starting with what C++11 left out.
+Now block one, concurrency, starting with what C++11 left out.
 
 >> IF BEHIND: "Five sessions, five diffs, one unchanged report. That's what modernization is supposed to look like."
 
-### 6. What C++11 gave, and what it lacked · C++11 · target 0:10, ~2 min
+### 6. What C++11 gave, and what it lacked · C++11 · target 0:05, ~1.5 min
 
 C++11 gave us a memory model. That's the big one, and it's easy to forget it: before 2011, threads weren't in the language at all; you were relying on POSIX and your compiler's goodwill. On top of the memory model: `thread`, `mutex`, `lock_guard`, `unique_lock`, `condition_variable`, atomics, `future` and `promise`.
 
@@ -145,7 +157,7 @@ Now read the right column. A `std::thread` that's still joinable when it's destr
 
 No cancellation, so every codebase invented an `atomic<bool> stop`. No semaphores, no latch, no barrier: you hand-wrote them on a condition variable. No reader/writer lock. No clean way to lock two mutexes. No way to wait on an atomic without spinning.
 
->> ASK: "Hands up if you've written a semaphore on top of a `condition_variable`." Expect most hands. Say: "Everyone has. That's the theme of this segment: the idioms you wrote by hand are now types with specified semantics, and ThreadSanitizer understands them."
+>> ASK: "Hands up if you've written a semaphore on top of a `condition_variable`." Expect most hands. Say: "Everyone has. That's the theme of this block: the idioms you wrote by hand are now types with specified semantics, and ThreadSanitizer understands them."
 
 C++14 through C++23 fill that right-hand column. Executors and a standard thread pool are still C++26 work; we'll get there.
 
@@ -155,7 +167,7 @@ First fill: the reader/writer lock.
 
 >> IF AHEAD: The hand-written semaphore is where a classic bug lives: `notify_one` called without the predicate check, or a `wait` without a predicate, which loses wake-ups or wakes spuriously and proceeds. In review, any `cv.wait(lock)` without a predicate argument is a comment. With the standard semaphore you can't write that bug at all, because there's no predicate to forget.
 
-### 7. Reader/writer locks: `shared_timed_mutex`, `shared_mutex` · C++14, C++17 · target 0:12, ~2 min
+### 7. Reader/writer locks: `shared_timed_mutex`, `shared_mutex` · C++14, C++17 · target 0:06, ~1.5 min
 
 The problem in red: a configuration table read on every record and updated once an hour, and every reader serialized behind one mutex. Readers don't conflict with each other, but a plain mutex doesn't know that.
 
@@ -173,11 +185,11 @@ That's a good one for review: "why is this a `shared_mutex`?" deserves an answer
 
 Next, locking more than one mutex.
 
->> IF AHEAD: Writer starvation is implementation-defined. The standard doesn't promise a waiting writer gets in while readers keep arriving. glibc's `pthread_rwlock` defaults to preferring readers, and libstdc++ builds `shared_mutex` on it, so a steady stream of readers can starve the hourly writer. If the writer must get through, measure under load, or use the RCU pattern on slide 16, which has no writer starvation because the writer never waits for readers.
+>> IF AHEAD: Writer starvation is implementation-defined. The standard doesn't promise a waiting writer gets in while readers keep arriving. glibc's `pthread_rwlock` defaults to preferring readers, and libstdc++ builds `shared_mutex` on it, so a steady stream of readers can starve the hourly writer. If the writer must get through, measure under load, or use the RCU pattern on appendix slide 50 (`atomic<shared_ptr>`), which has no writer starvation because the writer never waits for readers.
 
 >> IF BEHIND: "`shared_lock` for readers, `unique_lock` for the writer, and only for read-mostly data. Measure first."
 
-### 8. `std::scoped_lock` · C++17 · target 0:14, ~1 min
+### 8. `std::scoped_lock` · C++17 · target 0:08, ~1 min
 
 Left side, C++11: to lock two mutexes without deadlock, you called `std::lock` on both, then built two `lock_guard`s with `adopt_lock`. Three lines, and the `adopt_lock` tag is the kind of thing people get wrong.
 
@@ -187,31 +199,15 @@ Right side, C++17: one line. `std::scoped_lock lock(from.m, to.m);` Same deadloc
 
 One trap. `std::scoped_lock lock;` with no mutex compiles. It deduces `scoped_lock<>` and locks nothing. GCC with `-Wall` flags it as an unused variable, which under the repo's `-Werror` breaks the build. Its sibling, `std::scoped_lock{m};` with braces and no name, creates a temporary that unlocks at the semicolon; clang-tidy's `bugprone-unused-raii` catches that one.
 
-Now a performance bug with no lock in sight.
-
->> IF BEHIND: "One line, deadlock-free for any number of mutexes. Make it the default."
-
-### 9. False sharing and `hardware_destructive_interference_size` · C++17 · target 0:15, ~2 min
-
-Problem statement: two counters, two threads, no shared data, and it's several times slower than it should be.
-
-Look at `Packed` on the right. Two `atomic<long>`s side by side. Sixteen bytes. They fit in one 64-byte cache line. Thread A writes `a`, thread B writes `b`. They never touch each other's variable. (beat)
-
->> ASK: "No shared variables. Why is it slow?" Wait for "cache line" or "cache coherence." Say: "Right. **The cache line is the unit of coherence, not the variable.** Each core's write invalidates the other core's copy of the whole line, and the line ping-pongs."
-
-`Padded` puts each atomic on its own line with `alignas(kLine)`. `kLine` is `hardware_destructive_interference_size` where the library defines it, 64 on x86. libc++ 18 doesn't define it, so the demo falls back to 64.
-
->> DO: In the terminal: `./build/demos/s05/demo_s05_false_sharing`. Expect one line like `packed 695ms  padded 171ms  (sizeof 16 vs 128)`. Point at the two times, then at the sizes: "we paid 112 bytes to get that back." The deck's numbers are from GCC 14 on x86-64; yours will differ, the ratio is what matters. Recovery: if the ratio is small, the two threads probably shared a core or the VM has one vCPU. Say "on a real multicore box this is about four to one," show the deck's numbers, and move on.
-
-This is a Session 1 callback, by the way: `alignas` is C++11. The new part is the named constant.
+Lab 5.1's TODO 2 is this exact change, with two threads that would deadlock without it.
 
 Next: a thread that cleans up after itself.
 
->> IF AHEAD: Two details. First, some ARM cores have 128-byte lines, and Intel's adjacent-line prefetcher pulls pairs of 64-byte lines, which is why libraries like folly pad to 128. Second, GCC can warn with `-Winterference-size` when the constant is used in a header, because its value can change with `-mtune` and that makes it an ABI hazard. For anything in a public struct, define your own `constexpr` constant and document it. In a per-thread stats array this is the fix; in a struct that crosses a library boundary, it's an ABI decision.
+>> IF AHEAD: False sharing is in the appendix (slide 47): two atomics on one cache line ping-pong between cores, and `alignas(hardware_destructive_interference_size)` puts them on separate lines; the demo measures about four to one. One sentence of it is worth saying here if you are early: a performance bug with no lock in sight.
 
->> IF BEHIND: Skip the demo. "Two atomics on one cache line ping-pong between cores; `alignas` the interference size apart. The deck's numbers show about four to one."
+>> IF BEHIND: "One line, deadlock-free for any number of mutexes. Make it the default."
 
-### 10. `std::jthread` · C++20 · target 0:17, ~2 min
+### 9. `std::jthread` · C++20 · target 0:09, ~2 min
 
 Left side, C++11, `demos/s05/jthread.cpp`. A worker that loops until an `atomic<bool>` flag goes true. Look at the last line of `run11`: `t.join()`, with the comment "mandatory; an exception before it terminates." If anything between the constructor and that join throws, the `std::thread` destructor runs on a joinable thread and calls `std::terminate`. (pause) Not an exception, not a log line. Terminate.
 
@@ -231,7 +227,7 @@ Now what that token actually is.
 
 >> IF BEHIND: "`jthread` requests a stop and joins in its destructor; the token arrives as the first parameter. Replace `std::thread` with it, checking each thread's exit path."
 
-### 11. Cooperative cancellation: `stop_token`, `stop_source`, `stop_callback` · C++20 · target 0:19, ~3 min
+### 10. Cooperative cancellation: `stop_token`, `stop_source`, `stop_callback` · C++20 · target 0:11, ~2.5 min
 
 Slow down here. Three types. **`stop_source` requests a stop. `stop_token` observes one. `stop_callback` runs a function when a stop is requested.** (pause)
 
@@ -255,7 +251,7 @@ Next: the blocking primitive the exercise is built on.
 
 >> IF AHEAD: The callback's destructor is careful. If the callback is running on another thread at the moment it's destroyed, the destructor blocks until it finishes. That's why the declaration order in `pipeline` is safe: `forward` is destroyed before `producer`, so the callback can never fire on a dead `jthread`. Swap those two declarations and the callback could call `request_stop()` on a destroyed object. Order of locals is a correctness property in this code, and worth a comment in the source.
 
-### 12. `counting_semaphore` and `binary_semaphore` · C++20 · target 0:22, ~2 min
+### 11. `counting_semaphore` and `binary_semaphore` · C++20 · target 0:13, ~2 min
 
 "Wait until there's a slot" and "wait until there's an item" used to be a condition variable and a predicate. Now they're counts.
 
@@ -275,7 +271,7 @@ Side by side with the C++11 version next.
 
 >> IF AHEAD: The template argument is `LeastMaxValue`, a minimum the implementation must support, and releasing past `max()` is undefined behavior. That's why the exercise sizes `items_` as `Capacity + 1`: `close()` releases one extra count to wake a blocked consumer, and if the queue is already full, that's one more than `Capacity`. Get the size wrong and it works in testing and is UB the one time `close()` races a full queue.
 
-### 13. The bounded queue, before and after · C++20 · target 0:24, ~2 min
+### 12. The bounded queue, before and after · C++20 · target 0:15, ~2 min
 
 `demos/s05/semaphore_queue.cpp`. Left is C++11 style: one mutex, two condition variables, `not_full_` and `not_empty_`, and a predicate lambda in each `wait`. Right is C++20: the mutex and two semaphores.
 
@@ -289,117 +285,13 @@ One honesty note about the left side: it's labeled C++11 but it uses `std::uniqu
 
 The exercise's version adds `close()`: set a flag, then release one extra `items_` count so a blocked `pop` wakes, sees the flag, and returns `nullopt` once drained. That's task 1 in the README.
 
-Next: two primitives for groups of threads.
+**The rest of the C++20 toolbox is in the appendix of your PDF: `latch` and `barrier` for phases, `atomic::wait` and `atomic_ref`, `atomic<shared_ptr>` for hot-swapped config, `osyncstream` for logging, and `move_only_function` for task queues.** One sentence each in the Q&A if you want them; the lab and the exercise use what we have just seen.
+
+Next: the tool that tells you whether any of this is right.
 
 >> IF BEHIND: "Same structure, the semaphores replace both condition variables and both predicates."
 
-### 14. `std::latch` and `std::barrier` · C++20 · target 0:26, ~2 min
-
-Two shapes of group synchronization. "Wait for all N workers to start." And "nobody begins step 2 until everyone finishes step 1."
-
-Top snippet, the latch. A one-shot countdown, initialized to four. Each worker calls `count_down()`. The main thread calls `ready.wait()` and blocks until it hits zero. **A latch can't be reset: it's the fan-in half of fan-out, fan-in.**
-
-Bottom snippet, the barrier. Reusable. Each worker runs three steps and calls `arrive_and_wait()` after each one. When the last thread arrives, the completion function runs exactly once for that phase, before anyone is released. It must be `noexcept`. So the output says phase 0, 1, 2 complete.
-
->> DO: `./build/demos/s05/demo_s05_latch_barrier`. Expect four "worker N ready" lines in some order, "all workers ready," then "phase 0 complete," "phase 1 complete," "phase 2 complete." Point out: "all workers ready" can print before the last "worker N ready" line. (pause) Ask why. Answer: each worker counts down *before* it prints, so main can wake first. Recovery: if the order happens to be tidy, say "run it a few times; the order isn't guaranteed, which is the lesson."
-
-Look at the declaration order in the barrier part: `phase`, then `sync`, then `steppers`. The `jthread` vector is destroyed first, so the threads join while the barrier still exists. Reverse those and you destroy a barrier threads are waiting on.
-
-Next: waiting without any of these types.
-
->> IF AHEAD: `arrive_and_drop()` lets a thread leave the group for all future phases, which is how a worker that runs out of data stops participating without deadlocking the others. And the completion function runs on one of the participating threads, unspecified which, so it shouldn't assume it's on main. That's also why `phase++` in the demo is safe: only one completion runs at a time, and nobody else touches `phase`.
-
->> IF BEHIND: Skip the demo. "Latch: one-shot countdown. Barrier: reusable, with a once-per-phase completion. Both replace a mutex, a condition variable, and a counter."
-
-### 15. `atomic::wait` / `notify` and `atomic_ref` · C++20 · target 0:28, ~2 min
-
-Waiting for an atomic to change used to mean spinning, or a mutex you only held so you could sleep on a condition variable.
-
-Top snippet. `state.wait(0)` means "block until the value is no longer zero." Then the main thread stores 1 and calls `notify_one`. **The atomic is the wait point.** On Linux, libstdc++ implements it with a futex, after a short spin, so it's a real sleep. And it's what libstdc++'s semaphore, latch, and barrier are built on.
-
-Note there's no lost wake-up here. If the store happens before the waiter even calls `wait(0)`, the value isn't zero, so `wait` returns immediately.
-
-Bottom snippet, `atomic_ref`. A `Legacy` struct with a plain `int`: think of a struct from a C library or a hardware interface header you can't change. `std::atomic_ref<int> ref(obj.counter)` does atomic operations on that plain int, in place. Two threads, a thousand `fetch_add`s each, and the result is 2000. The object never changed type.
-
-The rule in the comment matters: **while any `atomic_ref` to an object exists, touch it only through `atomic_ref`s.** (pause) And look at the print on the last line. It reads `obj.counter` directly while `ref` is still in scope. After the joins there's no actual race, but by the letter of the standard that read should be `ref.load()`, or `ref` should live in an inner scope. That's precisely the kind of comment a good reviewer leaves.
-
->> ASK: "What happens if the object isn't aligned the way an atomic needs?" Expect a guess. Say: "It's a precondition: the object must meet `atomic_ref<T>::required_alignment`. For an `int` that's natural alignment. For a packed struct off the wire, check it."
-
-libc++ 18 doesn't have `atomic_ref`; the demo gates on `__cpp_lib_atomic_ref`.
-
-Next: the same idea for a whole configuration object.
-
->> IF AHEAD: `wait(old)` compares values, so it's subject to ABA: if the value changes from 0 to 1 and back to 0 before the waiter looks, the waiter may keep sleeping. For a state flag that only moves forward, that's fine. For a counter that wraps, use a generation number. And `wait` on types that aren't four bytes goes through a hashed table of waiters in libstdc++, so it works but can wake unrelated waiters and costs more.
-
->> IF BEHIND: "`wait` and `notify` make an atomic a sleep point; `atomic_ref` makes a plain int atomic in place. Touch it only through the ref while the ref exists."
-
-### 16. `std::atomic<std::shared_ptr<T>>` · C++20 · target 0:30, ~1.5 min
-
-The configuration table again, from slide 7. Readers on every record, a writer once an hour, and this time no lock on the read path at all.
-
-`g_config` is an `atomic<shared_ptr<const Config>>`. The reader on line 5 does one atomic load and gets its own `shared_ptr` copy. That copy keeps the `Config` alive for as long as the reader needs it. The writer, `reload`, builds a completely new `Config` and stores it. **In-flight readers keep the old one; it dies when the last reader drops it.** That's read-copy-update. (pause)
-
-Two honesty points. It's not lock-free on most implementations; libstdc++ uses a small internal lock. But the read path never waits on the writer's work, only on a pointer swap. And the global starts out null, so something has to call `reload` before the first `limit`; the demo does that on its first line.
-
-The C++11 free functions, `std::atomic_load` of a `shared_ptr*` and friends, are deprecated in C++20. They made a non-atomic `shared_ptr` look atomic if you remembered to use them everywhere. Nobody remembers everywhere.
-
-libstdc++ 12 and later have it; libc++ 18 doesn't.
-
-Next: logging from all these threads.
-
->> IF BEHIND: Fold into the previous slide: "Hot-swappable config is `atomic<shared_ptr<const T>>`: readers copy, the writer swaps."
-
-### 17. `std::osyncstream` · C++20 · target 0:31, ~1 min
-
-Four threads write to `cout` with three `<<` each. The output comes out interleaved.
-
-Read the slide's red line: the standard only promises that concurrent use of `cout` isn't a data race. It promises nothing about the line; characters from different threads can interleave. **The line isn't atomic.**
-
-The fix: wrap `std::cout` in an `osyncstream` for the statement. It buffers everything written to it and transfers the whole buffer to `cout` in one go when it's destroyed, here at the end of the full expression, or when you call `emit()`. No lock in your code.
-
-Pair it with Session 2's `format`, or call `std::print` with the `osyncstream` as the stream.
-
->> DO: Optional, 10 seconds: `./build/demos/s05/demo_s05_osyncstream`. Four clean lines in some order. Recovery: none needed.
-
-On libc++ 18 it's behind `-fexperimental-library`, which the repo's CMake adds.
-
-Next: a callable type every task queue needed.
-
-### 18. `std::move_only_function` and task queues · C++23 · target 0:32, ~1.5 min
-
-A task queue of `std::function` can't hold a task that owns a `unique_ptr`. `std::function` requires a copyable callable, and a lambda that captured a `unique_ptr` by move isn't copyable.
-
-Line 1 of the snippet: a queue of `move_only_function<void()>`. Line 3 pushes a lambda that owns the payload. Line 5 pops by moving and calls.
-
-The old workaround was to capture a `shared_ptr` instead, which made the task copyable by lying about ownership. **It's Session 2's lesson, ownership in the type, applied to callables.** (pause)
-
-It also carries qualifiers in the signature: `move_only_function<void() const noexcept>` means the call operator is `const` and `noexcept`. `std::function` never could say that.
-
-libc++ 18 doesn't have it; the demo gates on `__cpp_lib_move_only_function`.
-
->> ASK: "What do you get if you call an empty `std::function`?" Expect "`bad_function_call`." Say: "Right. Call an empty `move_only_function` and it's undefined behavior. No exception. Check before you call if empty is possible."
-
-Now the honest slide: what still isn't there.
-
->> IF BEHIND: "A queue of `move_only_function` holds tasks that own `unique_ptr`s; `std::function` can't."
-
-### 19. What is still missing, and where it is going · target 0:34, ~1.5 min
-
-C++23 has no thread pool, no executor, no async I/O. Every project still picks one.
-
-`std::async`: the future it returns blocks in its destructor. No pool, no priority, no cancellation. **Fine for a one-off; don't build on it.** A common bug is calling `std::async` and ignoring the returned future: the temporary future's destructor waits right there, and your "asynchronous" call is synchronous. (pause)
-
-Thread pools are still a library choice: TBB, Asio, folly, or your own on `jthread` plus the bounded queue from the exercise. If you write your own, it's maybe sixty lines with what we've seen today: a vector of `jthread`s, the bounded queue holding `move_only_function<void()>`, each worker popping with its own stop token. Shutdown is free, because destroying the vector requests a stop on every worker and joins them all. That's the slide-10 destructor doing real work.
-
-`std::execution`, senders and receivers, P2300, is C++26. That's the composable model, and the one `co_await` will plug into. Parallel algorithms from Session 4 are the only built-in parallelism, and on GCC they need TBB to actually run in parallel. Hazard pointers and RCU are C++26 too.
-
-**What to do now: `jthread` for lifetime, `stop_token` for cancellation, a semaphore queue for hand-off, and a pool behind one interface you can swap later.**
-
-Now the tool that tells you whether any of this is right.
-
->> IF BEHIND: "No pool or executor until C++26; keep yours behind an interface so `std::execution` can slot in."
-
-### 20. ThreadSanitizer as a test · demo · target 0:35, ~3.5 min
+### 13. ThreadSanitizer as a test · demo · target 0:17, ~2 min
 
 `demos/s05/tsan_race.cpp`. A plain `int`, written a thousand times by a writer `jthread`. Under `SHOW_ERRORS`, main reads it before the join. That's a data race. Without `SHOW_ERRORS`, main reads it after `writer.join()`. **`join()` is a synchronization point: every write in the thread happens-before the code after the join.** No race. (pause)
 
@@ -409,27 +301,50 @@ The exercise's `lines_read` counter is exactly this shape: written by the produc
 
 >> DO: In the terminal, build the racy version by hand: `g++-14 -std=c++23 -g -fsanitize=thread -DSHOW_ERRORS demos/s05/tsan_race.cpp -o /tmp/tsan_race && /tmp/tsan_race`. Expect `WARNING: ThreadSanitizer: data race`, then two stacks, a write in the lambda and a read in `main`, plus the thread creation site. Point at "Previous write ... by thread T1" and "Read ... by main thread." Then `echo $?`: TSan's default exit code on a report is 66. Non-zero, so CTest fails. Recovery: if it dies with `unexpected memory mapping`, that's the kernel ASLR setting, not your code; say so, and show the report from the pre-built run or skip to the exercise run.
 
->> DO: Then the exercise under TSan, already built: `ctest --test-dir build-tsan -R s05 --output-on-failure`. Expect all s05 tests passing, no warnings. Say: "That's the solution, clean on GCC 14 and Clang 18." Recovery: if tests fail, the build-tsan tree is stale; don't debug live, say "I'll post the clean run in the chat."
+>> DO: Only if ahead: the exercise under TSan, already built: `ctest --test-dir build-tsan -R s05 --output-on-failure`. Expect all s05 tests passing, no warnings. Say: "That's the solution, clean on GCC 14 and Clang 18." Otherwise say that sentence and post the run in chat during the lab. Recovery: if tests fail, the build-tsan tree is stale; don't debug live.
 
 TSan understands every primitive we showed today: joins, semaphores, latches, atomics. That's why "every concurrent test runs under TSan in CI" can be a policy, not a hope. The cost is a slowdown of roughly 5 to 15 times and 5 to 10 times the memory, so it's a separate CI job, not the default build.
 
-Takeaway next.
+Takeaway, then the lab.
 
 >> IF AHEAD: TSan and ASan can't be combined in one binary; they each want the address space. That's why the course runs them as separate jobs. And TSan needs a 64-bit host: Linux, macOS, or FreeBSD. It won't run on your RTOS target. The pattern for embedded teams is to keep the threading logic portable enough to build in host unit tests and run TSan there, which is another argument for standard primitives over RTOS-specific ones in the logic layer.
 
 >> IF BEHIND: Skip the exercise run. Show only the racy run, point at the warning and the exit code, and move on.
 
-### 21. Concurrency takeaway · target 0:39, ~1 min
+### 14. Concurrency takeaway · target 0:19, ~1 min
 
 **`jthread` plus `stop_token` for lifetime and cancellation. Semaphores for hand-off. `latch` and `barrier` for phases. `scoped_lock` for every lock. `osyncstream` for logging.**
 
 The hand-written versions of all of these are in your codebase right now. (beat) Each replacement is a design review, and ThreadSanitizer is how the review ends. (pause)
 
-For tonight: exercise tasks 1 through 3 are the bounded queue, the `jthread` pipeline, and the TSan run. Start there.
+`latch`, `barrier` and `osyncstream` are appendix slides; the takeaway still names them because they belong on the list.
 
-The queue hands records between threads. The next segment hands them between a function and its caller, with no thread at all.
+Now you: ten minutes, three TODOs. `thread` to `jthread`, two `lock_guard`s to one `scoped_lock`, a spin to a semaphore.
 
-### 22. What a coroutine is · C++20 · target 0:40, ~2.5 min
+(After the lab:) The queue hands records between threads. Block two hands them between a function and its caller, with no thread at all.
+
+### 15. Lab 5.1: jthread, stop_token, scoped_lock, semaphores · target 0:20, ~10 min
+
+**Ten minutes. Three TODOs, in order. Build and run after each one; the three output lines must not change. The link is on the slide; the same file is `labs/s05/lab1_jthread_stop_token.cpp` if you built the repo. The execution pane on Compiler Explorer runs real threads, so what you see is what a real run does.**
+
+>> DO: Put the lab slide up and paste the starter link into chat. Say nothing for the first minute while people get the file open. Then: "Each TODO deletes something: a flag and a join, a second lock guard, a spin loop. If your diff only adds lines, read the comment again."
+
+What to watch for:
+
+- TODO 1, the signature: `void sampler(std::stop_token stop, int& samples)`, token first, then `std::jthread t(sampler, std::ref(samples));`. The token is not passed by hand; people try `t.get_stop_token()` before `t` exists. The loop is `while (!stop.stop_requested())`; a missing `!` makes the sampler exit at once and the line reads `sampled: no`.
+- TODO 1, where the join went: if the `jthread` is a plain local of `main`, it joins at the end of `main`, after the `printf`. The output is still `sampled: yes`, and the `printf` reads `samples` while the sampler still writes it. That is slide 13's race, in their own file. The solution puts the `jthread` in a block that closes before the `printf`; a `t.join()` left in place is also correct, just not the point.
+- TODO 2, the starter is sequential on purpose: `t1.join()` before `t2` starts, because with two `lock_guard`s and opposite lock orders the concurrent version can deadlock, and on Compiler Explorer that is a hung execution pane. After `std::scoped_lock lock(from.m, to.m);`, move the join so `t2` starts before `t1` is joined, or make both `jthread`s in one block as the solution does. The sum stays 200 whichever order they run.
+- TODO 2, the unnamed lock: `std::scoped_lock(from.m, to.m);` with no variable name is a temporary that unlocks at the semicolon. GCC 14 warns, "ignoring return value ... declared with attribute 'nodiscard'". Slide 8's trap.
+- TODO 3: `std::binary_semaphore ready{0};` starts empty, so `acquire()` blocks until the worker's `release()`. `ready{1}` compiles, prints the same line, and is wrong: the owner passes before the worker is ready. Ask anyone who finished fast what `{1}` would mean.
+- The spin loop `while (!g_ready) {}` is a real bug pattern on embedded targets: it burns the core the worker may need. The semaphore sleeps.
+
+At seven minutes, paste the solution link. Walk the three diffs in two minutes: `sampler` with the token first and no global; `transfer` as one line; `ready` as a semaphore with `release` in the worker and `acquire` in the owner. Then the shape of `main`: two blocks whose closing braces are the joins.
+
+>> ASK: "How many joins are left in the file?" Expect: "none". Then: "Right. Two closing braces and the end of `main` do them, and each one requests a stop first. That is tier 1 on Monday: `std::thread` to `std::jthread`, with one look at each thread's exit path."
+
+At ten minutes, move on whether or not people are done. Block 2 starts at 0:30 on the clock; nothing in it depends on this lab.
+
+### 16. What a coroutine is · C++20 · target 0:30, ~2.5 min
 
 The definition in red: a function that can suspend in the middle, return to its caller, and later resume where it left off.
 
@@ -441,7 +356,7 @@ Two. Its locals live in a coroutine frame, usually heap-allocated, that survives
 
 Three. (beat) Suspending is not blocking, and it's not a thread. The caller gets control back, on the same thread.
 
->> ASK: "If I call a coroutine from main, which thread runs its body?" Pause. Expect "main" and maybe "a new thread." Say: "Main, until something else resumes it. **A coroutine is a control-flow feature, not a concurrency feature.** It runs on whichever thread resumes it. We'll see that on slide 27 with a demo that changes threads in the middle of a function."
+>> ASK: "If I call a coroutine from main, which thread runs its body?" Pause. Expect "main" and maybe "a new thread." Say: "Main, until something else resumes it. **A coroutine is a control-flow feature, not a concurrency feature.** It runs on whichever thread resumes it. We'll see that on slide 21 with a demo that changes threads in the middle of a function."
 
 Four. C++20 shipped the language machinery, `<coroutine>`, `coroutine_handle`, `suspend_always`, and no library types at all. You wrote a promise type, or you used a library. That's why C++20 coroutines were nearly unusable for most teams. C++23 shipped the first library type: `std::generator`.
 
@@ -453,7 +368,7 @@ Why do we care, for this program?
 
 >> IF AHEAD: Things that can't be coroutines: constructors, destructors, `main`, `constexpr` and `consteval` functions, and functions with C-style varargs. And a coroutine can't use a plain `return`; it must be `co_return`. Also, these are stackless: only the coroutine's own frame is saved. A function it calls can't suspend on its behalf unless that function is itself a coroutine that's awaited. That's the difference from stackful fibers like Boost.Context.
 
-### 23. Why they matter here · C++20 · target 0:42, ~1.5 min
+### 17. Why they matter here · C++20 · target 0:32, ~1.5 min
 
 Four rows. A lazy sequence, the parser: without coroutines it's an iterator class with hand-kept state, or an eager vector. With them, `co_yield` in a loop.
 
@@ -463,13 +378,13 @@ Async I/O: without, callbacks and the state they drag along in captures. With, `
 
 Embedded cooperative scheduling: suspend and resume with no stack per task, instead of `setjmp` or an RTOS task.
 
-What they're not: parallelism. Two coroutines on one thread never run at the same time. Pair them with the last segment for that.
+What they're not: parallelism. Two coroutines on one thread never run at the same time. Pair them with block one for that.
 
-We'll see three of these rows today: the parser, the decoder, and a taste of async. Parser first.
+We'll see three of these rows in this block: the parser, the decoder, and a taste of async. The parser is also lab 5.2. Parser first.
 
 >> IF BEHIND: "Lazy sequences, state machines, async I/O; not parallelism."
 
-### 24. `std::generator` · C++23 · target 0:44, ~2.5 min
+### 18. `std::generator` · C++23 · target 0:34, ~2.5 min
 
 Left: the exercise's Session 4 parser, `load_stream`. Read every line, strip the carriage return, parse, push accepted records into a vector, count rejects in a map, return everything at the end. Eager. Nothing reaches the caller until the whole file is parsed.
 
@@ -483,13 +398,13 @@ Now notice what got lost. (beat) The rejected-line count. A generator yields one
 
 Look at the size of the change between left and right. The loop body is almost identical. The vector, the map, and the return statement are gone. That's typical: a generator is usually the eager function with the container deleted. **If you can write the eager loop, you can write the generator.** The hard part isn't the syntax; it's the lifetime questions on the next slide.
 
-This is exercise task 5. It's gated on `__cpp_lib_generator`: libstdc++ 14 has it, libc++ 18 doesn't.
+This is exercise task 5, and lab 5.2's TODO 2 in miniature. It's gated on `__cpp_lib_generator`: libstdc++ 14 has it, libc++ 18 doesn't; the availability table is in the appendix (slide 56), and the lab link is preset to GCC 14 for that reason.
 
 How lazy is it, exactly?
 
 >> IF AHEAD: The sharpest version of CP.53 is `string_view`. A generator taking `std::string_view` and called with a temporary `std::string`: the string dies at the end of the full expression that created the generator, and every later resume reads freed memory. ASan catches it; the type system doesn't. For generators, take owning parameters, `std::string` by value, unless the caller provably outlives the generator.
 
-### 25. Generator mechanics: lazy, and the lookahead · C++23 · target 0:46, ~3 min
+### 19. Generator mechanics: lazy, and the lookahead · C++23 · target 0:36, ~3 min
 
 Slow down. Two consequences on this slide cause real bugs.
 
@@ -511,11 +426,13 @@ Think about what that means. If the coroutine holds a lock across a `co_yield`, 
 
 And one more: the body runs on the consumer's thread, at the consumer's pace. There's no thread anywhere in this.
 
+Both facts are lab 5.2's TODOs 2 and 3: you will watch the third line get parsed, and you will watch a destructor run where the end of the function never does.
+
 How does the compiler do this?
 
 >> IF AHEAD: The take-lookahead was argued about in committee: there was a paper to add a counted iterator that doesn't advance past the last element, and it didn't make C++23. If the extra resume matters, a byte stream where you need to leave the stream exactly positioned, don't use `take` on a generator; write the loop with a counter and `break` before advancing.
 
-### 26. What the compiler generates · C++20 · target 0:49, ~3 min
+### 20. What the compiler generates · C++20 · target 0:39, ~3 min
 
 Slow, again. This is a minimal hand-written generator, `demos/s05/coroutine_machinery.cpp`, so `std::generator` isn't magic. **Never write this in production.** It has no allocator support, no exception propagation, no nested yields.
 
@@ -535,11 +452,11 @@ The handle half, which isn't on the slide, is in the file: the `Gen` destructor 
 
 Now the other direction: what `co_await` does.
 
->> IF AHEAD: One quirk worth knowing. The order matters: `get_return_object` is called before `initial_suspend`, and when its result is converted to the function's return type varies between compilers, eagerly on some, after the first suspension on others. For a generator it doesn't matter. For a coroutine that wants to put an error into its own return value, which is the next-but-two slide, it matters a lot, and it's one reason those types are hard to write portably.
+>> IF AHEAD: One quirk worth knowing. The order matters: `get_return_object` is called before `initial_suspend`, and when its result is converted to the function's return type varies between compilers, eagerly on some, after the first suspension on others. For a generator it doesn't matter. For a coroutine that wants to put an error into its own return value, which is the `expected` slide in the appendix (54), it matters a lot, and it's one reason those types are hard to write portably.
 
 >> IF BEHIND: Skip the run. "The compiler allocates a frame, builds the promise, returns the object, then suspends before the body. Every hook is a member of `promise_type`."
 
-### 27. Awaitables and `co_await` · C++20 · target 0:52, ~3 min
+### 21. Awaitables and `co_await` · C++20 · target 0:42, ~3 min
 
 `co_await x` asks `x` three questions. **Are you ready? Where do I park? What's my value?** Those are `await_ready`, `await_suspend`, and `await_resume`.
 
@@ -565,7 +482,7 @@ Now a use that pays off even on one thread.
 
 >> IF AHEAD: There's a race hiding in this pattern. The new thread can call `h.resume()` before `await_suspend` has even returned on the original thread. The standard allows that: the coroutine is already considered suspended when `await_suspend` is called. The rule is that after starting the work, `await_suspend` must not touch the awaiter or the frame, because the frame may already be gone. Here it only assigns to a global, so it's fine. Also, `await_suspend` can return `bool`, false meaning "don't suspend after all," or another `coroutine_handle` to resume directly, which is symmetric transfer and how libraries avoid stack overflow in long chains.
 
-### 28. A coroutine as a state machine · C++20 · target 0:55, ~2.5 min
+### 22. A coroutine as a state machine · C++20 · target 0:45, ~2.5 min
 
 A frame decoder: sync byte 0xAA, a length, the payload, a checksum byte. Fed one byte at a time, which is how a serial or bus driver hands you data.
 
@@ -579,57 +496,13 @@ The forty lines of plumbing, the `Decoder` type with `next_byte`, are in the fil
 
 This is where coroutines pay off in embedded code: protocol decoders, parsers, anything that's "wait for the next input." Single-threaded, small, and testable.
 
+`co_await` on an `expected`, and what a generator costs, are appendix slides 54 and 55; the one number to carry is that a generator is one frame allocation plus an indirect call per element, and HALO is not something to plan on. Now the verdict table.
+
 >> IF AHEAD: The "before" side uses `using enum`, which is C++20, so it isn't strictly C++11; the comment says so. More useful: the coroutine version has one frame allocation for the life of the decoder, at construction, not per byte. If your coding standard forbids heap after initialization, that can still be acceptable, and if it isn't, `promise_type` can define its own `operator new` to allocate from a static pool. That's the hook for no-heap targets.
 
 >> IF BEHIND: Skip the demo. "The switch keeps the state in data; the coroutine keeps it in the program counter, and reads like the spec."
 
-### 29. Coroutines and `expected` · C++23 · target 0:58, ~1 min
-
-The Session 2 preview, closed out. This is not standard C++23; it's a custom promise type.
-
-`build` returns an `Expected`. `co_await parse_header(in)` means: unwrap the value, or return the error from the whole function. **Early return on error, with no macro and no `and_then` chain, because the promise type sees every `co_await`.**
-
-The mechanism: the promise's `await_transform` turns each `expected` into an awaitable whose `await_ready` is `has_value()`; on error, `await_suspend` stores the error in the result and destroys the frame.
-
-Boost.Outcome and a few proposals explore this; nothing's standard. C++26's `std::execution` takes a different route: errors are a channel, `set_error`, so `co_await` on a sender propagates them. (pause)
-
->> IF BEHIND: Skip the slide. "A custom promise can make `co_await` on an `expected` mean early return; not standard, and `std::execution` does errors differently."
-
-Next: what it costs.
-
-### 30. Allocation and performance · C++23 · target 0:59, ~2 min
-
-Three ways to parse two million comma-separated integers, `demos/s05/generator_perf.cpp`. Eager: build a vector, then loop. A view pipeline: `split`, `filter`, `transform`, no allocation, fully inlinable. A generator: one frame allocation, then a suspend and resume per element.
-
->> ASK: "In a Release build, which one wins?" Expect "the view." Say: "Yes. And the generator's cost is roughly an indirect call per element, plus one allocation for the frame."
-
-The deck's numbers: Debug build, GCC 14: eager 768 ms, view 936, generator 926. Take the ordering, not the ratios: it's a Debug build, and the eager version's allocations are amortized over millions of elements.
-
->> DO: Optional, if you built `build-rel`: `./build-rel/demos/s05/demo_s05_generator_perf`. Expect three lines, each with `sum=999000000` and a time in microseconds. Point at the sums first: "same answer three ways." Then the times. Recovery: if the generator line says "not available," you're on libc++.
-
-HALO, heap allocation elision, can remove the frame allocation when the coroutine is inlined into its consumer. Clang does it sometimes. Don't expect it from GCC. (pause) **Never rely on HALO for a hard real-time budget.** If you need control, `std::generator` takes an allocator, passed with `std::allocator_arg` as the first argument.
-
->> IF AHEAD: To verify HALO yourself, look for the call to `operator new` in the optimized assembly on Compiler Explorer: if the coroutine was elided, it's gone. A lambda-free, non-escaping generator consumed in the same function is the best case for Clang. As soon as the generator object is returned, stored, or passed through a non-inlined function, assume the allocation is there.
-
->> IF BEHIND: "Views win in Release; a generator is an allocation plus an indirect call per element; don't count on HALO."
-
-### 31. Availability · C++23 · target 1:01, ~1.5 min
-
-The language part, `co_await` and `<coroutine>`, is everywhere: GCC, Clang, MSVC. The library part is one implementation. `std::generator` is in libstdc++ 14. Not in libc++ 18. Not in MSVC 19.3x.
-
-HALO, per the table, varies; the safe reading is "don't plan on it."
-
-The exercise gates the generator: `__has_include(<generator>)` and `__cpp_lib_generator` together define `TELEMETRY_HAS_GENERATOR`. The coroutine parser and its test compile only there.
-
-**This is the strongest case in the course for feature-test macros: the same source builds on both toolchains, and the test suite differs by one test.** (pause)
-
-For libc++ today, a third-party generator is a single header: cppcoro's, or the reference implementation from the paper.
-
->> DO: Optional, 20 seconds: switch to the Compiler Explorer tab with `generator_basics.cpp` on GCC 14 and Clang 18 libc++ side by side. One prints Fibonacci, the other prints "not available on this standard library." Recovery: if Compiler Explorer is slow, skip it; the table says the same thing.
-
->> IF AHEAD: The classic feature-test bug: `__cpp_lib_generator` is defined by the library header, not by the compiler. If you test it before including `<generator>` or `<version>`, it's undefined everywhere, and your gated code silently never compiles, on any toolchain. Include `<version>` first, then test. A useful CI check is a test that fails if the gate is off on the toolchain you expect to have the feature.
-
-### 32. Where coroutines pay off, and where they do not · C++20 · target 1:02, ~1.5 min
+### 23. Where coroutines pay off, and where they do not · C++20 · target 0:48, ~1 min
 
 The middle column is the honest answer to "should we use coroutines."
 
@@ -641,15 +514,40 @@ A hot inner loop over a vector: no. A view or a plain loop; the suspend and resu
 
 >> ASK: "Where in your current code is there a hand-written state machine fed one input at a time?" Expect "message parsers," "bus protocols," "a mode manager." Say: "That's your tier 3 candidate for the worksheet later."
 
-### 33. Coroutines takeaway · target 1:04, ~1 min
+Takeaway, then the lab.
+
+### 24. Coroutines takeaway · target 0:49, ~1 min
 
 **A coroutine is a control-flow tool: a function that can pause.** `std::generator` is the standard's first use of it, and it's a range, so everything from Session 4 applies.
 
 The machinery is one promise type and three awaiter methods. (beat) Use a library's, not your own, except to learn. (pause)
 
-The last big feature is the one that changes the build.
+Now you: ten minutes, three TODOs, all `std::generator`. Leave the compiler on GCC 14.
 
-### 34. What modules fix · C++20 · target 1:05, ~2 min
+(After the lab:) The last big feature is the one that changes the build.
+
+### 25. Lab 5.2: std::generator · target 0:50, ~10 min
+
+**Ten minutes. Three TODOs, in order. Build and run after each one. This one needs GCC 14: `<generator>` is in libstdc++ 14 and not in libc++ 18, and the Compiler Explorer link is preset to GCC 14.2, so leave the compiler alone. The same file is `labs/s05/lab2_generator.cpp` if you built the repo.**
+
+>> DO: Lab slide up, starter link in chat. One quiet minute. Then: "TODO 1 is the syntax. TODO 2 and TODO 3 are the two facts from slide 19: the lookahead, and what happens to a suspended coroutine. Watch the output order, not just the values."
+
+What to watch for:
+
+- Anyone who switched the compiler to Clang gets "'generator' file not found". Back to GCC 14; that is the availability row from the slides, live.
+- TODO 1: the return type becomes `std::generator<int>`, the body becomes `for (int i = 1; i <= n; ++i) co_yield i * i;`, and the vector goes. Someone who leaves `return out;` in next to the `co_yield` gets "could not convert 'out' from 'std::vector<int>' to 'std::generator<int>'". Delete the vector and the return; a coroutine has no plain `return`. `main`'s loop does not change: `squares(10) | std::views::take(2)` works because a generator is an `input_range`.
+- TODO 2, the rewrite: same loop body, `co_yield Reading{...}` where `push_back` was, no vector, no return. Keep the `parsed:` print; it is the evidence.
+- TODO 2, the order: before, three `parsed:` lines then three `use:` lines. After, with `take(2)`: `parsed: rpm`, `use: rpm`, `parsed: temp`, `use: temp`, and then `parsed: psi,31` with no `use:` after it. **The third line is parsed and never used.** `take(2)`'s counted iterator advances the generator once more before it compares the count. That is the lookahead from slide 19, and the reason a generator must not do irreversible work before its `co_yield`.
+- TODO 3: `struct Guard { ~Guard() { std::puts("  generator frame destroyed"); } };`, a `Guard g;` at the top of `squares`, and `std::puts("  generator finished");` after the loop. With `take(2)`: `1`, `4`, `generator frame destroyed`. Never `generator finished`. The generator was suspended at the second `co_yield` when `take` stopped pulling; destroying it ran the destructors of its locals and skipped the rest of the body. People expect both lines or neither.
+- TODO 3, the variation worth one sentence: change `take(2)` to a plain loop over `squares(2)` and both lines print, because the body ran off the end. The difference is who stopped first, the consumer or the producer.
+
+At seven minutes, paste the solution link. Walk the three changes in two minutes: `squares` with the `Guard` and the line after the loop, `readings` as the eager loop with the container deleted, and the two comments in `main` that say what the output proves.
+
+>> ASK: "Where would you put a 'close the file' line in a generator?" Expect: "a destructor". Then: "Yes. Never after the loop, because with a lazy consumer the code after the loop may never run. Same RAII rule as always; coroutines just make the after-the-loop code look safe when it is not. CP.52 and CP.53 in the Core Guidelines."
+
+At ten minutes, move on. Block 3 starts at 1:00 on the clock; nothing in it depends on this lab.
+
+### 26. What modules fix · C++20 · target 1:00, ~2 min
 
 Every translation unit re-parses `<vector>`. Every macro in every header leaks into every file included after it.
 
@@ -659,13 +557,13 @@ What they don't fix: they're not packages, not a build system, not faster link t
 
 >> ASK: "Who has actually measured where your build time goes?" Expect few hands. (pause) Say: "Hold that thought. It's step one of the adoption posture in a few slides."
 
-Honest framing: as of 2026, modules are the least-adopted feature in this course, and the reasons are tooling, not the language. The next few slides show you why.
+Honest framing: as of 2026, modules are the least-adopted feature in this course, and the reasons are tooling, not the language. The next few slides show you why. And a warning about this block's lab: it is the deprecations file, not a module, because a module is two files and a build system and cannot run as one Compiler Explorer file.
 
 The macro row is the one that bites long-lived codebases. A vendor header that defines `min` and `max`, or `ERROR`, or `TRUE`, breaks code that has nothing to do with it, depending only on include order. You've all seen a file that only compiles if one header comes before another, with a comment saying "do not reorder." Modules make that whole class of problem impossible across an `import` boundary.
 
 >> IF AHEAD: A related point: modules aren't the only fix for parse cost. Precompiled headers already exist in every compiler and CMake supports them with `target_precompile_headers`. For an existing codebase, PCH is often most of the compile-time win with none of the build-system risk. Modules win on hygiene, macros and visibility, which PCH doesn't touch.
 
-### 35. `export module`, `export`, `import` · C++20 · target 1:07, ~3 min
+### 27. `export module`, `export`, `import` · C++20 · target 1:02, ~3 min
 
 Left: the CRC from Session 3 as a header. `#pragma once`, three includes, a `detail` namespace with the polynomial and the table builder, the comment "please do not use," and `crc16`. Every `#include` of this re-parses `<array>` and `<string_view>`.
 
@@ -679,7 +577,7 @@ Inside the namespace: `kPolynomial` and `kTable` have no `export`. They're modul
 
 Bottom right, `main.cpp`. `import telemetry.crc;`. No header, no include guard, no macros. And the `static_assert` that `crc16("123456789") == 0x29B1`, which is the standard check value for this CRC variant. **`constexpr` crosses the module boundary: the importer can evaluate it at compile time.**
 
->> DO: Point, don't run yet: put `modules/crc.cppm` on the right and scroll from `module;` to `export module` to the `export` on `crc16`. Then show `modules/main.cpp`. We build it on slide 39.
+>> DO: Point, don't run yet: put `modules/crc.cppm` on the right and scroll from `module;` to `export module` to the `export` on `crc16`. Then show `modules/main.cpp`. We build it on slide 30.
 
 A naming note: the dot in `telemetry.crc` means nothing to the language. It's a convention. `telemetry.crc` isn't a child of `telemetry`; it's just a name with a dot in it.
 
@@ -687,7 +585,7 @@ A naming note: the dot in `telemetry.crc` means nothing to the language. It's a 
 
 >> IF BEHIND: "`module;` for includes, `export module` names the unit, `export` marks the API; everything else is private."
 
-### 36. The global module fragment, and a GCC 14 rule · C++20 · target 1:10, ~2 min
+### 28. The global module fragment, and a GCC 14 rule · C++20 · target 1:05, ~2 min
 
 The standard library is still headers until `import std;`. So where do the includes go in a module?
 
@@ -701,23 +599,11 @@ The rule that keeps both compilers happy: includes first, everywhere.
 
 That's exercise task 6: swap the two lines in `main.cpp` and read GCC's error. It's worth seeing once so you recognize it.
 
+Partitions, implementation units and header units are an appendix slide (57); the one-sentence version is that partitions split the interface, implementation units split the definitions, and header units bridge old headers but are the least supported piece. Next: the standard library as a module.
+
 >> IF BEHIND: "Includes go in the global module fragment above `export module`; in consumers, includes before imports for GCC 14."
 
-### 37. Partitions, implementation units, header units · C++20 · target 1:12, ~1.5 min
-
-One interface file per library doesn't scale. Three ways to split.
-
-A partition: `export module telemetry:crc;`. Note the colon. Part of module `telemetry`, compiled separately, invisible outside the module except through its parent.
-
-The primary interface, `export module telemetry;`, re-exports its partitions with `export import :crc;` and `export import :parse;`. Consumers just `import telemetry;`.
-
-An implementation unit: `module telemetry;` with no `export`. It's like a `.cpp` file: it sees everything in the module, and the definitions live there.
-
-And the bottom snippet: `import <vector>;` is a header unit. **A header compiled as if it were a module, and macros do cross.** That's the migration bridge for third-party headers. It's also the least supported piece: CMake has no official header-unit support as of 3.30. (pause)
-
->> IF BEHIND: Fold into slide 36: "Partitions split the interface, implementation units split definitions, header units bridge old headers but are poorly supported."
-
-### 38. `import std;` · C++23 · target 1:13, ~2 min
+### 29. `import std;` · C++23 · target 1:07, ~2 min
 
 **The whole standard library as one module, and the first modules feature most codebases will switch on.**
 
@@ -733,9 +619,9 @@ The blocker for anyone on GCC 14 is libstdc++ 14; GCC 15 adds it. Clang 18 with 
 
 >> ASK: "What doesn't come through `import std;`?" Expect silence or "macros." Say: "Macros. `assert`, `INT_MAX`, `errno`, `offsetof`. You still `#include <cassert>` and `<climits>` for those."
 
->> IF AHEAD: Because `import std;` exports no macros, the feature-test macros don't come with it either. You still `#include <version>` to test `__cpp_lib_generator`. And the order rule from slide 36 applies: on toolchains with GCC-like behavior, that include goes before the import.
+>> IF AHEAD: Because `import std;` exports no macros, the feature-test macros don't come with it either. You still `#include <version>` to test `__cpp_lib_generator`. And the order rule from slide 28 applies: on toolchains with GCC-like behavior, that include goes before the import.
 
-### 39. Build systems · C++20 · target 1:15, ~4 min
+### 30. Build systems · C++20 · target 1:09, ~2 min
 
 **A module must be compiled before anything that imports it, and the build system has to discover that order by reading the source.** That's the whole problem in one sentence.
 
@@ -749,7 +635,7 @@ And BMIs are compiler-specific and flag-specific. No sharing a BMI across compil
 
 >> DO: In the terminal: `cmake --build build-mod` (configured before class with `-G Ninja -DCOURSE_MODULES=ON`). Expect a Ninja build line that includes a scan step before compiling `crc.cppm`. Then run the binary: `./build-mod/demos/s05/modules/demo_s05_modules` (if the path differs, `find build-mod -name demo_s05_modules`). Expect `4F54`, the CRC of "telemetry" in hex. Point out the `static_assert` passed at compile time or there'd be no binary.
 
->> DO: Then show the scan output: `find build-mod -name '*.ddi' | head -3` and open one in the editor. Point at the `provides` entry with `telemetry.crc` for `crc.cppm`, and the `requires` entry for `main.cpp`. Say: "That's P1689: the compiler telling the build system the order." Recovery: if no `.ddi` files show up, say "CMake keeps the scan results under `CMakeFiles`; the point is that a scan step ran before compile," and move on.
+>> DO: Only if ahead (this slide is two minutes now): show the scan output: `find build-mod -name '*.ddi' | head -3` and open one in the editor. Point at the `provides` entry with `telemetry.crc` for `crc.cppm`, and the `requires` entry for `main.cpp`. Say: "That's P1689: the compiler telling the build system the order." Recovery: if no `.ddi` files show up, say "CMake keeps the scan results under `CMakeFiles`; the point is that a scan step ran before compile," and move on.
 
 >> DO: Recovery for the build itself: if `cmake --build build-mod` fails, run `cmake -S . -B build-mod -G Ninja -DCOURSE_MODULES=ON` again and check the output says Ninja, not Unix Makefiles. If it still fails, don't debug live; say "the matrix row says it builds on GCC 14 and Clang 18; I'll post the log," and continue.
 
@@ -757,7 +643,7 @@ And BMIs are compiler-specific and flag-specific. No sharing a BMI across compil
 
 >> IF BEHIND: Build and run only, skip the `.ddi` files. "The compiler scans, CMake orders, Ninja builds. Make can't."
 
-### 40. Compiler status, and what the repo does · target 1:19, ~1.5 min
+### 31. Compiler status, and what the repo does · target 1:11, ~1 min
 
 This is the support matrix row for modules, expanded.
 
@@ -769,7 +655,7 @@ What the repo does: `demos/s05/modules/` builds `telemetry.crc` on both GCC 14 a
 
 >> IF BEHIND: "Compilers are ready; the build and third-party headers are the blockers."
 
-### 41. An adoption posture · C++20 · target 1:21, ~3 min
+### 32. An adoption posture · C++20 · target 1:12, ~3 min
 
 Six steps, and the order matters.
 
@@ -793,15 +679,15 @@ Notice what's missing from this list: "convert the codebase." Header files aren'
 
 >> IF AHEAD: A concrete measurement recipe: build once clean with `-ftime-trace`, feed the directory to ClangBuildAnalyzer, and read its "expensive headers" list. If the top ten headers account for a third or more of front-end time, `import std;` and PCH will show up in your wall clock. If the top items are template instantiations, look at Session 3's concepts and explicit instantiation instead.
 
-### 42. Modules takeaway · target 1:24, ~1 min
+### 33. Modules takeaway · target 1:15, ~1 min
 
 **Understand modules now: `module;`, `export module`, `export`, `import`, and the build order the compiler must discover.**
 
 Adopt them where the build is ready, and expect `import std;` to be the first thing worth switching on. (pause)
 
-Five minutes now on what was removed while all this was being added.
+Four minutes now on what was removed while all this was being added, and then it's your turn.
 
-### 43. Deprecated and removed, C++14 through C++23 · target 1:25, ~1.5 min
+### 34. Deprecated and removed, C++14 through C++23 · target 1:16, ~1.5 min
 
 Don't read the table; it's a reference. The pattern is what matters.
 
@@ -817,7 +703,7 @@ Let's find them.
 
 >> IF BEHIND: "Removed names: libstdc++ warns, libc++ refuses. And C++23 restored volatile `|=`, `&=`, `^=`, not `++`."
 
-### 44. Finding them · demo · target 1:26, ~3 min
+### 35. Finding them · demo · target 1:17, ~2 min
 
 The snippet is `demos/s05/deprecated.cpp`, the `modern` function: each line is the replacement, with the old spelling in the comment. `make_unique` for `auto_ptr`. `shuffle` with a seeded `mt19937` for `random_shuffle`. A lambda for `bind2nd`. `invoke_result_t` for `result_of`. Five member typedefs instead of inheriting `std::iterator`. `alignas` plus a `std::byte` array for `aligned_storage`.
 
@@ -827,27 +713,52 @@ The interesting part is under `SHOW_ERRORS`: the old spellings.
 
 >> ASK: "Which result would you rather have in CI?" Expect "the error." Say: "**Removed names are a toolchain test: build on both.**"
 
->> DO: Then the metric: `clang-tidy -p build --checks='modernize-*' exercises/s01-*/starter/src/*.cpp | grep -c warning`, and the same on the Session 5 solution's sources. Expect a large number for the starter and near zero for the solution. Say: "That difference is the course." Recovery: if clang-tidy says it can't find a compilation database, read the two numbers off your sticky note.
+>> DO: Then the metric, from the sticky note unless you are ahead: `clang-tidy -p build --checks='modernize-*' exercises/s01-*/starter/src/*.cpp | grep -c warning`, and the same on the Session 5 solution's sources. Expect a large number for the starter and near zero for the solution. Say: "That difference is the course." Recovery: if clang-tidy says it can't find a compilation database, read the two numbers off your sticky note.
 
-Exercise task 7 is exactly that comparison.
+Exercise task 7 is exactly that comparison. And the lab in a minute is this slide with your own hands on it: seven old spellings, six warnings, zero at the end.
 
 >> IF AHEAD: The library deprecations come through `-Wdeprecated-declarations`, which is on by default on both compilers; `-Wdeprecated` is a separate group for deprecated language features. Once the count is zero, `-Werror=deprecated-declarations` turns a regression into a build break. And `--checks='modernize-*'` adds to whatever `.clang-tidy` already enables; for a pure modernize count use `--checks='-*,modernize-*'`.
 
 >> IF BEHIND: Run only the Clang line, show one error, and give the clang-tidy numbers from the sticky note.
 
-### 45. Deprecations takeaway · target 1:29, ~0.5 min
+### 36. Deprecations takeaway · target 1:19, ~0.5 min
 
 **Removed names are a toolchain test: libstdc++ warns, libc++ refuses. Build on both.**
 
 `-Werror=deprecated-declarations` once the count is zero, and clang-tidy `modernize-*` as the metric for how far you've come. (pause)
 
-Now the workshop. This is the part that matters most.
+Now you: ten minutes, one file that compiles with six warnings. Make it zero without changing the output line.
 
-### 46. Three tiers · C++23 · target 1:30, ~2 min
+(After the lab:) Now the roadmap. This is the part that matters most.
 
-Twenty minutes, and these twenty are about your code.
+### 37. Lab 5.3: deprecated and removed, fixed · target 1:20, ~10 min
 
-Three tiers. **Tier 1, mechanical and zero risk, this month.** Local edits, no interface changes, clang-tidy does most of it: `make_unique`, `[[nodiscard]]`, structured bindings, `string_view` at read-only boundaries, `optional` for sentinels, `using` over `typedef`, the spaceship, `scoped_lock` for `lock_guard`, `jthread` for `thread`. On that last one, remember slide 10: mechanical, but check each thread's exit path, because the destructor now joins.
+**Ten minutes. This block's lab is the deprecations file, because a module is two files and a build system and cannot run as one Compiler Explorer file. The starter compiles under GCC 14 with `-Wdeprecated` and prints one line, with six warnings. Goal: zero warnings, same line. Seven numbered spots, each comment names the replacement; the slide groups them into three TODOs. The same file is `labs/s05/lab3_deprecations.cpp` if you built the repo.**
+
+>> DO: Lab slide up, starter link in chat. One quiet minute. Then: "Read the warnings top to bottom; they are in file order. Spot 5, `result_of`, gets no warning on libstdc++. Fix it anyway; you will see why at the end."
+
+What to watch for:
+
+- The six warnings, in order: `std::iterator` (deprecated), `auto_ptr` ("use 'std::unique_ptr' instead"), `random_shuffle` ("use 'std::shuffle' instead"), `bind2nd` ("use 'std::bind' instead": ignore that advice, a lambda is the answer), `aligned_storage_t`, and `'++' expression of 'volatile'-qualified type is deprecated` from `-Wvolatile`. Seven spots, six warnings: `std::result_of` compiles silently on libstdc++.
+- TODO 1, `std::iterator`: five `using` declarations, `iterator_category`, `value_type`, `difference_type`, `pointer`, `reference`. People forget `difference_type` and the warning is gone anyway, because nothing in this file asks `iterator_traits` for it. Say the solution spells all five.
+- TODO 1, `shuffle`: `std::shuffle(v.begin(), v.end(), std::mt19937{42});`. The engine argument is not optional; `std::shuffle(v.begin(), v.end())` does not compile. The `sort` afterwards is why the seed does not change the output line.
+- TODO 2, `bind2nd`: `[](int x) { return x < 5; }`. Anyone who takes GCC's hint and writes `std::bind(std::less<int>(), std::placeholders::_1, 5)` has fixed the warning and written the thing the lambda replaced.
+- TODO 2, `result_of`: `std::invoke_result_t<decltype(&by_id), Sensor, Sensor>`: the callable type and the argument types are separate template arguments, unlike `result_of`'s function-type spelling `F(Args...)`. The `static_assert` is the check; `is_same_v` while they are there.
+- TODO 3, `aligned_storage`: `alignas(Sensor) std::byte raw[sizeof(Sensor)];`. `sizeof(raw)` must stay 4; a `std::byte raw[alignof(Sensor)]` happens to also be 4 here, which is a coincidence worth naming.
+- TODO 3, `volatile`: three statements, `int tmp = counter; ++tmp; counter = tmp;`. `counter = counter + 1` also compiles cleanly; the lab's comment asks for three because the point is that the read and the write are visibly separate operations.
+- The closing point, for whoever finishes early: switch the compiler to Clang 18 with `-stdlib=libc++` on the starter. It does not compile at all: "no member named 'auto_ptr' in namespace 'std'", then `random_shuffle`, `bind2nd`, `result_of`. That is what "removed" means. The solution builds on both.
+
+At seven minutes, paste the solution link. Walk the seven spots in two minutes, top to bottom, reading the comment above each one; then the output line, unchanged.
+
+>> ASK: "Which of the seven would your codebase still have?" Expect: "`auto_ptr`", "`std::iterator`", "`bind2nd`". Then: "`std::iterator` is in every hand-written iterator older than 2017, and it is the quiet one: a warning, not an error, on both libraries. The rest are a toolchain test: libstdc++ warns, libc++ refuses. Build on both, and `-Werror=deprecated-declarations` the day the count is zero."
+
+At ten minutes, move on. Block 4 starts at 1:30 on the clock and is about your code, not the language.
+
+### 38. Three tiers · C++23 · target 1:30, ~2 min
+
+Twenty-five minutes left, and they are about your code: five minutes of slides, ten minutes of you writing, then the capstone and what's next.
+
+Three tiers. **Tier 1, mechanical and zero risk, this month.** Local edits, no interface changes, clang-tidy does most of it: `make_unique`, `[[nodiscard]]`, structured bindings, `string_view` at read-only boundaries, `optional` for sentinels, `using` over `typedef`, the spaceship, `scoped_lock` for `lock_guard`, `jthread` for `thread`. On that last one, remember slide 9 and lab 5.1: mechanical, but check each thread's exit path, because the destructor now joins.
 
 **Tier 2, interface changes, this quarter.** Callers change, so the tests have to exist first. `span` for buffers, `expected` for errors, concepts on public templates, `format` and `print`, `constexpr` tables, projections.
 
@@ -863,7 +774,7 @@ Why tiers at all? Because the most common way a modernization effort dies is a b
 
 >> IF BEHIND: "Tier 1 this month, no meeting. Tier 2 this quarter, tests first. Tier 3 one pilot with a measurement."
 
-### 47. Tooling as a force multiplier · C++23 · target 1:32, ~1.5 min
+### 39. Tooling as a force multiplier · C++23 · target 1:32, ~1.5 min
 
 Six tools. clang-tidy `modernize-*`, `performance-*`, `readability-*` with `-fix`. Run it per directory, commit per check, so each commit is one kind of change and reviewable.
 
@@ -873,7 +784,7 @@ Warnings as errors per directory: the course's `course_warnings` target, applied
 
 >> IF BEHIND: "clang-tidy per directory, a CI job one standard ahead, sanitizers as separate jobs."
 
-### 48. Writing the coding-standard update · C++23 · target 1:33, ~1.5 min
+### 40. Writing the coding-standard update · C++23 · target 1:33, ~1.5 min
 
 One page. Three verbs.
 
@@ -889,11 +800,13 @@ Reference the C++ Core Guidelines by rule number instead of restating them: R.11
 
 Now you write one.
 
-### 49. The worksheet · demo · target 1:35, ~13.5 min
+### 41. The worksheet (block 4's lab) · lab · target 1:35, ~10 min
 
->> DO: Paste `handouts/adoption-roadmap-template.md` into the Teams chat, or post the path. Start a visible 8-minute timer.
+**Ten minutes. This block's lab is not a file: it is your roadmap. Seven minutes of writing, then three volunteers. The template is `handouts/adoption-roadmap-template.md`; it is in the chat now.**
 
-Open the worksheet. Eight minutes. Three things.
+>> DO: Paste `handouts/adoption-roadmap-template.md` into the Teams chat, or post the path. Start a visible 7-minute timer.
+
+Open the worksheet. Seven minutes. Three things.
 
 One: name a codebase you own and its current `-std=` flag. Your real one.
 
@@ -905,11 +818,29 @@ Then three volunteers read theirs, and the rest of us ask one question each: **w
 
 Go.
 
->> DO: See "Exercise coaching" below for what to watch for and say while they write. At 5 minutes left, make the call. At 0, take three volunteers, about a minute each plus one "what would break?" question.
+What to say while they work: very little. Every two minutes, one sentence to the room:
 
-Close it out by saying: "The 'what would break' question is the review your roadmap needs before it becomes a ticket. Ask it again on Monday, with your lead."
+- "Use a real codebase and its real `-std=` flag, not an imaginary one."
+- "For each tier 1 row, a directory and a name. 'Everywhere' and 'the team' aren't answers."
+- "If clang-tidy can do it, say which check: `modernize-make-unique`, `modernize-use-nodiscard`, `modernize-use-using`."
 
-### 50. The capstone · C++23 · target 1:48, ~1.5 min
+What to watch for:
+
+- Anyone with more than one tier 3 item: push back. "Pick the one you'd pilot first; the other one waits for the retrospective."
+- Anyone with zero tier 1 items: push back. There's always a `new` somewhere.
+- Tier 2 items with no tests under them: ask "what tells you the callers still work?"
+- People on a C++14 or C++17 toolchain who think the worksheet doesn't apply: most of tier 1 is C++14 and C++17. `make_unique`, `[[nodiscard]]`, structured bindings, `string_view`, `optional`, `scoped_lock` all work on a C++17 floor.
+- Silence in Teams: ask one person by name to unmute and say their codebase and flag; it unblocks the room.
+
+At four minutes: "Three minutes. If tier 1 has a row with a where and a who, you're on track. Now pick your one tier 2 and one tier 3."
+
+At seven minutes, the debrief: three volunteers, about a minute each. After each, one question from the room: "What would break?" If nobody asks, ask it yourself. Good answers name a test, an interface, or a team. Weak answers say "nothing"; push gently: "What does the CI job one standard ahead say?" There's no solution link to paste: the debrief is the question.
+
+>> ASK: To the third volunteer, if nobody else has: "What would break?" Expect a test, an interface or a team. Then: "That answer is the review your roadmap needs before it becomes a ticket. Ask it again on Monday, with your lead."
+
+At ten minutes, move on: the capstone, then C++26, then the close. Nothing after this depends on a finished worksheet; take it to your lead this week.
+
+### 42. The capstone · C++23 · target 1:45, ~1.5 min
 
 The worksheet is the plan. The capstone is the proof.
 
@@ -917,15 +848,17 @@ The worksheet is the plan. The capstone is the proof.
 
 Two weeks. Bring the paragraph to the retrospective.
 
-**The course's five exercises are the worked example: the same program, five diffs, one unchanged report.** (pause)
+**The course's five exercises are the worked example: the same program, five diffs, one unchanged report.** (pause) The fifth diff is yours to do at home: `exercises/s05-concurrency/README.md`, tasks 1 to 3 first, the bounded queue, the `jthread` producer, and the TSan run, and the report stays byte-identical. Lab 5.1 was the rehearsal; the solution is clean under TSan on both compilers, so check yours against it.
 
 Small enough to finish, real enough to matter. And I'll review your diffs: send them over.
 
->> IF BEHIND: "300 to 500 lines, tier 1 then tier 2, one commit per feature, a diff and a paragraph in two weeks. I'll review them."
+>> DO: Paste into chat: `exercises/s05-concurrency/README.md` and `exercises/capstone/README.md`.
 
-### 51. What is coming in C++26 · C++23 · target 1:50, ~4 min
+>> IF BEHIND: "300 to 500 lines, tier 1 then tier 2, one commit per feature, a diff and a paragraph in two weeks. I'll review them. Tonight: the README, tasks 1 to 3."
 
-Last ten minutes. What's next, and then the whole course in one slide.
+### 43. What is coming in C++26 · C++23 · target 1:46, ~3 min
+
+Last nine minutes. What's next, and then the whole course in one slide.
 
 C++26 is feature-complete; the technical work finished in 2025, and the first compiler support is landing now. Check the cppreference table for what your compiler has.
 
@@ -945,7 +878,7 @@ Why is it free? Because most bounds bugs are in code nobody is going to rewrite.
 
 >> IF AHEAD: `inplace_vector` deserves a sentence for this audience. Its capacity is a template parameter, the storage is inside the object, and it never allocates. If your coding standard forbids heap after initialization, it's the first standard container you can use freely, and you can already get the same semantics from Boost's `static_vector` today, which makes it an easy tier 2 candidate to pilot ahead of the standard.
 
-### 52. Where to follow the language · C++23 · target 1:54, ~2 min
+### 44. Where to follow the language · C++23 · target 1:49, ~1.5 min
 
 Six places.
 
@@ -957,7 +890,7 @@ Talks: the CppCon and ACCU list in the syllabus, one per session topic. Compiler
 
 And this repo: the feature timeline, the support matrix, the cheat sheets, and five exercises with solutions. It stays available. Use it as a reference, not a souvenir.
 
-### 53. Course takeaway · target 1:56, ~4 min
+### 45. Course takeaway · target 1:51, ~4 min
 
 Five sessions ago we started with a careful, idiomatic C++11 program. Not bad code. Good C++11.
 
@@ -983,56 +916,224 @@ So, Monday morning. Three things. **One tier 1 item. One clang-tidy run. One CI 
 
 >> ASK: "Before you go: what's the one tier 1 item you're doing Monday?" Take two or three answers in chat or out loud. Say "good" and nothing more to each; let them own it.
 
-The capstone is two weeks. Bring the paragraph to the retrospective. Send me your diffs and I'll review them.
+The capstone is two weeks. Bring the paragraph to the retrospective. Send me your diffs and I'll review them. And tonight: the exercise README, tasks 1 to 3; lab 5.1 was the warm-up.
 
 Thank you. It's been a good five sessions. (beat) Questions for as long as you want to stay.
 
----
+## Appendix slides (in the PDF, not presented)
 
-## Exercise coaching
+These sections are kept for the `IF AHEAD` moments and for answering questions; the slides sit after the Further reading divider (deck slide 46).
 
-This session has two exercise pieces, and only one of them has a slot in the deck.
+### A1. False sharing and `hardware_destructive_interference_size` · C++17 (deck slide 47)
 
-### The take-home tasks (1 to 7; the README now says so)
+Problem statement: two counters, two threads, no shared data, and it's several times slower than it should be.
 
-The agenda has no block for tasks 1 to 3, and the README now lists them as the first at-home work, with the roadmap worksheet (task 8) as the in-class piece. Launch them as the first thing to do after class.
+Look at `Packed` on the right. Two `atomic<long>`s side by side. Sixteen bytes. They fit in one 64-byte cache line. Thread A writes `a`, thread B writes `b`. They never touch each other's variable. (beat)
 
-**Launch in 60 seconds, at slide 21:** "Tonight: `exercises/s05-concurrency/README.md`. Task 1 is the bounded queue on two semaphores, task 2 is the `jthread` producer with the calling thread as consumer, task 3 is running it under TSan. The report has to stay byte-identical. Tasks 4 to 7 are cancellation, the generator, modules, and clang-tidy. The solution is clean under TSan on both compilers; check yours against it."
+>> ASK: "No shared variables. Why is it slow?" Wait for "cache line" or "cache coherence." Say: "Right. **The cache line is the unit of coherence, not the variable.** Each core's write invalidates the other core's copy of the whole line, and the line ping-pongs."
 
-**Stumbles to warn about now (they will ask you later):**
-- `counting_semaphore`'s count is `std::ptrdiff_t`; a `size_t` capacity trips `-Wsign-conversion` under `-Werror`.
-- `items_` must allow `Capacity + 1` for the extra release in `close()`; otherwise it's UB on a full queue.
-- Reading `lines_read` before `producer.join()` is the race TSan is there to catch. The fix is the join, not making it atomic.
-- Records must come out in input order: one producer, one FIFO queue, so they will, unless someone parallelizes parsing.
-- For task 4: the `stop_callback` must close the queue as well as request the producer's stop, or a consumer blocked in `pop` sleeps through it (which is also why `pop` polls with `try_acquire_for`). Declare the callback after the producer `jthread` so it's destroyed first.
-- For task 5: include `<version>` or `<generator>` before testing `__cpp_lib_generator`. On libc++ the test simply doesn't compile in; that's expected, not a failure. Expect "next unread line is 4" to surprise people.
-- For task 6: `-G Ninja` is required; Makefiles won't build modules.
+`Padded` puts each atomic on its own line with `alignas(kLine)`. `kLine` is `hardware_destructive_interference_size` where the library defines it, 64 on x86. libc++ 18 doesn't define it, so the demo falls back to 64.
 
-**Debrief:** at the retrospective, or by message. Show the solution's `queue.h` (slide 12 is an excerpt), then the TSan-clean CTest run.
+>> DO: In the terminal: `./build/demos/s05/demo_s05_false_sharing`. Expect one line like `packed 695ms  padded 171ms  (sizeof 16 vs 128)`. Point at the two times, then at the sizes: "we paid 112 bytes to get that back." The deck's numbers are from GCC 14 on x86-64; yours will differ, the ratio is what matters. Recovery: if the ratio is small, the two threads probably shared a core or the VM has one vCPU. Say "on a real multicore box this is about four to one," show the deck's numbers, and move on.
 
-### The roadmap worksheet (slide 49, in class)
+This is a Session 1 callback, by the way: `alignas` is C++11. The new part is the named constant.
 
-**Launch (60 seconds):** paste the template, say the three steps on the slide, start a visible 10-minute timer, say "Go," and stop talking.
+(Appendix: no transition. In the live deck this material is one IF AHEAD sentence on the `scoped_lock` slide.)
 
-**What to say while they work:** very little. Every two or three minutes, one sentence to the room:
-- "Use a real codebase and its real `-std=` flag, not an imaginary one."
-- "For each tier 1 row, a directory and a name. 'Everywhere' and 'the team' aren't answers."
-- "If clang-tidy can do it, say which check: `modernize-make-unique`, `modernize-use-nodiscard`, `modernize-use-using`."
+>> IF AHEAD: Two details. First, some ARM cores have 128-byte lines, and Intel's adjacent-line prefetcher pulls pairs of 64-byte lines, which is why libraries like folly pad to 128. Second, GCC can warn with `-Winterference-size` when the constant is used in a header, because its value can change with `-mtune` and that makes it an ABI hazard. For anything in a public struct, define your own `constexpr` constant and document it. In a per-thread stats array this is the fix; in a struct that crosses a library boundary, it's an ABI decision.
 
-**What to watch for:**
-- Anyone with more than one tier 3 item: push back. "Pick the one you'd pilot first; the other one waits for the retrospective."
-- Anyone with zero tier 1 items: push back. There's always a `new` somewhere.
-- Tier 2 items with no tests under them: ask "what tells you the callers still work?"
-- People on a C++14 or C++17 toolchain who think the worksheet doesn't apply: most of tier 1 is C++14 and C++17. `make_unique`, `[[nodiscard]]`, structured bindings, `string_view`, `optional`, `scoped_lock` all work on a C++17 floor.
-- Silence in Teams: ask one person by name to unmute and say their codebase and flag; it unblocks the room.
+>> IF BEHIND: Skip the demo. "Two atomics on one cache line ping-pong between cores; `alignas` the interference size apart. The deck's numbers show about four to one."
 
-**5-minutes-left call:** "Five minutes. If tier 1 has a row with a where and a who, you're on track. Now pick your one tier 2 and one tier 3."
+### A2. `std::latch` and `std::barrier` · C++20 (deck slide 48)
 
-**Debrief (about 3.5 minutes):** three volunteers, about a minute each. After each, one question from the room: "What would break?" If nobody asks, ask it yourself. Good answers name a test, an interface, or a team. Weak answers say "nothing"; push gently: "What does the CI job one standard ahead say?" There's no solution to show: the debrief is the question.
+Two shapes of group synchronization. "Wait for all N workers to start." And "nobody begins step 2 until everyone finishes step 1."
 
-**Closing:** "Take the worksheet to your lead this week. The 'what would break' answers are your risk list. The capstone is two weeks; that's where this worksheet turns into a diff."
+Top snippet, the latch. A one-shot countdown, initialized to four. Each worker calls `count_down()`. The main thread calls `ready.wait()` and blocks until it hits zero. **A latch can't be reset: it's the fan-in half of fan-out, fan-in.**
 
----
+Bottom snippet, the barrier. Reusable. Each worker runs three steps and calls `arrive_and_wait()` after each one. When the last thread arrives, the completion function runs exactly once for that phase, before anyone is released. It must be `noexcept`. So the output says phase 0, 1, 2 complete.
+
+>> DO: `./build/demos/s05/demo_s05_latch_barrier`. Expect four "worker N ready" lines in some order, "all workers ready," then "phase 0 complete," "phase 1 complete," "phase 2 complete." Point out: "all workers ready" can print before the last "worker N ready" line. (pause) Ask why. Answer: each worker counts down *before* it prints, so main can wake first. Recovery: if the order happens to be tidy, say "run it a few times; the order isn't guaranteed, which is the lesson."
+
+Look at the declaration order in the barrier part: `phase`, then `sync`, then `steppers`. The `jthread` vector is destroyed first, so the threads join while the barrier still exists. Reverse those and you destroy a barrier threads are waiting on.
+
+(Appendix: no transition.)
+
+>> IF AHEAD: `arrive_and_drop()` lets a thread leave the group for all future phases, which is how a worker that runs out of data stops participating without deadlocking the others. And the completion function runs on one of the participating threads, unspecified which, so it shouldn't assume it's on main. That's also why `phase++` in the demo is safe: only one completion runs at a time, and nobody else touches `phase`.
+
+>> IF BEHIND: Skip the demo. "Latch: one-shot countdown. Barrier: reusable, with a once-per-phase completion. Both replace a mutex, a condition variable, and a counter."
+
+### A3. `atomic::wait` / `notify` and `atomic_ref` · C++20 (deck slide 49)
+
+Waiting for an atomic to change used to mean spinning, or a mutex you only held so you could sleep on a condition variable.
+
+Top snippet. `state.wait(0)` means "block until the value is no longer zero." Then the main thread stores 1 and calls `notify_one`. **The atomic is the wait point.** On Linux, libstdc++ implements it with a futex, after a short spin, so it's a real sleep. And it's what libstdc++'s semaphore, latch, and barrier are built on.
+
+Note there's no lost wake-up here. If the store happens before the waiter even calls `wait(0)`, the value isn't zero, so `wait` returns immediately.
+
+Bottom snippet, `atomic_ref`. A `Legacy` struct with a plain `int`: think of a struct from a C library or a hardware interface header you can't change. `std::atomic_ref<int> ref(obj.counter)` does atomic operations on that plain int, in place. Two threads, a thousand `fetch_add`s each, and the result is 2000. The object never changed type.
+
+The rule in the comment matters: **while any `atomic_ref` to an object exists, touch it only through `atomic_ref`s.** (pause) And look at the print on the last line. It reads `obj.counter` directly while `ref` is still in scope. After the joins there's no actual race, but by the letter of the standard that read should be `ref.load()`, or `ref` should live in an inner scope. That's precisely the kind of comment a good reviewer leaves.
+
+>> ASK: "What happens if the object isn't aligned the way an atomic needs?" Expect a guess. Say: "It's a precondition: the object must meet `atomic_ref<T>::required_alignment`. For an `int` that's natural alignment. For a packed struct off the wire, check it."
+
+libc++ 18 doesn't have `atomic_ref`; the demo gates on `__cpp_lib_atomic_ref`.
+
+(Appendix: no transition.)
+
+>> IF AHEAD: `wait(old)` compares values, so it's subject to ABA: if the value changes from 0 to 1 and back to 0 before the waiter looks, the waiter may keep sleeping. For a state flag that only moves forward, that's fine. For a counter that wraps, use a generation number. And `wait` on types that aren't four bytes goes through a hashed table of waiters in libstdc++, so it works but can wake unrelated waiters and costs more.
+
+>> IF BEHIND: "`wait` and `notify` make an atomic a sleep point; `atomic_ref` makes a plain int atomic in place. Touch it only through the ref while the ref exists."
+
+### A4. `std::atomic<std::shared_ptr<T>>` · C++20 (deck slide 50)
+
+The configuration table again, from live slide 7. Readers on every record, a writer once an hour, and this time no lock on the read path at all.
+
+`g_config` is an `atomic<shared_ptr<const Config>>`. The reader on line 5 does one atomic load and gets its own `shared_ptr` copy. That copy keeps the `Config` alive for as long as the reader needs it. The writer, `reload`, builds a completely new `Config` and stores it. **In-flight readers keep the old one; it dies when the last reader drops it.** That's read-copy-update. (pause)
+
+Two honesty points. It's not lock-free on most implementations; libstdc++ uses a small internal lock. But the read path never waits on the writer's work, only on a pointer swap. And the global starts out null, so something has to call `reload` before the first `limit`; the demo does that on its first line.
+
+The C++11 free functions, `std::atomic_load` of a `shared_ptr*` and friends, are deprecated in C++20. They made a non-atomic `shared_ptr` look atomic if you remembered to use them everywhere. Nobody remembers everywhere.
+
+libstdc++ 12 and later have it; libc++ 18 doesn't.
+
+(Appendix: no transition.)
+
+>> IF BEHIND: Fold into the previous slide: "Hot-swappable config is `atomic<shared_ptr<const T>>`: readers copy, the writer swaps."
+
+### A5. `std::osyncstream` · C++20 (deck slide 51)
+
+Four threads write to `cout` with three `<<` each. The output comes out interleaved.
+
+Read the slide's red line: the standard only promises that concurrent use of `cout` isn't a data race. It promises nothing about the line; characters from different threads can interleave. **The line isn't atomic.**
+
+The fix: wrap `std::cout` in an `osyncstream` for the statement. It buffers everything written to it and transfers the whole buffer to `cout` in one go when it's destroyed, here at the end of the full expression, or when you call `emit()`. No lock in your code.
+
+Pair it with Session 2's `format`, or call `std::print` with the `osyncstream` as the stream.
+
+>> DO: Optional, 10 seconds: `./build/demos/s05/demo_s05_osyncstream`. Four clean lines in some order. Recovery: none needed.
+
+On libc++ 18 it's behind `-fexperimental-library`, which the repo's CMake adds.
+
+(Appendix: no transition.)
+
+### A6. `std::move_only_function` and task queues · C++23 (deck slide 52)
+
+A task queue of `std::function` can't hold a task that owns a `unique_ptr`. `std::function` requires a copyable callable, and a lambda that captured a `unique_ptr` by move isn't copyable.
+
+Line 1 of the snippet: a queue of `move_only_function<void()>`. Line 3 pushes a lambda that owns the payload. Line 5 pops by moving and calls.
+
+The old workaround was to capture a `shared_ptr` instead, which made the task copyable by lying about ownership. **It's Session 2's lesson, ownership in the type, applied to callables.** (pause)
+
+It also carries qualifiers in the signature: `move_only_function<void() const noexcept>` means the call operator is `const` and `noexcept`. `std::function` never could say that.
+
+libc++ 18 doesn't have it; the demo gates on `__cpp_lib_move_only_function`.
+
+>> ASK: "What do you get if you call an empty `std::function`?" Expect "`bad_function_call`." Say: "Right. Call an empty `move_only_function` and it's undefined behavior. No exception. Check before you call if empty is possible."
+
+(Appendix: no transition.)
+
+>> IF BEHIND: "A queue of `move_only_function` holds tasks that own `unique_ptr`s; `std::function` can't."
+
+### A7. What is still missing, and where it is going (deck slide 53)
+
+C++23 has no thread pool, no executor, no async I/O. Every project still picks one.
+
+`std::async`: the future it returns blocks in its destructor. No pool, no priority, no cancellation. **Fine for a one-off; don't build on it.** A common bug is calling `std::async` and ignoring the returned future: the temporary future's destructor waits right there, and your "asynchronous" call is synchronous. (pause)
+
+Thread pools are still a library choice: TBB, Asio, folly, or your own on `jthread` plus the bounded queue from the exercise. If you write your own, it's maybe sixty lines with what we've seen today: a vector of `jthread`s, the bounded queue holding `move_only_function<void()>`, each worker popping with its own stop token. Shutdown is free, because destroying the vector requests a stop on every worker and joins them all. That's the `jthread` destructor from live slide 9 doing real work.
+
+`std::execution`, senders and receivers, P2300, is C++26. That's the composable model, and the one `co_await` will plug into. Parallel algorithms from Session 4 are the only built-in parallelism, and on GCC they need TBB to actually run in parallel. Hazard pointers and RCU are C++26 too.
+
+**What to do now: `jthread` for lifetime, `stop_token` for cancellation, a semaphore queue for hand-off, and a pool behind one interface you can swap later.**
+
+(Appendix: no transition.)
+
+>> IF BEHIND: "No pool or executor until C++26; keep yours behind an interface so `std::execution` can slot in."
+
+### A8. Coroutines and `expected` · C++23 (deck slide 54)
+
+The Session 2 preview, closed out. This is not standard C++23; it's a custom promise type.
+
+`build` returns an `Expected`. `co_await parse_header(in)` means: unwrap the value, or return the error from the whole function. **Early return on error, with no macro and no `and_then` chain, because the promise type sees every `co_await`.**
+
+The mechanism: the promise's `await_transform` turns each `expected` into an awaitable whose `await_ready` is `has_value()`; on error, `await_suspend` stores the error in the result and destroys the frame.
+
+Boost.Outcome and a few proposals explore this; nothing's standard. C++26's `std::execution` takes a different route: errors are a channel, `set_error`, so `co_await` on a sender propagates them. (pause)
+
+>> IF BEHIND: Skip the slide. "A custom promise can make `co_await` on an `expected` mean early return; not standard, and `std::execution` does errors differently."
+
+(Appendix: no transition.)
+
+### A9. Allocation and performance · C++23 (deck slide 55)
+
+Three ways to parse two million comma-separated integers, `demos/s05/generator_perf.cpp`. Eager: build a vector, then loop. A view pipeline: `split`, `filter`, `transform`, no allocation, fully inlinable. A generator: one frame allocation, then a suspend and resume per element.
+
+>> ASK: "In a Release build, which one wins?" Expect "the view." Say: "Yes. And the generator's cost is roughly an indirect call per element, plus one allocation for the frame."
+
+The deck's numbers: Debug build, GCC 14: eager 768 ms, view 936, generator 926. Take the ordering, not the ratios: it's a Debug build, and the eager version's allocations are amortized over millions of elements.
+
+>> DO: Optional, if you built `build-rel`: `./build-rel/demos/s05/demo_s05_generator_perf`. Expect three lines, each with `sum=999000000` and a time in microseconds. Point at the sums first: "same answer three ways." Then the times. Recovery: if the generator line says "not available," you're on libc++.
+
+HALO, heap allocation elision, can remove the frame allocation when the coroutine is inlined into its consumer. Clang does it sometimes. Don't expect it from GCC. (pause) **Never rely on HALO for a hard real-time budget.** If you need control, `std::generator` takes an allocator, passed with `std::allocator_arg` as the first argument.
+
+>> IF AHEAD: To verify HALO yourself, look for the call to `operator new` in the optimized assembly on Compiler Explorer: if the coroutine was elided, it's gone. A lambda-free, non-escaping generator consumed in the same function is the best case for Clang. As soon as the generator object is returned, stored, or passed through a non-inlined function, assume the allocation is there.
+
+>> IF BEHIND: "Views win in Release; a generator is an allocation plus an indirect call per element; don't count on HALO."
+
+### A10. Availability · C++23 (deck slide 56)
+
+The language part, `co_await` and `<coroutine>`, is everywhere: GCC, Clang, MSVC. The library part is one implementation. `std::generator` is in libstdc++ 14. Not in libc++ 18. Not in MSVC 19.3x.
+
+HALO, per the table, varies; the safe reading is "don't plan on it."
+
+The exercise gates the generator: `__has_include(<generator>)` and `__cpp_lib_generator` together define `TELEMETRY_HAS_GENERATOR`. The coroutine parser and its test compile only there.
+
+**This is the strongest case in the course for feature-test macros: the same source builds on both toolchains, and the test suite differs by one test.** (pause)
+
+For libc++ today, a third-party generator is a single header: cppcoro's, or the reference implementation from the paper.
+
+>> DO: Optional, 20 seconds: switch to the Compiler Explorer tab with `generator_basics.cpp` on GCC 14 and Clang 18 libc++ side by side. One prints Fibonacci, the other prints "not available on this standard library." Recovery: if Compiler Explorer is slow, skip it; the table says the same thing.
+
+>> IF AHEAD: The classic feature-test bug: `__cpp_lib_generator` is defined by the library header, not by the compiler. If you test it before including `<generator>` or `<version>`, it's undefined everywhere, and your gated code silently never compiles, on any toolchain. Include `<version>` first, then test. A useful CI check is a test that fails if the gate is off on the toolchain you expect to have the feature.
+
+### A11. Partitions, implementation units, header units · C++20 (deck slide 57)
+
+One interface file per library doesn't scale. Three ways to split.
+
+A partition: `export module telemetry:crc;`. Note the colon. Part of module `telemetry`, compiled separately, invisible outside the module except through its parent.
+
+The primary interface, `export module telemetry;`, re-exports its partitions with `export import :crc;` and `export import :parse;`. Consumers just `import telemetry;`.
+
+An implementation unit: `module telemetry;` with no `export`. It's like a `.cpp` file: it sees everything in the module, and the definitions live there.
+
+And the bottom snippet: `import <vector>;` is a header unit. **A header compiled as if it were a module, and macros do cross.** That's the migration bridge for third-party headers. It's also the least supported piece: CMake has no official header-unit support as of 3.30. (pause)
+
+>> IF BEHIND: Fold into live slide 28: "Partitions split the interface, implementation units split definitions, header units bridge old headers but are poorly supported."
+## Running the labs
+
+The per-lab coaching is in the script at slides 15, 25, 37 and 41. The rhythm is the same every time:
+
+1. Lab slide up, starter link in chat, one quiet minute while people open the file. Then stay quiet for five more; answer chat, do not lecture.
+2. At seven minutes, paste the solution link and walk the changes in two minutes. The debrief is the last word on the block's topic, so it is scripted.
+3. One question to the room, then move on at ten minutes whether or not people are done. Nothing later depends on finishing a lab.
+
+If the lecture runs late, the lab still starts within two minutes of its target; cut the slide before the takeaway instead. Block 4's lab is the roadmap worksheet (slide 41), not a file: there is no solution link, the debrief is three volunteers and the question "what would break?", and it still ends at ten minutes so the capstone, C++26 and the close fit before 1:55. Block 3's lab is the deprecations file, because a module cannot run as one Compiler Explorer file; say so when you launch it. Compiler notes: lab 5.1 builds on both libraries (on Compiler Explorer the execution pane runs real threads); lab 5.2 needs GCC 14 (libstdc++ has `<generator>`, libc++ 18 does not), and its link is preset to GCC 14.2; lab 5.3's starter does not compile on libc++ at all, which is that lab's closing point.
+
+## The at-home exercise
+
+Launched in one sentence on the capstone slide (42); nothing of it is done in class. The README lists tasks 1 to 3 as the first at-home work, with the roadmap worksheet (task 8) as the one piece done in class. What to say when it comes up in chat during the week, and at the retrospective:
+
+- Task 1: `counting_semaphore`'s count is `std::ptrdiff_t`; a `size_t` capacity trips `-Wsign-conversion` under `-Werror`.
+- Task 1: `items_` must allow `Capacity + 1` for the extra release in `close()`; otherwise it's UB on a full queue.
+- Task 2: records must come out in input order: one producer, one FIFO queue, so they will, unless someone parallelizes parsing.
+- Task 3: reading `lines_read` before `producer.join()` is the race TSan is there to catch. The fix is the join, not making it atomic. (Lab 5.1's TODO 1 had the same shape: the `jthread` in a block that closes before the read.)
+- Task 4: the `stop_callback` must close the queue as well as request the producer's stop, or a consumer blocked in `pop` sleeps through it (which is also why `pop` polls with `try_acquire_for`). Declare the callback after the producer `jthread` so it's destroyed first.
+- Task 5: include `<version>` or `<generator>` before testing `__cpp_lib_generator`. On libc++ the test simply doesn't compile in; that's expected, not a failure. "Next unread line is 4" will still surprise people who skipped lab 5.2's TODO 2.
+- Task 6: `-G Ninja` is required; Makefiles won't build modules.
+- Task 7: `--checks='modernize-*'` adds to whatever `.clang-tidy` already enables; for a pure modernize count use `--checks='-*,modernize-*'`. Lab 5.3 was the by-hand version of this count.
+- Task 8, the worksheet, was done in class as block 4's lab; the follow-up is "take it to your lead this week; the 'what would break' answers are your risk list; the capstone is where it turns into a diff."
+
+Debrief: at the retrospective, or by message. Show the solution's `queue.h` (slide 11 is an excerpt), then the TSan-clean CTest run.
 
 ## Likely questions and answers
 
@@ -1075,6 +1176,8 @@ It's implementation-defined. On Linux, libstdc++ uses futexes. On other platform
 ---
 
 ## Deck issues found
+
+Slide numbers in this list are the deck's numbering before the block restructure (see `docs/session-format.md`); the items are kept for the record. The two timing items (slide 2's missing block for the README's in-class tasks, and slide 49's 20 minutes) are resolved by the restructure: the exercise is entirely at-home work, launched from the capstone slide, and the worksheet is block 4's ten-minute lab with the capstone, C++26 and the close after it.
 
 Status: fixed in the deck, demos, outline and README on 2026-10-02 (see scripts/README.md). Items kept for the record. Still open: the Compiler Explorer `<add short link>` placeholders in every demo file header.
 

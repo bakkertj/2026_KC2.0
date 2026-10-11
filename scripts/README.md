@@ -2,13 +2,15 @@
 
 One spoken script per session, slide by slide, in deck order. They are written for rehearsal and for keeping open in a third editor group while presenting (see `docs/teaching-setup.md`).
 
-| Session | Script | Slides |
+| Session | Script | Slides presented (+ appendix) |
 |---|---|---|
 | 1. The Everyday Language | `s01-script.md` | 55 |
-| 2. Vocabulary Types | `s02-script.md` | 59 |
-| 3. Compile Time and Generic | `s03-script.md` | 51 |
-| 4. Ranges | `s04-script.md` | 49 |
-| 5. Concurrency, Coroutines, Modules | `s05-script.md` | 53 |
+| 2. Vocabulary Types | `s02-script.md` | 50 (+13) |
+| 3. Compile Time and Generic | `s03-script.md` | 45 (+10) |
+| 4. Ranges | `s04-script.md` | 43 (+10) |
+| 5. Concurrency, Coroutines, Modules | `s05-script.md` | 45 (+11) |
+
+Sessions 2 to 5 run as four blocks of about twenty minutes of lecture followed by a ten-minute lab (`docs/session-format.md`). Each script's pace plan is built around the four lab launches, the lab slides have their own scripted sections (launch, what to watch for, the seven-minute debrief, one question), and the slides that no longer fit live are in each deck's Further reading appendix with their script sections kept under "Appendix slides" at the end of the script. Session 1 keeps its original shape; it has already been given.
 
 Each script has: a pace plan with clock checkpoints and the slides to slow down on, a before-class checklist, the per-slide talk track (bold must-say lines, `(pause)` cues, `>> DO` demo steps, `>> ASK` questions, `>> IF AHEAD` / `>> IF BEHIND` flex material), exercise coaching, likely questions with answers, and a **Deck issues found** list at the end.
 

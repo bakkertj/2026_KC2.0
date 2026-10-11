@@ -16,25 +16,31 @@ A new model of iteration that composes
 <!--
 Notes: The biggest change to how loops are written since range-based for. C++20 gave the model,
 C++23 the pieces that make it daily-usable. Warn up front that libc++ 18 is behind on several
-C++23 views; the support matrix slide at the end lists them.
+C++23 views; the support matrix slide in block 4 lists them.
 -->
 
 ---
 
 ## Agenda
 
-1. Recap and framing (10 min)
-2. The C++20 ranges foundation (25 min)
-3. Views and pipelines (25 min)
-4. C++23: ranges become practical (20 min)
-5. Parallel algorithms (10 min)
-6. Algorithm additions worth knowing (10 min)
-7. Guided exercise (20 min)
+Four blocks. Each one is about twenty minutes of slides, then a ten-minute lab you do on Compiler Explorer.
 
-Every demo opens in Compiler Explorer, preconfigured for GCC 14: `handouts/compiler-explorer-links.md`
+| | Lecture | Lab |
+|---|---|---|
+| 1. Foundation: concepts, constrained algorithms, projections | 0:00 | 0:20 |
+| 2. Views | 0:30 | 0:50 |
+| 3. C++23 ranges and parallel algorithms | 1:00 | 1:20 |
+| 4. Algorithms by standard, and the same task three ways | 1:30 | 1:42 |
+
+The telemetry exercise is at-home work this time; the last slide launches it. Slides we skip live are in a **Further reading** appendix at the end of the PDF.
 
 <!--
-Notes: Exercise README: exercises/s04-ranges/README.md. The starter is the Session 3 solution.
+Notes: Say the rhythm out loud once: "twenty minutes of me, ten minutes of you, four times."
+Block 4 is short on purpose: its lab is the three-ways task, and the exercise launch and the
+takeaway follow it. Each lab is one file with the TODOs that block just taught; the slide that
+launches it has the link. People who build locally: the same files are under labs/
+(ctest -R lab_s04). Exercise README: exercises/s04-ranges/README.md; the starter is the
+Session 3 solution.
 -->
 
 ---
@@ -97,7 +103,7 @@ C++23 part is what makes views worth using in production.
 
 ---
 
-<!-- SEGMENT: Foundation (0:10) -->
+<!-- SEGMENT: Block 1, Foundation (0:07; lab at 0:20) -->
 
 <!-- _class: feature dense -->
 
@@ -285,64 +291,6 @@ Demo file: demos/s04/sentinels.cpp
 
 ---
 
-## Customization point objects <span class="badge cpp20">C++20</span>
-
-`std::ranges::begin`, `end`, `size`, `data`, `swap`, and every `std::ranges::` algorithm are **objects**, not functions.
-
-- They cannot be found by argument-dependent lookup, so `sort(v)` with `using namespace std::ranges` cannot be hijacked by a `sort` in `v`'s namespace
-- They dispatch correctly to arrays, member `begin()`, or ADL free `begin()`, in that order, reject anything else with a concept error, and refuse an rvalue of a non-borrowed range
-- `std::ranges::begin(r)` is the spelling to use in generic code; `r.begin()` only works for members
-- Consequence: you can pass `std::ranges::sort` to another function without a wrapper lambda
-
-<!--
-Notes: Optional slide if behind. The practical takeaway is the last bullet: algorithm objects
-are first-class values.
--->
-
----
-
-<!-- _class: feature -->
-
-## Range-for and ranges <span class="badge cpp20">C++20</span>
-
-<p class="problem">Every view is a range, so it works in range-for. The temporary-lifetime rule from Session 1 still applies.</p>
-
-```cpp
-for (const auto& r : records | std::views::filter(is_rpm)) { ... }     // fine: records is an lvalue
-
-for (const auto& r : load().records() | std::views::take(3)) { ... }   // BUG before C++23: records() is a reference into load(), which dies before the body
-for (auto loaded = load(); const auto& r : loaded.records() | std::views::take(3)) { ... }   // C++20 fix
-
-for (auto&& x : some_view) { ... }        // auto&& because some views yield prvalues (transform) and some references
-```
-
-<!--
-Notes: The init-statement form from Session 1 is the C++20 fix; C++23's P2718 makes the bug
-line legal (GCC 15, Clang 19). The bug needs a REFERENCE into the temporary: an accessor
-returning const vector&. Piping a data member of a temporary (`load().records | take(3)`) is
-already safe, because the rvalue vector is moved into an owning_view (P2415, a C++20 DR) that
-lives for the loop. The auto&& advice: transform yields values, filter yields references;
-auto&& binds either without a copy. Hand-typed.
--->
-
----
-
-## `std::ranges::` or `std::`?
-
-| Use `std::ranges::` when | Use `std::` when |
-|---|---|
-| writing new code (concepts, projections, sentinels) | you need an execution policy (`par`): no `ranges::` version until C++26 |
-| calling with a whole container | the algorithm has no `ranges::` counterpart (`std::accumulate`, `std::reduce`, `inclusive_scan`, the `<numeric>` family) |
-| you want a concept error instead of a template-instantiation error | interoperating with old code that hands you iterator pairs (`std::ranges::subrange(first, last)` bridges the gap) |
-
-Both live in the same headers. Mixing them in one file is fine.
-
-<!--
-Notes: The accumulate gap is filled by ranges::fold_left in C++23; the parallel gap by C++26.
--->
-
----
-
 <!-- _class: feature -->
 
 ## Borrowed ranges and `dangling` <span class="badge cpp20">C++20</span>
@@ -368,70 +316,49 @@ Demo file: demos/s04/dangling.cpp
 
 ---
 
-<!-- _class: dense -->
-
-## The concepts, with one type each
-
-| Concept | Means | Example |
-|---|---|---|
-| `range` | `begin()` and `end()` | anything below |
-| `input_range` | single pass forward | `std::istream_iterator` range, `views::istream` |
-| `forward_range` | multi-pass forward | `std::forward_list`, `views::split` result |
-| `bidirectional_range` | also backward | `std::list`, `std::map`, `views::filter` over a vector |
-| `random_access_range` | `it + n` in O(1) | `std::deque`, `views::iota`, `views::transform` over a vector |
-| `contiguous_range` | `data()` is a pointer | `std::vector`, `std::array`, `std::span`, `std::string_view` |
-| `sized_range` | `size()` in O(1) | all of the above except `forward_list`, `filter`, and the `istream` and `split` views |
-| `view` | cheap copy, non-owning | `span`, `string_view`, every `views::` result |
-| `borrowed_range` | iterators may outlive it | `span`, `string_view`, `subrange`, any lvalue |
-| `common_range` | `begin()` and `end()` same type | containers; `views::common` makes any range one |
-
-<!--
-Notes: Handout slide. The "views::filter over a vector is bidirectional, not random access" row
-is the one to say aloud.
--->
-
----
-
-<!-- _class: dense -->
-
-## Constrained algorithms with new behavior
-
-| Algorithm | What is new in `std::ranges::` |
-|---|---|
-| `for_each` | returns `{end, functor}`: the functor's state comes back |
-| `copy`, `transform`, `move` | return `in_out_result` with both end positions |
-| `minmax`, `min`, `max` | return the elements (with projection applied for comparison, not to the result) |
-| `find`, `find_if`, `lower_bound` | return `dangling` on a temporary non-borrowed range |
-| `sort`, `unique`, `remove` | return the end (or the subrange to erase, for `unique`/`remove`) |
-| `contains`, `starts_with`, `ends_with` [23] | new; `contains` takes a projection |
-| `find_last` [23] | returns a subrange from the last match to the end |
-| `fold_left`, `fold_right`, `fold_left_first` [23] | the missing `accumulate`, range-taking |
-| `iota`, `shift_left` [23] | ranges versions of the C++20 iterator-pair algorithms |
-
-<!--
-Notes: Handout slide. Availability: the [23] rows are uneven on libc++ 18; the support matrix
-slide has the details.
--->
-
----
-
 <!-- _class: takeaway -->
 
 ## Foundation takeaway
 
 **Constrained algorithms and projections are strictly better than iterator pairs.** Adopt them in every new line: `std::ranges::sort(v, {}, &T::member)`.
 
-The library refuses to hand you an iterator into a temporary (`dangling`). Read that as a feature.
+The library refuses to hand you an iterator into a temporary (`dangling`). Read that as a feature. The two handout tables (the concepts, the algorithms with new behavior) are in the appendix.
 
 **Monday morning:** find one `std::sort` with a comparator lambda and replace it with a projection.
 
 <!--
-Notes: 0:35. Views next.
+Notes: 0:20. Lab 4.1 next, ten minutes. Views at 0:30.
 -->
 
 ---
 
-<!-- SEGMENT: Views (0:35) -->
+<!-- _class: lab -->
+
+## Lab 4.1: constrained algorithms and projections <span class="clock">10 minutes</span>
+
+Open [`labs/s04/lab1_constrained_algorithms.cpp`](https://godbolt.org/z/h7dM73Kc8) on Compiler Explorer. Three TODOs, in order; build and run after each. The output must not change.
+
+1. `std::sort` with a lambda that only picks a member: `std::ranges::sort(rs, {}, &Reading::value)` instead (`{}` is the default comparator)
+2. `find_if` plus a lambda for the first `"temp"` reading: `std::ranges::find(rs, "temp", &Reading::sensor)`, the projection applied before the compare
+3. `max_element` with a lambda: `std::ranges::max_element(ok, {}, &Reading::value)`; then uncomment the `dangling` line, read the error, comment it out again
+
+At seven minutes: [solution](https://godbolt.org/z/67zbenxKq). Locally: `ctest -R lab_s04_lab1`.
+
+<!--
+Notes: Stay quiet for the first five minutes. TODO 1: the stumble is dropping the {} and
+passing the member pointer as the comparator: "no match for call to ranges::__sort_fn",
+constraints not satisfied. TODO 2: find(rs, "temp") with no projection fails for the same
+reason (a Reading is not comparable with a char array); the projection bridges the types.
+TODO 3: the uncommented line passes a temporary vector, and the error is "base operand of
+'->' has non-pointer type 'std::ranges::dangling'": the algorithm refused to return an
+iterator into a dead vector. That is slide 11 in their own file. Debrief: show the solution,
+ask "how many lambdas are left?" (one: the copy_if predicate, which is a real predicate, not
+a member name).
+-->
+
+---
+
+<!-- SEGMENT: Block 2, Views (0:30; lab at 0:50) -->
 
 <!-- _class: feature -->
 
@@ -536,49 +463,6 @@ show("chain",      n | v::reverse | v::filter([](int x) { return x > 2; }) | v::
 <!--
 Notes: Run the demo; each line prints its result. filter and transform are 80% of real use;
 take/drop and their _while forms most of the rest. Demo file: demos/s04/adaptors_tour.cpp
--->
-
----
-
-<!-- _class: feature -->
-
-## `views::split` and the edge case the tests caught <span class="badge cpp20">C++20</span>
-
-<p class="problem">The exercise's split() as a pipeline, and the one input on which it disagreed with the loop.</p>
-
-```cpp
-std::vector<std::string_view> split(std::string_view text, char delimiter) {
-    if (text.empty()) return {std::string_view{}};       // views::split("") yields ZERO pieces; the loop yielded one
-    return text | std::views::split(delimiter)
-                | std::views::transform([](auto&& part) { return std::string_view(part); })
-                | std::ranges::to<std::vector>();
-}
-```
-
-`views::split` yields subranges of the original characters; `transform` turns each into a `string_view` over the same buffer. No copies.
-
-<!--
-Notes: Exercise task 3. The test `split("", ',').size() == 1` failed when the loop became a
-pipeline. Views have their own edge semantics; the tests define the contract. Either answer
-(zero pieces or one) is defensible; silently changing it is not. Hand-typed from the solution.
--->
-
----
-
-## View semantics <span class="badge cpp20">C++20</span>
-
-A view is a **`string_view` over a computation**: non-owning, O(1) to copy and move, holds a reference (or a copy of another view) plus the adaptor's state.
-
-- `v | views::filter(p)` holds a `ref_view<vector>` (a pointer) and `p`. Copying it copies a pointer and a functor.
-- `std::move(v) | views::filter(p)` holds an `owning_view<vector>`: the vector is inside the view (C++20 DR, all compilers)
-- A view **must not be stored** past the range it refers to (same rule as `string_view` and `span`)
-- `std::ranges::view` requires: movable, default-constructible-or-not, O(1) destroy; `views::all` is what the pipe applies to a container to make it one
-
-<!--
-Notes: The owning_view case is the exception to "non-owning": piping an rvalue container moves
-it into the view. That is what makes `load() | views::take(3)` safe both to store and to
-iterate in a range-for, even in C++20: the container now lives inside the view. The dangling
-case is a REFERENCE into a temporary, `load().records() | views::take(3)` (the range-for slide).
 -->
 
 ---
@@ -796,17 +680,42 @@ libstdc++-only until libc++ 20. Demo file: demos/s04/zip_enumerate.cpp
 
 Views for transformations that are **consumed once, lazily**. `to` when the result must **outlive the source**. Take ranges by **`R&&`**. Never **store** a view past its source.
 
-The two traps the exercise's tests caught: `views::split("")` and the `const filter_view`. Views have their own semantics; **the tests define the contract**.
+The two traps the exercise's tests caught: `views::split("")` (appendix) and the `const filter_view` (lab 4.2). Views have their own semantics; **the tests define the contract**.
 
 **Monday morning:** turn one `copy_if` + `back_inserter` into `filter | to<vector>`.
 
 <!--
-Notes: 1:00. C++23 additions.
+Notes: 0:50. Lab 4.2, then C++23 at 1:00.
 -->
 
 ---
 
-<!-- SEGMENT: C++23 (1:00) -->
+<!-- _class: lab -->
+
+## Lab 4.2: views <span class="clock">10 minutes</span>
+
+Open [`labs/s04/lab2_views.cpp`](https://godbolt.example/labs/s04/lab2_views.cpp). Three TODOs, in order; build and run after each.
+
+1. Three eager loops and two scratch vectors: one lazy pipeline, `rs | views::filter(not fault) | views::transform(value) | views::take(3)`, in a range-for
+2. All non-fault values into a `std::vector<double>`: the same pipeline with `| std::ranges::to<std::vector>()` in place of the loop
+3. The `const` view trap: uncomment the two `hot` lines, read the error, drop the `const`; then explain to your neighbor why `const std::vector&` is fine and `const filter_view` is not
+
+At seven minutes: [solution](https://godbolt.example/labs/s04/lab2_views_solution.cpp). Locally: `ctest -R lab_s04_lab2`.
+
+<!--
+Notes: TODO 1: take(3) must come after the filter; put it first and the output becomes
+"3200.0 88.5" because the fault reading was one of the first three. The first line must
+still read 3200.0 88.5 3350.0. TODO 2: to<std::vector> without the trailing () gives "no
+match for operator| ... unresolved overloaded function type". TODO 3: the error is "passing
+'const std::ranges::filter_view<...>' as 'this' argument discards qualifiers": begin() caches
+and is non-const. The fix is `auto hot`; the elements are still const through const Reading&.
+Debrief: ask "what did const on the view ever promise?" (nothing about the elements; a view
+is a handle, like a string_view).
+-->
+
+---
+
+<!-- SEGMENT: Block 3, C++23 ranges and parallel algorithms (1:00; lab at 1:20) -->
 
 ## What C++20 was missing
 
@@ -920,38 +829,6 @@ gives deltas; stride(2) decimates. Demo file: demos/s04/windows.cpp (gated on fe
 
 <!-- _class: feature -->
 
-## `cartesian_product`, `repeat`, `join_with`, `as_rvalue` <span class="badge cpp23">C++23</span>
-
-<p class="problem">The rest of the C++23 view family.</p>
-
-<!-- snippet: demos/s04/zip_family.cpp#family -->
-```cpp
-for (auto [s, c] : v::cartesian_product(sensors, channels)) std::print("{}/{} ", s, c);   // every pair
-std::println("");
-
-for (int x : v::repeat(7, 3)) std::print("{} ", x);                                      // 7 7 7
-std::println("");
-
-for (char ch : sensors | v::join_with(std::string_view{", "})) std::print("{}", ch);    // rpm, temp
-std::println("");                                                                        // (pattern: a range or a single element, e.g. ',')
-
-std::vector<std::string> src{"a", "b"};
-auto moved = src | v::as_rvalue | std::ranges::to<std::vector>();   // moves the strings out of src
-std::println("{} {}", moved.size(), moved[0]);                      // src's strings are now moved-from: valid but unspecified
-```
-
-<!--
-Notes: cartesian_product for "every combination" (test matrices, sensor x channel);
-join_with for string joining (the pattern is a range such as a string_view, or a single
-element such as ','; a const char* is neither); as_rvalue to move elements out of a range into
-a container. The moved-from strings in src are valid but unspecified, so print moved, not src.
-Demo file: demos/s04/zip_family.cpp
--->
-
----
-
-<!-- _class: feature -->
-
 ## `ranges::fold_left` and friends <span class="badge cpp23">C++23</span>
 
 <p class="problem">C++20 ranges had no accumulate. C++23 has four folds.</p>
@@ -1019,28 +896,7 @@ libc++ 19. Demo file: demos/s04/cpp23_algorithms.cpp (gated)
 
 ---
 
-## Formatting and generating ranges <span class="badge cpp23">C++23</span>
-
-```cpp
-std::println("{}", v | std::views::take(3));          // [1, 2, 3]       (libc++ 17+, GCC 15)
-std::println("{::.1f}", readings | std::views::transform(&Record::value));   // element spec
-
-std::generator<Record> records(std::istream& in) {    // Session 5: a coroutine that IS an input_range
-    for (std::string line; std::getline(in, line);)
-        if (auto r = parse_record(line)) co_yield *r;
-}
-for (const Record& r : records(file) | std::views::filter(is_rpm)) { ... }
-```
-
-<!--
-Notes: Range formatting from Session 2 applies to views. std::generator (C++23) is the bridge
-to Session 5: a coroutine whose result is a lazy input_range, so load_stream could become a
-generator and feed pipelines directly. Hand-typed preview.
--->
-
----
-
-<!-- SEGMENT: Parallel (1:20) -->
+<!-- SEGMENT: Block 3 continued, parallel algorithms (1:13) -->
 
 <!-- _class: feature -->
 
@@ -1118,12 +974,37 @@ They are also the easiest to misuse: **no TBB means no parallelism** on GCC, and
 **Monday morning:** check `__cpp_lib_parallel_algorithm` and `ldd` before trusting a `par` benchmark.
 
 <!--
-Notes: 1:30. Ten minutes of algorithm additions, then the exercise.
+Notes: 1:20. Lab 4.3, then block 4, the algorithms by standard, at 1:30.
 -->
 
 ---
 
-<!-- SEGMENT: Algorithms (1:30) -->
+<!-- _class: lab -->
+
+## Lab 4.3: C++23 ranges <span class="clock">10 minutes</span>
+
+Open [`labs/s04/lab3_cpp23_ranges.cpp`](https://godbolt.example/labs/s04/lab3_cpp23_ranges.cpp). Three TODOs, in order; build and run after each. The output must not change.
+
+1. The hand-written group-by (a "previous sensor" and two indices): `for (auto group : rs | std::views::chunk_by(same_sensor))`, with `group.size()` and `group.front()`
+2. `std::accumulate` with begin/end and an unpacking lambda: `std::ranges::fold_left(rs | std::views::transform(&Reading::value), 0.0, std::plus<>{})`
+3. An index loop whose index is only printed: `for (auto [idx, r] : rs | std::views::enumerate)` (libstdc++ 14 has it; libc++ 18 does not)
+
+At seven minutes: [solution](https://godbolt.example/labs/s04/lab3_cpp23_ranges_solution.cpp). Locally: `ctest -R lab_s04_lab3`.
+
+<!--
+Notes: TODO 1: same_sensor takes two Readings and compares .sensor; chunk_by only groups
+ADJACENT runs, which is why load() is sorted by sensor already. group.size() is fine on
+libstdc++ (the subrange is sized); the solution casts it for printf. TODO 2: fold_left's
+result type comes from the operation, so even init 0 gives 9889.5 here; with accumulate, 0
+would truncate. TODO 3: idx is a signed difference_type; the solution casts for %zu. On
+Compiler Explorer with Clang/libc++ 18 there is no views::enumerate; the solution keeps the
+index loop behind a feature-test macro. Debrief: ask "which of the three could you have
+written in C++20?" (none: chunk_by, fold_left and enumerate all arrived in C++23).
+-->
+
+---
+
+<!-- SEGMENT: Block 4, Algorithms by standard and the same task three ways (1:30; lab at 1:42) -->
 
 <!-- _class: feature -->
 
@@ -1150,25 +1031,6 @@ int c = std::clamp(150, 0, 100);
 Notes: reduce vs accumulate: reduce may reorder (so it can parallelize) and defaults the init
 to T{} (so it does not truncate doubles to int). transform_reduce is the dot product / weighted
 sum. Scans are prefix sums. Demo file: demos/s04/numeric17.cpp
--->
-
----
-
-## C++17 searchers and `for_each_n` <span class="badge cpp17">C++17</span>
-
-```cpp
-std::string haystack = ..., needle = "temp_core";
-auto it = std::search(haystack.begin(), haystack.end(),
-                      std::boyer_moore_searcher(needle.begin(), needle.end()));   // preprocessed needle, reused across searches
-
-std::for_each_n(v.begin(), 3, [](auto& x) { x *= 2; });   // the first n, without computing an end iterator
-```
-
-Searchers: `default_searcher`, `boyer_moore_searcher`, `boyer_moore_horspool_searcher`. Build once, search many buffers.
-
-<!--
-Notes: Thirty seconds. The searcher matters when the same pattern is searched in many buffers
-(log scanning, protocol framing). Hand-typed.
 -->
 
 ---
@@ -1230,7 +1092,7 @@ on range formatting and starts_with. The exercise uses only the rows marked yes.
 
 ---
 
-<!-- SEGMENT: Exercise (1:40) -->
+<!-- SEGMENT: Block 4 continued, guidance and the three ways (1:37) -->
 
 ## Guidance for production code
 
@@ -1243,7 +1105,7 @@ on range formatting and starts_with. The exercise uses only the rows marked yes.
 - **clang-tidy `modernize-use-ranges`** (Clang 19+) converts iterator-pair calls automatically.
 
 <!--
-Notes: The slide to screenshot. Every bullet corresponds to something in today's exercise.
+Notes: The slide to screenshot. Every bullet corresponds to something in today's labs or the at-home exercise.
 -->
 
 ---
@@ -1272,30 +1134,59 @@ Compiler Explorer: [`demos/s04/same_task_three_ways.cpp`](https://godbolt.org/z/
 Notes: Show all three functions in the demo file, then the assembly. The C++11 version has a map
 of vectors (an allocation per group); the C++20 version does run detection by hand; the C++23
 version is the chunk_by pipeline. Same output, and the C++23 version generates comparable code
-to C++20. Demo file: demos/s04/same_task_three_ways.cpp
+to C++20. Say "you are about to write these yourself": lab 4.4 is the same shape on a smaller
+task (top three non-fault readings), C++11 given, C++17 and ranges to write. 1:42, lab 4.4.
+Demo file: demos/s04/same_task_three_ways.cpp
 -->
 
 ---
 
-## Exercise: ranges
+<!-- _class: lab -->
 
-Open `exercises/s04-ranges/README.md`
+## Lab 4.4: the same task, three ways <span class="clock">10 minutes</span>
 
-**In class (10 minutes; finish at home):**
+Open [`labs/s04/lab4_three_ways.cpp`](https://godbolt.example/labs/s04/lab4_three_ways.cpp). The task: the three highest non-fault readings, highest first, as `"sensor=value"` strings. `top3_cpp11` is done; write the other two. `main` prints `all three agree` when they match it.
 
-1. Projections: `minmax`, `lower_bound`, `find` with `&Record::value`, `&Record::ts`, `&SensorConfig::name`. Every comparator lambda disappears.
+1. `top3_cpp17`: `copy_if` with a lambda, `sort` with a lambda, `transform` into a `std::back_inserter` for the labels, the count bounded with `std::min`
+2. `top3_ranges`: `filter | ranges::to<vector>`, `ranges::sort` with `std::ranges::greater` and the projection `&Reading::value`, then `take(3) | transform(label) | to<vector>`
+
+At seven minutes: [solution](https://godbolt.example/labs/s04/lab4_three_ways_solution.cpp). Locally: `ctest -R lab_s04_lab4`.
+
+<!--
+Notes: Two TODOs, not three: each is a whole function. Say first that the starter prints
+"all three agree" trivially, because both stubs call top3_cpp11; the check means something
+only after they replace the bodies. TODO 1: std::min(3, ok.size()) fails to deduce (int vs
+size_type); write std::min<std::size_t>(3, ok.size()). TODO 2: sorting the filter view
+directly fails the random_access_range constraint, which is why to<vector> comes first; and
+sort(ok, {}, &Reading::value) is ascending, so take(3) gives the three lowest and main prints
+MISMATCH. Debrief: the three functions one above the other. Ask "which version would you
+want to review?" and "what did the C++17 version buy you over C++11?" (named algorithms,
+but the lambdas and the iterator pairs stayed; ranges removed those).
+-->
+
+---
+
+## At home: the telemetry exercise
+
+Open `exercises/s04-ranges/README.md`. The starter is the Session 3 solution.
+
+1. Projections: `minmax`, `lower_bound`, `find` with `&Record::value`, `&Record::ts`, `&SensorConfig::name`. Every comparator lambda disappears
 2. `top_n_by_value` as `filter | to<vector>` plus a projected `stable_sort`
-3. `split` as `views::split | transform | to`. Run the tests. **One fails.** Decide the contract.
+3. `split` as `views::split | transform | to`. Run the tests. **One fails.** Decide the contract
+4. Then tasks 4 to 8: `input_range` and the `const` view, `chunk_by` in the report, `contains`, what not to convert, dangling
 
 ```
 cmake --build build && ctest --test-dir build -R s04 --output-on-failure
 ```
 
-**At home:** tasks 4 to 8 (`input_range`, the `const` view, `chunk_by` in the report, `contains`, what not to convert, dangling). `solution/` is next session's starter.
+`s04_report_identical` diffs your report against the starter's, byte for byte. No toolchain? The README has Compiler Explorer links for the whole program. `solution/` is next session's starter.
 
 <!--
-Notes: Task 3's failing test is the moment of the session. Let them find it, then ask: which
-contract do you want, and where should the decision live? (In the tests.)
+Notes: One minute. Tasks 1 to 3 are today's labs 4.1, 4.2 and 4.4 applied to the real
+program; say so. Task 3's failing test is the moment of the exercise: let them find it at
+home, then the question is which contract they want and where the decision lives (in the
+tests). Appendix slide 50 has the solution's answer. Mention the solution is next week's
+starter, so finishing is optional but reading it is not.
 -->
 
 ---
@@ -1313,4 +1204,248 @@ The lifetime rules are the same as every other view. The tests define the contra
 <!--
 Notes: Point at handouts/cheat-sheet-ranges.md and the support
 matrix.
+-->
+
+---
+
+<!-- _class: lead -->
+
+# Further reading
+
+## Slides not covered live
+
+Each one stands on its own. The demo files are in the repo and on Compiler Explorer (`handouts/compiler-explorer-links.md`), and the scripts' `IF AHEAD` material points here.
+
+<!--
+Notes: Nothing after this slide is presented. Stop at the takeaway.
+-->
+
+---
+
+<!-- _class: appendix -->
+
+## Customization point objects <span class="badge cpp20">C++20</span>
+
+`std::ranges::begin`, `end`, `size`, `data`, `swap`, and every `std::ranges::` algorithm are **objects**, not functions.
+
+- They cannot be found by argument-dependent lookup, so `sort(v)` with `using namespace std::ranges` cannot be hijacked by a `sort` in `v`'s namespace
+- They dispatch correctly to arrays, member `begin()`, or ADL free `begin()`, in that order, reject anything else with a concept error, and refuse an rvalue of a non-borrowed range
+- `std::ranges::begin(r)` is the spelling to use in generic code; `r.begin()` only works for members
+- Consequence: you can pass `std::ranges::sort` to another function without a wrapper lambda
+
+<!--
+Notes: Optional slide if behind. The practical takeaway is the last bullet: algorithm objects
+are first-class values.
+-->
+
+---
+
+<!-- _class: feature appendix -->
+
+## Range-for and ranges <span class="badge cpp20">C++20</span>
+
+<p class="problem">Every view is a range, so it works in range-for. The temporary-lifetime rule from Session 1 still applies.</p>
+
+```cpp
+for (const auto& r : records | std::views::filter(is_rpm)) { ... }     // fine: records is an lvalue
+
+for (const auto& r : load().records() | std::views::take(3)) { ... }   // BUG before C++23: records() is a reference into load(), which dies before the body
+for (auto loaded = load(); const auto& r : loaded.records() | std::views::take(3)) { ... }   // C++20 fix
+
+for (auto&& x : some_view) { ... }        // auto&& because some views yield prvalues (transform) and some references
+```
+
+<!--
+Notes: The init-statement form from Session 1 is the C++20 fix; C++23's P2718 makes the bug
+line legal (GCC 15, Clang 19). The bug needs a REFERENCE into the temporary: an accessor
+returning const vector&. Piping a data member of a temporary (`load().records | take(3)`) is
+already safe, because the rvalue vector is moved into an owning_view (P2415, a C++20 DR) that
+lives for the loop. The auto&& advice: transform yields values, filter yields references;
+auto&& binds either without a copy. Hand-typed.
+-->
+
+---
+
+<!-- _class: appendix -->
+
+## `std::ranges::` or `std::`?
+
+| Use `std::ranges::` when | Use `std::` when |
+|---|---|
+| writing new code (concepts, projections, sentinels) | you need an execution policy (`par`): no `ranges::` version until C++26 |
+| calling with a whole container | the algorithm has no `ranges::` counterpart (`std::accumulate`, `std::reduce`, `inclusive_scan`, the `<numeric>` family) |
+| you want a concept error instead of a template-instantiation error | interoperating with old code that hands you iterator pairs (`std::ranges::subrange(first, last)` bridges the gap) |
+
+Both live in the same headers. Mixing them in one file is fine.
+
+<!--
+Notes: The accumulate gap is filled by ranges::fold_left in C++23; the parallel gap by C++26.
+-->
+
+---
+
+<!-- _class: dense appendix -->
+
+## The concepts, with one type each
+
+| Concept | Means | Example |
+|---|---|---|
+| `range` | `begin()` and `end()` | anything below |
+| `input_range` | single pass forward | `std::istream_iterator` range, `views::istream` |
+| `forward_range` | multi-pass forward | `std::forward_list`, `views::split` result |
+| `bidirectional_range` | also backward | `std::list`, `std::map`, `views::filter` over a vector |
+| `random_access_range` | `it + n` in O(1) | `std::deque`, `views::iota`, `views::transform` over a vector |
+| `contiguous_range` | `data()` is a pointer | `std::vector`, `std::array`, `std::span`, `std::string_view` |
+| `sized_range` | `size()` in O(1) | all of the above except `forward_list`, `filter`, and the `istream` and `split` views |
+| `view` | cheap copy, non-owning | `span`, `string_view`, every `views::` result |
+| `borrowed_range` | iterators may outlive it | `span`, `string_view`, `subrange`, any lvalue |
+| `common_range` | `begin()` and `end()` same type | containers; `views::common` makes any range one |
+
+<!--
+Notes: Handout slide. The "views::filter over a vector is bidirectional, not random access" row
+is the one to say aloud.
+-->
+
+---
+
+<!-- _class: dense appendix -->
+
+## Constrained algorithms with new behavior
+
+| Algorithm | What is new in `std::ranges::` |
+|---|---|
+| `for_each` | returns `{end, functor}`: the functor's state comes back |
+| `copy`, `transform`, `move` | return `in_out_result` with both end positions |
+| `minmax`, `min`, `max` | return the elements (with projection applied for comparison, not to the result) |
+| `find`, `find_if`, `lower_bound` | return `dangling` on a temporary non-borrowed range |
+| `sort`, `unique`, `remove` | return the end (or the subrange to erase, for `unique`/`remove`) |
+| `contains`, `starts_with`, `ends_with` [23] | new; `contains` takes a projection |
+| `find_last` [23] | returns a subrange from the last match to the end |
+| `fold_left`, `fold_right`, `fold_left_first` [23] | the missing `accumulate`, range-taking |
+| `iota`, `shift_left` [23] | ranges versions of the C++20 iterator-pair algorithms |
+
+<!--
+Notes: Handout slide. Availability: the [23] rows are uneven on libc++ 18; the support matrix
+slide has the details.
+-->
+
+---
+
+<!-- _class: feature appendix -->
+
+## `views::split` and the edge case the tests caught <span class="badge cpp20">C++20</span>
+
+<p class="problem">The exercise's split() as a pipeline, and the one input on which it disagreed with the loop.</p>
+
+```cpp
+std::vector<std::string_view> split(std::string_view text, char delimiter) {
+    if (text.empty()) return {std::string_view{}};       // views::split("") yields ZERO pieces; the loop yielded one
+    return text | std::views::split(delimiter)
+                | std::views::transform([](auto&& part) { return std::string_view(part); })
+                | std::ranges::to<std::vector>();
+}
+```
+
+`views::split` yields subranges of the original characters; `transform` turns each into a `string_view` over the same buffer. No copies.
+
+<!--
+Notes: Exercise task 3. The test `split("", ',').size() == 1` failed when the loop became a
+pipeline. Views have their own edge semantics; the tests define the contract. Either answer
+(zero pieces or one) is defensible; silently changing it is not. Hand-typed from the solution.
+-->
+
+---
+
+<!-- _class: appendix -->
+
+## View semantics <span class="badge cpp20">C++20</span>
+
+A view is a **`string_view` over a computation**: non-owning, O(1) to copy and move, holds a reference (or a copy of another view) plus the adaptor's state.
+
+- `v | views::filter(p)` holds a `ref_view<vector>` (a pointer) and `p`. Copying it copies a pointer and a functor.
+- `std::move(v) | views::filter(p)` holds an `owning_view<vector>`: the vector is inside the view (C++20 DR, all compilers)
+- A view **must not be stored** past the range it refers to (same rule as `string_view` and `span`)
+- `std::ranges::view` requires: movable, default-constructible-or-not, O(1) destroy; `views::all` is what the pipe applies to a container to make it one
+
+<!--
+Notes: The owning_view case is the exception to "non-owning": piping an rvalue container moves
+it into the view. That is what makes `load() | views::take(3)` safe both to store and to
+iterate in a range-for, even in C++20: the container now lives inside the view. The dangling
+case is a REFERENCE into a temporary, `load().records() | views::take(3)` (the range-for slide).
+-->
+
+---
+
+<!-- _class: feature dense appendix -->
+
+## `cartesian_product`, `repeat`, `join_with`, `as_rvalue` <span class="badge cpp23">C++23</span>
+
+<p class="problem">The rest of the C++23 view family.</p>
+
+<!-- snippet: demos/s04/zip_family.cpp#family -->
+```cpp
+for (auto [s, c] : v::cartesian_product(sensors, channels)) std::print("{}/{} ", s, c);   // every pair
+std::println("");
+
+for (int x : v::repeat(7, 3)) std::print("{} ", x);                                      // 7 7 7
+std::println("");
+
+for (char ch : sensors | v::join_with(std::string_view{", "})) std::print("{}", ch);    // rpm, temp
+std::println("");                                                                        // (pattern: a range or a single element, e.g. ',')
+
+std::vector<std::string> src{"a", "b"};
+auto moved = src | v::as_rvalue | std::ranges::to<std::vector>();   // moves the strings out of src
+std::println("{} {}", moved.size(), moved[0]);                      // src's strings are now moved-from: valid but unspecified
+```
+
+<!--
+Notes: cartesian_product for "every combination" (test matrices, sensor x channel);
+join_with for string joining (the pattern is a range such as a string_view, or a single
+element such as ','; a const char* is neither); as_rvalue to move elements out of a range into
+a container. The moved-from strings in src are valid but unspecified, so print moved, not src.
+Demo file: demos/s04/zip_family.cpp
+-->
+
+---
+
+<!-- _class: appendix -->
+
+## Formatting and generating ranges <span class="badge cpp23">C++23</span>
+
+```cpp
+std::println("{}", v | std::views::take(3));          // [1, 2, 3]       (libc++ 17+, GCC 15)
+std::println("{::.1f}", readings | std::views::transform(&Record::value));   // element spec
+
+std::generator<Record> records(std::istream& in) {    // Session 5: a coroutine that IS an input_range
+    for (std::string line; std::getline(in, line);)
+        if (auto r = parse_record(line)) co_yield *r;
+}
+for (const Record& r : records(file) | std::views::filter(is_rpm)) { ... }
+```
+
+<!--
+Notes: Range formatting from Session 2 applies to views. std::generator (C++23) is the bridge
+to Session 5: a coroutine whose result is a lazy input_range, so load_stream could become a
+generator and feed pipelines directly. Hand-typed preview.
+-->
+
+---
+
+<!-- _class: appendix -->
+
+## C++17 searchers and `for_each_n` <span class="badge cpp17">C++17</span>
+
+```cpp
+std::string haystack = ..., needle = "temp_core";
+auto it = std::search(haystack.begin(), haystack.end(),
+                      std::boyer_moore_searcher(needle.begin(), needle.end()));   // preprocessed needle, reused across searches
+
+std::for_each_n(v.begin(), 3, [](auto& x) { x *= 2; });   // the first n, without computing an end iterator
+```
+
+Searchers: `default_searcher`, `boyer_moore_searcher`, `boyer_moore_horspool_searcher`. Build once, search many buffers.
+
+<!--
+Notes: Thirty seconds. The searcher matters when the same pattern is searched in many buffers
+(log scanning, protocol framing). Hand-typed.
 -->

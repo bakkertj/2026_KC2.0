@@ -17,7 +17,7 @@ No local toolchain? The whole program also runs on Compiler Explorer as a single
 
 The target tests are in `solution/tests/`. Most of the new ones are `static_assert`s: if the file compiles, they passed.
 
-## In class (about 20 minutes)
+## At home, first (these were the in-class tasks; the session's labs 3.1 and 3.3 rehearse them on a small file)
 
 1. **The CRC table at compile time.** Write `constexpr std::array<std::uint16_t, 256> make_crc_table()` (the same loop as the `CrcTable` constructor; C++14 relaxed `constexpr` allows the loops and locals) and replace the function-local static with `inline constexpr auto kCrcTable = make_crc_table();` in the header. Make `crc16` itself `constexpr`. Then add `static_assert(crc16("123456789") == 0x29B1);`. One snag you will hit: `std::as_bytes` is not `constexpr`, because it is a `reinterpret_cast`. Write the core over `std::span<const Byte>` for any one-byte `Byte` and use `static_cast<unsigned char>` instead.
 
@@ -25,7 +25,7 @@ The target tests are in `solution/tests/`. Most of the new ones are `static_asse
 
 3. **One `serialize`, constrained.** Replace the integer overloads with `std::string serialize(std::integral auto v)` and the `double` overload with `std::floating_point auto`. Write a `StringLike` concept (`std::convertible_to<T, std::string_view>`) and a `requires`-clause overload for it. Check that `serialize(42)`, `serialize(2.5)`, `serialize("x")` still pick the right one; the tests say what each must produce.
 
-## At home
+## At home, after that
 
 4. **Finish the concept set.** A `SerializableRange` concept (`begin()`/`end()`, and not `StringLike`, or a `std::string` call would be ambiguous between the string overload and the container overload, since neither constraint subsumes the other) for the container overload; a `requires std::same_as<T, Status> || std::same_as<T, Record>` overload for the formatter-backed types. Then define `Serializable<T>` as "some `serialize` overload accepts a `T` and returns `std::string`" and `static_assert` a few types in and out. `static_assert(!Serializable<ParseError>)` is the one that shows what concepts buy you: a question about your API, answered by the compiler.
 

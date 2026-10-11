@@ -1,0 +1,10 @@
+squares:
+  1
+  4
+  generator frame destroyed
+readings:
+  parsed: rpm,3200
+  use: rpm=3200
+  parsed: temp,88
+  use: temp=88
+  parsed: psi,31

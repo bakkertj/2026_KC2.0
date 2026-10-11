@@ -1,0 +1,4 @@
+ok   rpm=42
+fail temp,x     (bad number)
+fail            (empty line)
+fail temp,900   (out of range)

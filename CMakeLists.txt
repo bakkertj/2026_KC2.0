@@ -11,3 +11,4 @@ enable_testing()
 
 add_subdirectory(demos)
 add_subdirectory(exercises)
+add_subdirectory(labs)

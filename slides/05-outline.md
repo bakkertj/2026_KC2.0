@@ -1,6 +1,20 @@
 # Session 5 deck outline: Concurrency, Coroutines, Modules, and Adoption
 
-One line per slide. Badge in brackets; "2col" is before/after; "demo" is live; "evo" is a timeline. Target: 52 content slides for 90 minutes, then the roadmap workshop and close. "From the exercise" slides pull code from `exercises/s05-concurrency/` starter and solution.
+One line per slide. Badge in brackets; "2col" is before/after; "demo" is live; "evo" is a timeline. Originally 53 slides for about 100 minutes of lecture, a 20-minute roadmap workshop and the close; now 57 slides: 45 presented in four lecture-plus-lab blocks (three of them lab launches, and the worksheet slide is block 4's lab) and 11 in a Further reading appendix after a divider (see the block table). "From the exercise" slides pull code from `exercises/s05-concurrency/` starter and solution.
+
+## Block structure (current deck)
+
+The deck now runs as four blocks of about twenty minutes of lecture and a ten-minute Compiler Explorer lab (`docs/session-format.md`). The sections below are the original design, one line per slide, and still describe every slide's content; this table says where each one ended up. Deck numbers are the current ones.
+
+| Block | Deck slides | Lab |
+|---|---|---|
+| 1. Concurrency (0:00) | 1 to 14: opening (1 to 5), what C++11 gave (6), reader/writer locks (7), `scoped_lock` (8), `jthread` (9), cooperative cancellation (10), semaphores (11), the bounded queue (12), ThreadSanitizer as a test (13), takeaway (14) | 15. Lab 5.1 `labs/s05/lab1_jthread_stop_token.cpp` (0:20) |
+| 2. Coroutines (0:30) | 16 to 24: what a coroutine is (16), why they matter here (17), `std::generator` (18), generator mechanics (19), what the compiler generates (20), awaitables (21), a coroutine as a state machine (22), where coroutines pay off (23), takeaway (24) | 25. Lab 5.2 `lab2_generator.cpp` (0:50) |
+| 3. Modules and deprecations (1:00) | 26 to 36: what modules fix (26), `export module`/`export`/`import` (27), the global module fragment (28), `import std;` (29), build systems (30), compiler status (31), an adoption posture (32), modules takeaway (33), deprecated and removed (34), finding them (35), deprecations takeaway (36) | 37. Lab 5.3 `lab3_deprecations.cpp` (1:20; modules cannot run as one Compiler Explorer file) |
+| 4. Roadmap and close (1:30) | 38 to 40: three tiers (38), tooling (39), the coding-standard update (40); then 42 the capstone (launches the at-home exercise), 43 C++26, 44 where to follow the language, 45 course takeaway | 41. The worksheet, `handouts/adoption-roadmap-template.md` (1:35; the worksheet is the lab) |
+| Further reading (not presented) | 46 divider; 47 false sharing, 48 `latch` and `barrier`, 49 `atomic::wait` and `atomic_ref`, 50 `atomic<shared_ptr>`, 51 `osyncstream`, 52 `move_only_function`, 53 what is still missing, 54 coroutines and `expected`, 55 allocation and performance, 56 availability, 57 partitions and header units | |
+
+The telemetry exercise is at-home work; its tasks 1 to 3 are the first at-home tasks and the roadmap worksheet (task 8) is the one piece done in class, as block 4's lab.
 
 ## 0. Opening (0:00, 5 slides)
 

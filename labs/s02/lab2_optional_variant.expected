@@ -1,0 +1,6 @@
+rpm unit: 1/min
+psi unit: ?
+scaled: 21.00 -1.00
+reading 3 = 11.50
+alive 120s
+FAULT 7: over temperature

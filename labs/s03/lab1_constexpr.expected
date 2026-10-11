@@ -1,0 +1,3 @@
+crc8[1]=07 crc8[255]=F3
+sensors ok: yes
+parse_hex("BEEF") = 48879

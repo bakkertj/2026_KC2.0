@@ -11,43 +11,49 @@
 
 ## Pace plan for a fast speaker
 
+Four blocks: about twenty minutes of slides, then a ten-minute lab, four times. The lab is the checkpoint; if the lecture runs long, the lab still starts on time and the slides you did not reach are covered in the lab debrief or skipped (they are all in the deck's Further reading appendix for the PDF). Block 2 is scripted for fifteen minutes, so its lab starts at 0:45 and the five minutes before block 3 at 1:00 are the buffer for the first half running long.
+
 | Checkpoint | Target clock |
 |---|---|
-| Slide 6, `constexpr` in C++11 (segment start) | 0:10 |
-| Slide 14, The rest of C++20 `constexpr` | 0:27 |
-| Slide 20, `constexpr` takeaway (time check) | 0:39, leave at 0:40 |
-| Slide 21, The problem with C++11 templates (segment start) | 0:40 |
-| Slide 28, C++17 templates takeaway (time check) | 0:54, leave at 0:55 |
-| Slide 29, The problem concepts solve (segment start) | 0:55 |
-| Slide 35, Subsumption | 1:05 |
-| Slide 42, Concepts takeaway (time check) | 1:19, leave at 1:20 |
-| Slide 43, Three problems, one feature (segment start) | 1:20 |
-| Slide 48, Deducing `this` takeaway (time check) | 1:33, leave at 1:35 |
-| Slide 49, Reading the diagnostics (segment start) | 1:35 |
-| Slide 50, Exercise launched | 1:37 |
-| Slide 51, Session 3 takeaway | 1:57 |
+| 1. Title | 0:00 |
+| 5. `constexpr` in C++11 (block 1, `constexpr`) | 0:06 |
+| 11. `consteval` | 0:17 |
+| 13. Lab 3.1 launched | 0:20 |
+| 14. The problem with C++11 templates (block 2, C++17 templates) | 0:30 |
+| 22. Lab 3.2 launched | 0:45 |
+| Buffer: block 3 starts on the clock even if block 1 ran long | 0:55 to 1:00 |
+| 23. The problem concepts solve (block 3, Concepts) | 1:00 |
+| 29. Subsumption | 1:10 |
+| 35. Lab 3.3 launched | 1:20 |
+| 36. Three problems, one feature (block 4, Deducing `this` and the diagnostics) | 1:30 |
+| 42. Reading the diagnostics | 1:43 |
+| 43. Lab 3.4 launched | 1:45 |
+| 44. Exercise (at home), 45. Takeaway | 1:55 |
+| Done | 1:58 |
 
-If you hit a checkpoint more than 3 minutes early, use the IF AHEAD material in the next segment rather than speeding on.
+If you hit a lab launch more than 2 minutes early, use the IF AHEAD material in the slide before it rather than starting the lab early; people need the clock to be predictable. If you are late, cut the slide before the takeaway, never the lab.
 
 Slow down deliberately on these four:
 
-- **Slide 8, Where `constexpr` values live.** "May" versus "must" is the single most common misunderstanding of `constexpr`, and everything after it (`consteval`, `constinit`, `if consteval`) depends on it landing.
-- **Slide 14, The rest of C++20 `constexpr`.** The `is_constant_evaluated` inside `if constexpr` trap is subtle: the condition is itself a constant expression, so the answer is always "yes". People nod at this and do not get it on first hearing.
-- **Slides 35 and 36, Subsumption.** The rule that only named concepts subsume is counterintuitive, and it is the reason the exercise's `SerializableRange` is written the way it is.
-- **Slide 44, Explicit object parameter.** Forwarding references plus value categories, applied to `*this`. Half the room is still fuzzy on `Self&&` from Session 2's supplemental deck.
+- **Slide 7, Where `constexpr` values live.** "May" versus "must" is the single most common misunderstanding of `constexpr`, and everything after it (`consteval`, and lab 3.1's TODO 2) depends on it landing.
+- **Slide 11, `consteval`.** The must half. Lab 3.1 has people make a validator `consteval` and then be surprised that a call in `main` still compiles; set that up here.
+- **Slides 29 and 30, Subsumption.** The rule that only named concepts subsume is counterintuitive, and it is the reason lab 3.3's `SerializableRange` and the exercise's are written the way they are.
+- **Slide 37, Explicit object parameter.** Forwarding references plus value categories, applied to `*this`. Half the room is still fuzzy on `Self&&` from Session 2's supplemental deck, and lab 3.4's TODO 3 is exactly this.
 
 ## Before class checklist
 
-- Build once from the repo root: `cmake -S . -B build -G Ninja && cmake --build build`, then `ctest --test-dir build -R s03 --output-on-failure`. Everything should pass. Binaries land at `./build/demos/s03/demo_s03_<stem>`.
-- For the `SHOW_ERRORS` demos, have a compile line ready in the terminal history, for example `g++-14 -std=c++23 -fsyntax-only -DSHOW_ERRORS demos/s03/constexpr_limits.cpp`. If you build with Clang, use your `clang++ -std=c++23 -stdlib=libc++` equivalent.
-- Demo files to have open in the right-hand editor group, in this order: `constexpr_evolution.cpp`, `constexpr_limits.cpp`, `constexpr_alloc.cpp`, `is_constant_evaluated.cpp`, `consteval_constinit.cpp`, `fold_expressions.cpp`, `if_constexpr_dispatch.cpp`, `variable_templates.cpp`, `ctad_guides.cpp`, `auto_nttp.cpp`, `concepts_basics.cpp`, `requires_expressions.cpp`, `subsumption.cpp`, `template_lambdas.cpp`, `concepts_vs_sfinae.cpp`, `deducing_this.cpp`.
-- Compiler Explorer tabs to preload (the demo headers still say `<add short link>`, so build these by hand and save the short links):
+- Build with GCC 14 and run the tests, labs included: `cmake -S . -B build -G Ninja && cmake --build build && ctest --test-dir build -R "s03|lab_s03" --output-on-failure`. Everything should pass. Binaries land at `./build/demos/s03/demo_s03_<stem>`.
+- Open the four lab starters on Compiler Explorer in four tabs, from the links on slides 13, 22, 35 and 43, and do each lab yourself once: `lab1_constexpr`, `lab2_templates17`, `lab3_concepts`, `lab4_deducing_this`. Keep the four solution links ready to paste at the seven-minute mark of each lab. For lab 3.3, also run the `to_json(Opaque{1})` line before and after the constraint so you have both error messages in your head.
+- For the `SHOW_ERRORS` demos, have a compile line ready in the terminal history, for example `g++-14 -std=c++23 -fsyntax-only -DSHOW_ERRORS demos/s03/concepts_vs_sfinae.cpp`. If you build with Clang, use your `clang++ -std=c++23 -stdlib=libc++` equivalent.
+- Demo files to have open in the right-hand editor group, in deck order: `constexpr_evolution.cpp`, `constexpr_alloc.cpp`, `consteval_constinit.cpp`, `fold_expressions.cpp`, `if_constexpr_dispatch.cpp`, `variable_templates.cpp`, `ctad_guides.cpp`, `auto_nttp.cpp`, `concepts_basics.cpp`, `requires_expressions.cpp`, `subsumption.cpp`, `concepts_vs_sfinae.cpp`, `deducing_this.cpp`. (The appendix slides' demos, `constexpr_limits.cpp`, `is_constant_evaluated.cpp` and `template_lambdas.cpp`, only if you expect to use the IF AHEAD material.)
+- Compiler Explorer tabs to preload besides the labs (the demo headers still say `<add short link>`, so build these by hand and save the short links):
   1. The solution's `make_crc_table` and `crc16` (from `exercises/s03-compile-time/solution/include/telemetry/crc.h`), GCC 14, `-std=c++23 -O2`, with a tiny `int main` that calls `crc16` on a literal. You want to show `kCrcTable` as a data symbol and the call folded to an immediate.
-  2. Two panes, same call `serialize(ParseError::EmptyLine)`: left pane with the starter's `serialize.h` inlined, right pane with the solution's. GCC 14 in both. This is slide 29 and slide 49.
+  2. Two panes, same call `serialize(ParseError::EmptyLine)`: left pane with the starter's `serialize.h` inlined, right pane with the solution's. GCC 14 in both. This is slide 23 and slide 42.
   3. `concepts_vs_sfinae.cpp` with `-DSHOW_ERRORS`, one GCC 14 pane and one Clang 18 pane.
-  4. Optional, for an IF AHEAD on slide 16: the `validate(kRpm)` snippet with `static_assert(validate(kRpm).empty(), validate(kRpm));` on Clang 18 with `-std=c++2c`. Clang prints the returned reason as the message.
-- Exercise: confirm `starter/` builds and the three in-class tasks are reachable in 20 minutes. Find which sensor in `config.cpp` / `config.h` actually breaks when you set `.min_valid = 500.0` (it must be one whose `max_valid` is at or below 500; `rpm` with a 12000 max will not break). Note the exact edit for slide 49.
-- Know what the broken-table error actually prints. Verified on GCC 13 and Clang 18: you get the `static_assert` message and the failing expression, **not** the string your `validate` returned. Do not promise the room they will see the reason text.
+  4. Optional, for a question about appendix slide 51: the `validate(kRpm)` snippet with `static_assert(validate(kRpm).empty(), validate(kRpm));` on Clang 18 with `-std=c++2c`. Clang prints the returned reason as the message.
+- Slide 42's table break: find which sensor in the solution's `config.h` actually breaks when you set `.min_valid = 500.0` (it must be one whose `max_valid` is at or below 500; `rpm` with a 12000 max will not break). Note the exact edit.
+- Know what the broken-table error actually prints. Verified on GCC 13 and Clang 18: you get the `static_assert` message and the failing expression, **not** the string your `validate` returned. Do not promise the room they will see the reason text. Lab 3.1's TODO 2 shows the same thing.
+- Have the exercise README ready to paste for the at-home launch: `exercises/s03-compile-time/README.md`. Confirm `ctest --test-dir build -R s03_report_identical` passes on the starter as-is.
 
 ---
 
@@ -67,15 +73,19 @@ Bridge: here's how the two hours break down.
 
 ### 2. Agenda · target 0:01, ~1 min
 
-Six blocks. Ten minutes of recap and framing. Thirty minutes on the `constexpr` story, which is the longest single story in the course: it runs from C++11 to C++26, and every standard changed it. Fifteen minutes of C++17 template quality of life. Twenty-five on concepts. Fifteen on deducing `this`. Then twenty minutes of guided exercise, and a short wrap.
+Four blocks. **Twenty minutes of me, ten minutes of you, four times.** Block one is `constexpr` and `consteval`: making the compiler compute. Block two is the C++17 template features that made templates readable: folds, `if constexpr`, CTAD. It is the short block; its spare five minutes are the buffer if block one runs long. Block three is concepts: making the compiler check. Block four is deducing `this`, and reading the diagnostics.
 
-**The exercise starter is the Session 2 solution, so if your Session 2 build works, today's will too.** The README is `exercises/s03-compile-time/README.md`. Don't open it yet.
+(beat)
+
+Each lab is one file on Compiler Explorer with three TODOs. The slide that launches it has the link; you need nothing installed. If you built the repo, the same files are under `labs/`.
+
+The telemetry exercise is at-home work this time. Its first three tasks are today's labs applied to the real program, so you will have done them once already. **The exercise starter is the Session 2 solution, so if your Session 2 build works, today's will too.**
 
 (pause)
 
 Bridge: first, where we left the program last time.
 
-### 3. Session 2 recap · target 0:02, ~3 min
+### 3. Session 2 recap · target 0:02, ~2 min
 
 Last session's solution: an `expected` parser, `optional` lookups, `span` parameters, `string_view` fields, and a `std::print` report with three formatters. Same report, byte for byte. That byte-for-byte test is still in force today. We are going to change a lot of the code and none of the output.
 
@@ -95,7 +105,7 @@ Third: a `formatter::format` that isn't a template on the context type. libstdc+
 
 Bridge: so why spend a whole session on compile time? Because of three specific lines in the starter.
 
-### 4. Why compile time matters here · target 0:05, ~3 min
+### 4. Why compile time matters here · target 0:04, ~2 min
 
 Three things in the starter do work at runtime that never changes. They were put there for today.
 
@@ -109,29 +119,15 @@ Row three: `serialize.h` is a pile of overloads. Hand it a type it doesn't suppo
 
 **Zero runtime cost, no static-initialization order, and one class of bug that cannot reach a running program.** That last phrase is the one I care about. In a codebase that lives for twenty years, under a coding standard, through code review, the cheapest defect is the one the build refuses.
 
+The last line on the slide is the shape of the day. **Making the compiler compute, that's `constexpr` and `consteval`; making the compiler check, that's concepts.** C++17 templates are the bridge between the two, and deducing `this` removes the last of the boilerplate. Keep "may, must" in your head for block one; that's the whole vocabulary.
+
 >> ASK: "Where in your own code is there a table that's built at startup and never changes?" Expect: CRC tables, lookup tables for scaling or calibration, message ID maps, register maps. Say: "Every one of those is a candidate for the first half of today."
 
 >> IF BEHIND: "Three rows, three exercise tasks: the CRC table, the config table, and `serialize`."
 
-Bridge: those three rows split cleanly into two halves.
-
-### 5. The two halves of today · target 0:08, ~2 min
-
-**Making the compiler compute.** `constexpr` means a function *may* run at compile time. `consteval` means it *must*. `constinit` means a variable is initialized at compile time but stays mutable. The result is tables, checks, hashes, and configuration that cost nothing at runtime, and `static_assert` as a unit test that runs every time you build.
-
-**Making the compiler check.** That's concepts. A template's requirements go in its signature, where the compiler can check them at the call site, and the error message names the requirement that failed.
-
-(beat)
-
-In between is a bridge. C++17 made templates readable with fold expressions and `if constexpr`. C++20 made them checkable with concepts. And C++23's deducing `this` removes the last big pile of boilerplate in class design.
-
-Keep "may, must, initialized" in your head for the first half. That's the whole vocabulary.
-
 Bridge: let's start where `constexpr` started, which was not very impressive.
 
----
-
-### 6. `constexpr` in C++11: where it started · C++11 · target 0:10, ~1 min
+### 5. `constexpr` in C++11: where it started · C++11 · target 0:06, ~1 min
 
 `constexpr` in C++11 was a function that could run at compile time, as long as its body was a single return statement. That's it.
 
@@ -145,7 +141,7 @@ It's on screen so the rest of the story has a starting point. Everything after t
 
 Bridge: C++14 made it look like a normal function.
 
-### 7. Relaxed `constexpr` · C++14 · target 0:11, ~2 min
+### 6. Relaxed `constexpr` · C++14 · target 0:07, ~2 min
 
 Left: the C++11 form. Right: C++14. Look at the right side: a local `int r = 1`, a `for` loop, `r *= i`, return. **From C++14 on, a `constexpr` function looks like a normal function with a keyword in front.** Loops, locals, `if`, mutation of locals, multiple return statements.
 
@@ -165,7 +161,7 @@ The other C++14 change is at the bottom of the slide: `constexpr` member functio
 
 Bridge: before going further, where do these values actually live, and when does the compiler actually run the function?
 
-### 8. Where `constexpr` values live · target 0:13, ~3 min (slow down)
+### 7. Where `constexpr` values live · target 0:09, ~2 min (slow down)
 
 This slide is the one I most want you to get right, so I'm going to slow down.
 
@@ -185,19 +181,19 @@ Line six: `static_assert(f(3) == 6);` Also compile time, and it's a unit test.
 
 **A `constexpr` function is one function: the same body serves both contexts.** It runs at compile time only when a constant is required: a `constexpr` variable, a template argument, an array bound, a `static_assert`. Otherwise it's an ordinary function call.
 
-**`constexpr` on a function permits compile-time evaluation. It does not force it.** If you take one sentence out of this segment, take that one. People put `constexpr` on a function, call it in a hot loop with a runtime argument, and believe they've moved the work to compile time. They haven't. The keyword that forces it is `consteval`, which is about eight slides from now.
+**`constexpr` on a function permits compile-time evaluation. It does not force it.** If you take one sentence out of this block, take that one. People put `constexpr` on a function, call it in a hot loop with a runtime argument, and believe they've moved the work to compile time. They haven't. The keyword that forces it is `consteval`, four slides from now.
 
 >> ASK: "Line four, `int a = f(3);`. Compile time or runtime?" (pause) Expect a split room, some say compile time because the argument is a literal. Say: "Language answer: runtime. Optimizer answer: probably folded. The only way to get a guarantee is to require a constant, which is line five."
 
->> IF AHEAD: There's a wrinkle at namespace scope. If `int a = f(3);` is a global, not a local, the rules for static initialization say the compiler must constant-initialize it if the initializer is a constant expression. So the same line is "runtime" at block scope and "constant-initialized" at namespace scope, and nothing in the code tells you which you got. If someone later changes `f` so it can't be constant-evaluated, the global silently becomes dynamically initialized, and now it's subject to initialization order across translation units. That's precisely the problem `constinit` solves, on slide 17. Also: `constexpr` functions are implicitly `inline`, so they live in headers, and their bodies are visible to every caller. That's a header-hygiene cost you should know about in a large build.
+>> IF AHEAD: There's a wrinkle at namespace scope. If `int a = f(3);` is a global, not a local, the rules for static initialization say the compiler must constant-initialize it if the initializer is a constant expression. So the same line is "runtime" at block scope and "constant-initialized" at namespace scope, and nothing in the code tells you which you got. If someone later changes `f` so it can't be constant-evaluated, the global silently becomes dynamically initialized, and now it's subject to initialization order across translation units. That's precisely the problem `constinit` solves; it is in the appendix, slide 52. Also: `constexpr` functions are implicitly `inline`, so they live in headers, and their bodies are visible to every caller. That's a header-hygiene cost you should know about in a large build.
 
 >> IF BEHIND: "`constexpr` means may, not must; it's compile time only where a constant is required."
 
 Bridge: C++17 brought lambdas into constant expressions.
 
-### 9. `constexpr` lambdas and `if constexpr` · C++17 · target 0:16, ~2 min
+### 8. `constexpr` lambdas and `if constexpr` · C++17 · target 0:11, ~2 min
 
-C++17 adds two things to the `constexpr` story. Lambdas can be `constexpr`, and `if constexpr` can pick a branch at compile time. I'll cover `if constexpr` in the templates segment; it's mostly a template tool.
+C++17 adds two things to the `constexpr` story. Lambdas can be `constexpr`, and `if constexpr` can pick a branch at compile time. I'll cover `if constexpr` in block two; it's mostly a template tool.
 
 Look at the code. `factorials17` returns a `std::array<int, 6>`. Inside, there's a local array, a lambda called `fact` that's marked `constexpr`, and a loop that fills the array. At the bottom, `inline constexpr auto kFactorials = factorials17();` That's the pattern you'll use in the exercise: **a `constexpr` function that builds a table, and an `inline constexpr` variable that holds the result, computed once, by the compiler, in the header.**
 
@@ -207,13 +203,13 @@ The `constexpr` on the lambda is optional. Since C++17, lambdas are implicitly `
 
 Note the `static_cast<std::size_t>(i)` on the index. That's there because the repo builds with `-Wall -Wextra -Wpedantic -Werror`, and sign-conversion warnings are the kind of thing a strict build catches. You'll see that pattern in the solution.
 
->> IF AHEAD: An explicitly `constexpr` lambda whose body can't be constant-evaluated is an error at the point of definition only if no invocation could ever be constant; in practice compilers diagnose obvious cases like calling a non-`constexpr` function. The implicit rule is what makes generic algorithms work in constant expressions: a C++20 `std::sort` with a lambda comparator runs at compile time without anyone marking the lambda. That's the next-but-three slide.
+>> IF AHEAD: An explicitly `constexpr` lambda whose body can't be constant-evaluated is an error at the point of definition only if no invocation could ever be constant; in practice compilers diagnose obvious cases like calling a non-`constexpr` function. The implicit rule is what makes generic algorithms work in constant expressions: a C++20 `std::sort` with a lambda comparator runs at compile time without anyone marking the lambda. That's slide 10, two slides from now.
 
 >> IF BEHIND: "Lambdas are `constexpr` when they can be; write the keyword to make intent checked."
 
 Bridge: here's the exercise's version of that pattern.
 
-### 10. `std::array` at compile time · C++17 · target 0:18, ~3 min
+### 9. `std::array` at compile time · C++17 · target 0:13, ~2 min
 
 This is exercise task one, from the solution's `crc.h`. Hand-typed excerpt.
 
@@ -235,51 +231,11 @@ Why does this matter on embedded targets? `.rodata` on a microcontroller usually
 
 >> IF BEHIND: "The CRC table becomes `inline constexpr`; the `static_assert` on `0x29B1` is the unit test."
 
-Bridge: now the part that converts embedded engineers. What does a constant expression refuse to do?
-
-### 11. What a constant expression refuses · C++11 · target 0:21, ~2 min
-
-**Undefined behavior is not allowed in a constant expression.** That's been true since C++11, and it's the most underrated property of `constexpr`.
-
-Look at the code. `overflow(x)` returns `x + 1`. `at(a, i)` returns `a[i]`. Ordinary functions. Inside `SHOW_ERRORS`, three `static_assert`s. `overflow(INT_MAX)`: signed overflow. The compiler refuses: overflow in constant expression. `at({1, 2, 3}, 5)`: out of bounds. Refused. `uninit()`: reads an uninitialized `int`. Refused.
-
-(pause)
-
-**The compiler is a sanitizer for every `constexpr` call it evaluates, and it costs nothing at runtime.** Signed overflow, out-of-bounds access, uninitialized reads, use after lifetime ends, null dereference: all of those are hard errors during constant evaluation. Not warnings. Not "maybe the optimizer does something weird". Errors.
-
-So the advice is: write your lookup tables and protocol constants `constexpr`, add a `static_assert` or two, and you get UBSan and ASan for that code at build time, for free, on every build.
-
->> DO: In the terminal, run `g++-14 -std=c++23 -fsyntax-only -DSHOW_ERRORS demos/s03/constexpr_limits.cpp`. Expect three or more errors: "overflow in constant expression", "array subscript value '5' is outside the bounds", and an uninitialized-read error, plus one from the `reinterpret_cast` on the next slide. Point at each message in turn. Recovery: "If the output scrolls past, the three lines to find are overflow, out of bounds, uninitialized. The comments in the file name them."
-
->> IF AHEAD: The uninitialized case has a version wrinkle. Before C++20, a `constexpr` function couldn't even declare an uninitialized local. C++20 allows the declaration, but reading it during constant evaluation is still an error. The comment in the file notes Clang rejects the read even earlier, with its uninitialized-variable diagnostic. Also, this is only for what the compiler actually evaluates. A `constexpr` function called at runtime with `INT_MAX` overflows exactly like any other function. The sanitizer runs on the compile-time calls, which is why the `static_assert`s with edge cases are worth writing.
-
->> IF BEHIND: "UB in a constant expression is a compile error; the compiler is your sanitizer."
-
-Bridge: there's one more thing it refuses, and you'll hit it in task one.
-
-### 12. Also refused: `reinterpret_cast` · C++11 · target 0:23, ~2 min
-
-`reinterpret_cast` is never allowed in a constant expression. Never. Not in C++11, not in C++26.
-
-Look at `first_two_bytes`. Under `SHOW_ERRORS`, it takes `s.data()`, reinterprets it as a pointer to `uint16_t`, and dereferences. That's the "read two bytes as a word" idiom you've seen in every protocol parser. In a constant expression, it's an error. The `#else` branch does it properly: two `static_cast`s to `unsigned char`, a shift, an OR.
-
-(pause)
-
-Why? **A constant expression has no memory to reinterpret, only values.** The compiler's evaluator tracks objects and their types. A `uint16_t` view of two `char`s isn't an object that exists, so there's nothing to read.
-
-**This is why `std::as_bytes` isn't `constexpr`, and it's the snag you'll hit in exercise task one.** The starter's `crc16` takes `std::as_bytes(...)` of the input. When you make `crc16` `constexpr` and add the `static_assert`, the compiler will tell you `as_bytes` isn't usable in a constant expression. The fix in the solution is a template over the byte type with `static_cast<unsigned char>` per byte. I'll let you find that yourselves.
-
-The rest of the list at the bottom: `goto` and inline `asm` can't be *executed* during constant evaluation. Calling a non-`constexpr` function is refused. `std::to_string` isn't `constexpr`, so for integers use `std::to_chars`, which is `constexpr` for integral types since C++23.
-
->> ASK: "If you need to turn bytes into a `uint16_t` at compile time and you don't want to write shifts, what's the C++20 tool?" Expect: `std::bit_cast`. Say: "Right, and `bit_cast` is `constexpr` as long as neither type contains pointers, references, or unions. It copies the object representation. So `std::bit_cast<std::uint16_t>(std::array<unsigned char, 2>{...})` works at compile time. Watch the endianness: that gives you the host's byte order, which is exactly the bug the shift version avoids."
-
->> IF AHEAD: The slide's list says "non-literal types (pre-C++20)". The precise history: C++20 made far more types literal (constexpr destructors, which is what lets `std::string` and `std::vector` work), and C++23 relaxed the rule further so a `constexpr` function can declare a variable of non-literal type, as long as that path isn't evaluated at compile time. Similarly, `asm` blocks became allowed to appear in C++20 and `goto` in C++23, but only on paths that aren't evaluated. The rule underneath all of it: a `constexpr` function only has to work for the calls you actually make at compile time.
-
->> IF BEHIND: "`reinterpret_cast` is never `constexpr`; that's why `as_bytes` isn't, and you'll hit it in task one."
+>> IF AHEAD: What a constant expression refuses, appendix slides 48 and 49. Undefined behavior is not allowed in one: signed overflow, out-of-bounds, an uninitialized read, all hard errors during constant evaluation, so the compiler is a sanitizer for every `constexpr` call it evaluates, at no runtime cost. And `reinterpret_cast` is never allowed, which is why `std::as_bytes` is not `constexpr` and why the at-home exercise's task 1 has a snag in it. Both slides are in the PDF with the demo file `constexpr_limits.cpp`.
 
 Bridge: C++20 made the biggest jump. You can allocate.
 
-### 13. Dynamic allocation at compile time · C++20 · target 0:25, ~2 min
+### 10. Dynamic allocation at compile time · C++20 · target 0:15, ~2 min
 
 C++20 lets you use `new` and `delete` in a constant expression, which means `std::vector` and `std::string` work at compile time. With one rule.
 
@@ -299,37 +255,11 @@ So the pattern is: **build with `vector`, return an `array`.** If you need the s
 
 >> IF BEHIND: "C++20 allocates at compile time as long as the memory is freed before the expression ends; build in a vector, return an array."
 
-Bridge: the rest of C++20's additions, and the trap.
-
-### 14. The rest of C++20 `constexpr` · C++20 · target 0:27, ~3 min (slow down)
-
-The subtitle lists them: virtual calls, `try`/`catch` blocks, `dynamic_cast`, changing the active member of a union. All allowed in `constexpr` functions in C++20. A `throw` still can't be evaluated at compile time, but the `try` block is allowed to exist.
-
-The code is about something more useful. **One function, two implementations: exact at compile time, fast at runtime.** Look at `power`. `if (std::is_constant_evaluated())`, the C++20 spelling, opens a branch that runs only during constant evaluation: a plain multiply loop. C++23 spells the same thing `if consteval`, and we'll see that on slide 18. The `else` branch runs at runtime and calls `std::pow`, which is fast but not `constexpr` everywhere. The `static_assert` uses the compile-time branch.
-
-(pause)
-
-Now the trap, second block. Slow down here.
-
-`std::is_constant_evaluated()` is the C++20 library function that answers "am I being evaluated at compile time right now?" Look inside `SHOW_ERRORS`: someone wrote `if constexpr (std::is_constant_evaluated())`. That looks right. It's wrong.
-
-(pause)
-
-Here's why. The condition of an `if constexpr` is itself a constant expression. It's evaluated at compile time, always. So when the compiler asks "am I being constant-evaluated?" while evaluating that condition, the answer is yes. Always. **`is_constant_evaluated()` inside `if constexpr` is always true, so the runtime branch is dead code.** GCC 14 warns about it.
-
-The correct C++20 spelling is a plain `if`, line under the `#endif`. And the C++23 spelling is `if consteval`, which can't be misused that way, because there's no condition to put it in.
-
->> DO: Run `./build/demos/s03/demo_s03_is_constant_evaluated`. Expected output: `1024 2`. Point at the `2`: "`trap()` was called at runtime, so the plain `if` correctly took the runtime path." Then compile with `-DSHOW_ERRORS` and point at the GCC warning about `is_constant_evaluated` always evaluating to true in `if constexpr`. Recovery: "The output is `1024 2`; the warning text is in the comment on line 24."
-
->> ASK: "If the compile-time branch is a multiply loop and the runtime branch is `std::pow`, are you guaranteed they give the same answer?" (pause) Expect: "no". Say: "Correct. Floating point at compile time and at runtime can differ, in the last bit or more, depending on the library, FMA contraction, and flags like fast-math. If you write two implementations, you need a test that runs both paths on the same inputs. That's a real review point."
-
->> IF AHEAD: There's a mirror-image trap. `std::is_constant_evaluated()` called in a function that isn't `constexpr` at all is always false. And in a `constexpr` function called to initialize a non-`constexpr` local, it's false even if the optimizer later folds the call. "Constant-evaluated" means the language required a constant, not that the compiler happened to compute it early. `if consteval` has the same semantics, minus the misuse. It's also needed to call a `consteval` function from inside a `constexpr` one: the `if consteval` branch is an immediate context, so the call is allowed there.
-
->> IF BEHIND: "`if consteval` gives one function two implementations; `is_constant_evaluated` inside `if constexpr` is always true, so don't."
+>> IF AHEAD: The rest of C++20 `constexpr` is appendix slide 50: virtual calls, `try`/`catch`, unions, and `std::is_constant_evaluated()`, which lets one function be exact at compile time and fast at runtime. The trap on that slide is worth one sentence here: `is_constant_evaluated()` inside `if constexpr` is always true, because the condition is itself constant-evaluated. C++23's `if consteval` cannot be misused that way.
 
 Bridge: if `constexpr` means may, what's the keyword for must?
 
-### 15. `consteval`: must run at compile time · C++20 · target 0:30, ~2 min
+### 11. `consteval`: must run at compile time · C++20 · target 0:17, ~2 min
 
 `consteval` declares an immediate function. **Every call to a `consteval` function must produce a constant. Calling it at runtime is a compile error.**
 
@@ -345,103 +275,19 @@ Why would you want a function that refuses to run? Because some work should neve
 
 The classic use is switching on strings: hash the case labels at compile time with `consteval`, hash the input at runtime with a separate ordinary function, and compare integers.
 
+The last line on the slide: **two relatives of this are in the appendix.** Slide 51 is a `consteval` validator that returns the reason it failed, which is the exercise's task 2 and lab 3.1's TODO 2 in miniature. Slide 52 is `constinit`: a mutable global whose initializer is proven constant, the end of the static initialization order fiasco. One sentence each; the PDF has the rest.
+
 >> DO: Run `./build/demos/s03/demo_s03_consteval_constinit`. Expected output: `4DD8BED6 1`. Point at the hex: "That's FNV-1a of `rpm`, computed by the compiler." Then uncomment line 17 (the `id` function), rebuild with `cmake --build build --target demo_s03_consteval_constinit`, and show the error saying the call is not a constant expression because `s` is not a constant. Re-comment it. Recovery: "The error text is in the comment; the point is that the compiler refuses the runtime call."
 
 >> IF AHEAD: In C++20 as originally published, `consteval` was viral in an annoying way: calling a `consteval` function from inside a `constexpr` function with a parameter was an error, even if the `constexpr` function was only ever used at compile time. C++23 fixed this with "consteval needs to propagate up" (P2564), applied as a defect report: such a `constexpr` function is implicitly promoted to `consteval` instead. GCC 14 and recent Clang implement it. If you're on an older compiler and see "is not a constant expression" on a call that obviously is constant, that's the reason. Also: you can't take the address of a `consteval` function in runtime code, because there's no runtime function to point to.
 
 >> IF BEHIND: "`consteval` must run at compile time; a runtime call doesn't compile."
 
-Bridge: exercise task two uses `consteval` with a twist: it returns a reason.
+Bridge: the takeaway, then the first lab.
 
-### 16. `consteval` with a message · C++20 · target 0:32, ~2 min
+### 12. `constexpr` takeaway · target 0:19, ~1 min
 
-This is the pattern for exercise task two, the config validator.
-
-`Limit` has a name and a low and high bound. `validate` is `consteval` and returns a `std::string_view`. If the name is empty, return "limit has no name". If `lo` isn't less than `hi`, return "limit has lo >= hi". Otherwise return an empty view.
-
-Then `static_assert(validate(kRpm).empty(), "sensor limit is invalid");` 
-
-(beat)
-
-**An empty string means valid; a non-empty string is the reason it failed.** And because it's `consteval`, the validation can't accidentally become a runtime check that somebody disables in production.
-
-Notice the test is `!(l.lo < l.hi)` and not `l.lo >= l.hi`. That's on purpose. If a bound is NaN, every comparison is false. `lo >= hi` would be false and the check would pass. `!(lo < hi)` is true and the check catches it. That's a habit worth having in any range validation.
-
-(pause)
-
-In the exercise, `validate` takes a `std::span<const SensorConfig>` and checks names, units, ranges, and duplicate names across the whole table, and the `static_assert` guards `kSensors`.
-
-One honest caveat about the error you'll see. **The compiler prints your `static_assert` message and the failing expression. It does not print the string your validator returned.** So the message tells you the table is bad, and the code tells you which checks exist. C++26 lets you pass a computed string as the `static_assert` message, and then the reason prints directly.
-
->> IF AHEAD: Show the C++26 form if you preloaded it (Compiler Explorer tab 4): `static_assert(validate(kRpm).empty(), validate(kRpm));` on Clang 18 with `-std=c++2c`. Break `kRpm` by swapping the bounds. Clang prints "static assertion failed due to requirement 'validate(kRpm).empty()': limit has lo >= hi". That's P2741, user-generated `static_assert` messages; GCC 14 has it too in C++26 mode. Until your project is on C++26, a cheap trick to get the reason into the error is to make each failing check call a non-`constexpr` function, or `throw` a string literal, inside `validate`: the compiler then points at the exact line that failed. It's uglier, but the error lands on the line that names the problem.
-
->> IF BEHIND: "Return an empty `string_view` for valid and a reason for invalid, and `static_assert` on `.empty()`."
-
-Bridge: that's compute-and-check. Now for globals you need to change at runtime.
-
-### 17. `constinit`: initialized at compile time, mutable at runtime · C++20 · target 0:34, ~2 min
-
-There are three kinds of global, and C++20 finally named the one embedded code wants.
-
-**`constexpr` globals are immutable and constant-initialized. Plain globals are mutable and might be dynamically initialized, in an order you don't control across translation units. `constinit` is the middle one: mutable, and guaranteed constant-initialized.**
-
-Look at the code. `Counters` has two counters, `parsed` and `rejected`. `constinit Counters g_counters{};` That means the compiler guarantees `g_counters` is initialized before any code runs. It's in `.data` or `.bss` with its initial value. No constructor runs at startup.
-
-(pause)
-
-The commented line: `constinit int bad = fnv1a_runtime("x");` If the initializer isn't a constant expression, that's an error. That's the point. **`constinit` doesn't change what happens; it makes the compiler prove it.** Without it, someone changes an initializer, it silently becomes dynamic initialization, and now another translation unit's static constructor can read it before it's set. That's the static initialization order fiasco, and it's the kind of bug that shows up only when the link order changes.
-
-`constinit` isn't `const`. The demo's `main` does `++g_counters.parsed`, and the output shows `1`.
-
->> ASK: "Why not just make the counters `constexpr`?" Expect: "because they need to change". Say: "Right. `constexpr` implies `const`. `constinit` is for exactly the globals that must change but must also be ready before anything runs: counters, state machines, error flags."
-
->> IF AHEAD: `constinit` pairs well with `thread_local`. A `thread_local` variable with dynamic initialization makes every access go through a wrapper function that checks initialization. If you declare it `extern thread_local constinit int x;` in the header, every translation unit knows there's no dynamic initializer, and the compiler can access it directly. That's a measurable win in hot paths. Also, `constinit` applies only to variables with static or thread storage duration; on a local it's an error.
-
->> IF BEHIND: "`constinit`: mutable global, initializer proven constant, no initialization-order fiasco."
-
-Bridge: C++23 cleaned up nearly everything else.
-
-### 18. Almost nothing left · C++23 · target 0:36, ~2 min
-
-C++23 removed most of the remaining restrictions. The subtitle: `if consteval`, static locals, non-literal variables, `constexpr std::unique_ptr`.
-
-The code shows static locals. `cached_or_computed` has `if consteval` on top. At compile time, just compute the factorial. At runtime, go to the `else` branch, which has a `static std::array<int, 13> cache`, and memoize. Before C++23, a `static` local anywhere in a `constexpr` function was an error, even on a branch that couldn't run at compile time. C++23 allows it, as long as the compile-time path doesn't touch it.
-
-(pause)
-
-**The bigger C++23 change is in the notes: a function may be `constexpr` as long as some call could be a constant expression.** The old rule required every path to be constant-evaluable. Now the compiler only checks what you actually evaluate.
-
-A code-review point on that example: the runtime cache is a function-local static that's written without synchronization. Call it from two threads and that's a data race. Good for a slide; in production, it needs an atomic or a lock, or it shouldn't be a cache.
-
-The bottom of the slide is what's still not `constexpr` in C++23: throwing exceptions, placement `new`, most of `<cmath>`, and `reinterpret_cast`, which is never. Throwing at compile time and placement `new` are C++26. Some of `<cmath>` became `constexpr` in C++23 (things like `fabs`, `floor`, `fmin`) and C++26 adds most of the rest.
-
->> IF AHEAD: The table size 13 isn't random. 12 factorial is 479,001,600, which fits in a 32-bit `int`. 13 factorial is about 6.2 billion, which doesn't. So the cache covers 0 through 12 and the next index would overflow. That's a nice way to tie back to slide 11: `static_assert(cached_or_computed(13) > 0)` would fail the build with an overflow error, and the runtime call would just be UB. Also from this slide's subtitle: `constexpr std::unique_ptr` (C++23) means RAII code can run at compile time, as long as the allocation is freed, same as the vector rule.
-
->> IF BEHIND: "C++23 allows static locals and non-literal variables on runtime-only paths; almost nothing is left that can't be `constexpr`."
-
-Bridge: here's the whole story on one slide.
-
-### 19. The full timeline · target 0:38, ~1 min
-
-Twelve years from a glorified macro to nearly the whole language at compile time.
-
-C++11: single return, recursion. C++14: loops and locals, which is where the CRC loop becomes legal. C++17: lambdas, `if constexpr`, `std::array`, `inline constexpr` variables, which is where the CRC table lives. C++20: allocation, `vector` and `string`, `consteval`, `constinit`, which is the config validator. C++23: `if consteval`, static locals, and the relaxed rules that let the exercise's lookup functions move into headers. C++26: exceptions, placement `new`, and `static_assert` with a computed message.
-
-(beat)
-
-**Point at where each exercise function sits: every row has a piece of today's code on it.** And notice how much of this works on a C++17 compiler. If your certified toolchain is stuck at C++17, you still get the CRC table and most of the validation pattern, minus `consteval`.
-
->> IF AHEAD: For the record on the C++23 row: `string_view` has been usable in constant expressions since C++17, and `std::optional` became fully `constexpr` in C++20 (P2231 was applied as a defect report against C++20). So `find_sensor` returning an `optional` in a `static_assert` doesn't actually need C++23; it needs a library new enough to have implemented the C++20 fixes.
-
->> IF BEHIND: "Every standard expanded `constexpr`; the exercise functions sit on the C++14, 17, and 20 rows."
-
-Bridge: the takeaway.
-
-### 20. `constexpr` takeaway · target 0:39, ~1 min
-
-Time check: you should be at 0:39 here and leave at 0:40.
-
-**`constexpr` by default on any function that could be: it costs nothing and unlocks `static_assert`.** `consteval` when it must never run at runtime. `constinit` for mutable globals.
+**`constexpr` by default on any function that could be: it costs nothing and unlocks `static_assert`.** `consteval` when it must never run at runtime. `constinit` for mutable globals, in the appendix.
 
 **`static_assert` is your compile-time unit test, and undefined behavior in a constant expression is a compile error.**
 
@@ -449,13 +295,35 @@ Time check: you should be at 0:39 here and leave at 0:40.
 
 Monday morning: find one lookup table that's built at startup and make it `inline constexpr`. Check the map file before and after. You'll see it move from code plus RAM to read-only data.
 
->> IF BEHIND: Read the bold lines and the Monday morning line. Move on.
+Time check: 0:20, and lab 3.1 starts now. It is this block in one file: a table, a validator, a parser.
 
-Bridge: next, templates. A shorter segment, and it starts with an error message.
+>> IF BEHIND: Read the bold lines and the Monday morning line. Start the lab on time.
+
+After the lab: templates. A shorter block, and it starts with an error message.
+
+### 13. Lab 3.1: work that belongs at compile time · target 0:20, ~10 min
+
+**Ten minutes. Three TODOs, in order. Build after each one; each TODO ends with a `static_assert` you uncomment, and if it compiles, it passed. The link is on the slide; the same file is `labs/s03/lab1_constexpr.cpp` if you built the repo.**
+
+>> DO: Put the lab slide up and paste the starter link into chat. Say nothing for the first minute while people get the file open. Then: "Every TODO is two keywords and one uncommented line. The compiler tells you which keyword you forgot."
+
+What to watch for:
+
+- TODO 1: people make `make_crc8_table` `constexpr` and leave `kCrc8` as `const`. The `static_assert` then says "the value of `kCrc8` is not usable in a constant expression", with a note "`kCrc8` was not declared `constexpr`". Both halves are needed: a `constexpr` function may run at compile time; a `constexpr` variable requires it. That is slide 7 again.
+- TODO 2, first error: `validate` is `consteval` but `kSensors` is still `const`. The error lands on the call in `main`, not on the `static_assert`: "call to consteval function ... is not a constant expression", because a `const` array of class type is not usable in a constant expression. Making `kSensors` `constexpr` fixes both lines at once.
+- TODO 2, the surprise: once `kSensors` is `constexpr`, the call in `main` still compiles. People expect `consteval` to reject a call inside `main`. It does not; it rejects a call whose arguments are not constants. `kSensors.data()` is a constant, so the compiler evaluates `validate` there too and `main` prints a baked-in "yes". Say that out loud; it is the "must" half of may-versus-must.
+- TODO 2, the break: duplicate an id and the error is "static assertion failed" pointing at the `static_assert` line. The returned reason string is not printed. Same as the exercise's task 2, and worth saying once.
+- TODO 3: one keyword, no body change. If someone says "that was too easy", that is the point: the function did not change, the contexts it can be used in did.
+
+At seven minutes, paste the solution link. Walk the three diffs in two minutes: the two `constexpr` keywords on TODO 1, `consteval` plus `constexpr` on TODO 2 (point at the comment in `main`: that call is evaluated by the compiler too), and the solution's `main` on TODO 3, which calls `parse_hex` on a runtime `char frame[]` to prove the runtime path still exists.
+
+>> ASK: "What runs at start-up now?" Expect: "nothing", or "just the printfs". Then: "Two tables and two checks moved into the compiler. The binary has the answers in `.rodata` and no code that computes them. That is the whole first block."
+
+At ten minutes, move on whether or not people are done. Nothing in block 2 depends on this lab.
 
 ---
 
-### 21. The problem with C++11 templates · target 0:40, ~2 min
+### 14. The problem with C++11 templates · target 0:30, ~2 min
 
 This is a real error from the Session 2 starter. The call is `serialize(ParseError::EmptyLine)`. `ParseError` is an enum class. There's no `serialize` for it.
 
@@ -467,15 +335,15 @@ That's nine candidates: seven overloads plus the two templates, `span` and `vect
 
 And this is the simple case. These are plain overloads. When the overloads are `enable_if` templates, each candidate's note includes a `substitution failed` with a `no type named 'type' in 'struct std::enable_if<false, int>'` and the error runs to pages. If you've ever scrolled through a Boost or Eigen error looking for the one line that matters, you know.
 
-Keep this error in mind. It comes back at the start of the concepts segment with the C++20 version next to it.
+Keep this error in mind. It comes back at the start of block three with the C++20 version next to it.
 
->> ASK: "Who reads template errors from the top, and who reads them from the bottom?" Expect a split. Say: "Both are coping strategies. The goal of the next two segments is an error you can read from the top."
+>> ASK: "Who reads template errors from the top, and who reads them from the bottom?" Expect a split. Say: "Both are coping strategies. The goal of the next two blocks is an error you can read from the top."
 
->> IF BEHIND: "Eight candidates, no reason; this error comes back in the concepts segment."
+>> IF BEHIND: "Eight candidates, no reason; this error comes back in block three."
 
 Bridge: the first C++17 fix is for variadic templates.
 
-### 22. Fold expressions · C++17 · target 0:42, ~3 min
+### 15. Fold expressions · C++17 · target 0:32, ~3 min
 
 Left side, C++11. Every variadic function was a recursive pair: a base case with no arguments, and a template that peels off `first`, does something with it, and recurses on `rest...`. Two functions, and the compiler instantiates one copy for every pack length.
 
@@ -499,7 +367,7 @@ Right side, C++17. **A fold expression applies an operator across the whole pack
 
 Bridge: there are four forms, and one gotcha.
 
-### 23. The four fold forms · C++17 · target 0:45, ~1 min
+### 16. The four fold forms · C++17 · target 0:35, ~1 min
 
 Four shapes. Pack on the left with the dots on the right is a right fold. Dots on the left is a left fold. Add an initial value and it's a binary fold.
 
@@ -515,7 +383,7 @@ The gotcha is the last line. With an empty pack, `&&` gives `true`, `||` gives `
 
 Bridge: `if constexpr` replaced the other big C++11 template trick.
 
-### 24. `if constexpr` replacing dispatch · C++17 · target 0:46, ~3 min
+### 17. `if constexpr` replacing dispatch · C++17 · target 0:36, ~3 min
 
 Left, C++11. Two overloads of `describe11`, each guarded by `enable_if` on a type trait. One for integral types, one for floating point. To understand what `describe11` does, you have to find all the overloads, read each `enable_if`, and reassemble the logic in your head. If somebody adds a third overload in another header, you have to find that too.
 
@@ -537,7 +405,7 @@ Where does this leave concepts? **`if constexpr` is for branching inside one fun
 
 Bridge: you've seen `is_integral_v` twice now. Where did the `_v` come from?
 
-### 25. Variable templates and the `_v` / `_t` aliases · C++14 · target 0:49, ~2 min
+### 18. Variable templates and the `_v` / `_t` aliases · C++14 · target 0:39, ~2 min
 
 A variable template is a constant parameterized on a type. C++14.
 
@@ -559,7 +427,7 @@ The practical win of `_t` is that it kills the `typename` keyword in front of de
 
 Bridge: Session 2 had a template that knew its own arguments. How?
 
-### 26. CTAD and deduction guides · C++17 · target 0:51, ~2 min
+### 19. CTAD and deduction guides · C++17 · target 0:41, ~2 min
 
 In Session 2 we wrote `std::visit(overloaded{lambda1, lambda2}, v)`. `overloaded` is a class template. Nobody wrote its template arguments. That's class template argument deduction, CTAD, C++17.
 
@@ -579,7 +447,7 @@ Look at the first line. `overloaded` inherits from every `Fs` and pulls in every
 
 Bridge: a short one on template parameters that are values.
 
-### 27. `auto` non-type template parameters · C++17 · target 0:53, ~1 min
+### 20. `auto` non-type template parameters · C++17 · target 0:43, ~1 min
 
 `template <auto N>`: a template parameter that's a value, with its type deduced from the argument.
 
@@ -587,7 +455,7 @@ Bridge: a short one on template parameters that are values.
 
 (beat)
 
-Preview: in C++20 the value can be a class type, which is how you get a compile-time string as a template argument. That's coming in the concepts segment.
+Preview: in C++20 the value can be a class type, which is how you get a compile-time string as a template argument. That's appendix slide 56, `FixedString`; read it in the PDF.
 
 >> DO: Optional. `./build/demos/s03/demo_s03_auto_nttp` prints `7 temp_core`. Skip if past 0:53.
 
@@ -597,9 +465,7 @@ Preview: in C++20 the value can be a class type, which is how you get a compile-
 
 Bridge: the C++17 takeaway.
 
-### 28. C++17 templates takeaway · target 0:54, ~1 min
-
-Time check: 0:54, leave at 0:55.
+### 21. C++17 templates takeaway · target 0:44, ~1 min
 
 **Fold expressions end recursive variadics. `if constexpr` ends tag dispatch. `_v` and `_t` end `::value` and `::type`. CTAD ends most `make_` helpers.** Not all: `make_unique` and `make_shared` still exist for good reasons, because they do the allocation.
 
@@ -609,13 +475,35 @@ Templates stopped being a specialist skill in C++17. **C++20 makes them checkabl
 
 Monday morning: find one recursive variadic template and fold it.
 
->> IF BEHIND: Read the bold lines. Move on.
+Time check: 0:45, and lab 3.2 starts now. Block three starts at 1:00 on the clock; the five minutes between the lab and it are the buffer for block one, not extra lab time. If you have them, take a break.
 
-Bridge: back to that error message.
+>> IF BEHIND: Read the bold lines. Start the lab on time.
+
+After the lab: back to that error message.
+
+### 22. Lab 3.2: C++17 templates · target 0:45, ~10 min
+
+**Ten minutes, three TODOs. A fold, an `if constexpr`, a deduction guide. The output must not change: the program prints the same four lines before and after.**
+
+>> DO: Lab slide up, starter link in chat. One quiet minute. Then: "Every TODO has the answer's shape in the comment above it. The thinking is in the second half of each one."
+
+What to watch for:
+
+- TODO 1: `sum` is given in the comment. `count_true` is the one to think about. A unary fold over `+` works on `bool`s, because they promote to `int`, and it prints 3; but call it with no arguments and GCC says "fold of empty expansion over operator+". The binary form, `(0 + ... + (bs ? 1 : 0))`, handles the empty pack. That is slide 16's gotcha, in their own file.
+- TODO 1: someone will write `(bs ? 1 : 0 + ...)`. The fold needs its own parentheses around the whole expression and around the operand: `((bs ? 1 : 0) + ...)`.
+- TODO 2: anyone who writes a plain `if` instead of `if constexpr` gets "no matching function for call to `to_string(const char*&)`" and "`basic_string(int&)`". Both branches were instantiated for every `T`. That error is the lesson: the discarded branch is the feature.
+- TODO 2: delete the three tag structs and the three `describe_impl` overloads too. People leave them in and the lab still builds; say the point is one function, not four plus a trait expression.
+- TODO 3: `std::pair p{3, 0.25}` just works. `Range r{0, 1.0}` without the guide: "class template argument deduction failed", then "deduced conflicting types for parameter 'T' ('int' and 'double')". The guide in the comment resolves it to `Range<double>`. If someone writes `Range r{0.0, 1.0}` instead, that also compiles, and it is a fair answer: the guide exists so callers do not have to.
+
+At seven minutes: solution link. Two minutes: `sum` and `count_true` side by side with the recursive pairs, the one `describe`, and the guide line under `Range`.
+
+>> ASK: "Which of the three could you have written in C++14?" Expect: "none". Then: "Right. Fold expressions, `if constexpr`, and CTAD all landed in C++17 together, and that is the year templates stopped being a specialist skill."
+
+At ten minutes, move on. Block 3 starts at 1:00; if you are early, the five minutes before it are the buffer for the first half, not extra lab time.
 
 ---
 
-### 29. The problem concepts solve · demo · target 0:55, ~3 min
+### 23. The problem concepts solve · demo · target 1:00, ~3 min
 
 Compiler Explorer, two panes, same call: `serialize(ParseError::EmptyLine)`.
 
@@ -637,7 +525,7 @@ This is exercise task eight, at home. It's the most persuasive thirty seconds in
 
 Bridge: so what is a concept, exactly?
 
-### 30. A concept is a named predicate on types · C++20 · target 0:58, ~1 min
+### 24. A concept is a named predicate on types · C++20 · target 1:03, ~1 min
 
 **A concept is a compile-time boolean, parameterized on a type, with a name you can use in a signature.** That's all.
 
@@ -655,7 +543,7 @@ In the exercise: `StringLike`, `SerializableRange`, and `Serializable`. Tasks th
 
 Bridge: there are four ways to use one.
 
-### 31. Four ways to constrain · C++20 · target 0:59, ~2 min
+### 25. Four ways to constrain · C++20 · target 1:04, ~2 min
 
 Same constraint, four spellings. All four functions on the slide are identical in behavior.
 
@@ -679,7 +567,7 @@ When to use which. **Use four, the abbreviated form, when it's one concept on on
 
 Bridge: the abbreviated form, side by side with what it replaced.
 
-### 32. Abbreviated function templates · C++20 · target 1:01, ~1 min
+### 26. Abbreviated function templates · C++20 · target 1:06, ~1 min
 
 Left: the same constraint in `enable_if` form. The comment says "read it aloud to a colleague". Try it: "template, typename T, typename std enable if, std is convertible, T, string view, value, int, type, equals zero". (beat) Nobody can review that.
 
@@ -697,7 +585,7 @@ Note the left side is labeled C++11 but uses `std::string_view`, which is C++17.
 
 Bridge: how do you write your own concept when no standard one fits?
 
-### 33. `requires` expressions · C++20 · target 1:02, ~2 min
+### 27. `requires` expressions · C++20 · target 1:07, ~2 min
 
 A `requires` expression defines a concept by what must compile. There are four kinds of requirement, and this slide shows all four.
 
@@ -709,7 +597,7 @@ Look at the `Range` concept. `t.begin();` and `t.end();` are simple requirements
 
 Bottom: `vector<int>` is a `Range`. `std::string` isn't, because the nested requirement excludes it. `int` isn't, because there's no `int::value_type`.
 
-The exercise's `SerializableRange` uses simple requirements for `begin` and `end`, plus `!StringLike` as the exclusion. You'll see why the exclusion is needed in three slides.
+The exercise's `SerializableRange` uses simple requirements for `begin` and `end`, plus `!StringLike` as the exclusion. You'll see why the exclusion is needed two slides from now.
 
 >> IF AHEAD: The parameter list of a `requires` expression, `requires(T& t)`, just introduces names to use in the expressions. It doesn't create objects. So `requires(T& t)` versus `requires(const T& t)` matters a lot: with `const T&`, `t.begin()` checks the const overload. A common bug is writing `requires(T t)` and then being surprised that a non-copyable type passes or fails based on things that have nothing to do with the requirement. There's also an ad hoc form in the demo file, `requires requires(T t) { t.size(); }`, which is legal and looks like a typo. Prefer a named concept: it subsumes, it documents, and the error message uses its name.
 
@@ -717,7 +605,7 @@ The exercise's `SerializableRange` uses simple requirements for `begin` and `end
 
 Bridge: before writing your own, check the standard library.
 
-### 34. The standard concepts library · C++20 · target 1:04, ~1 min
+### 28. The standard concepts library · C++20 · target 1:09, ~1 min
 
 The table is a reference. Don't read it; skim the rows. Core language concepts like `same_as`, `convertible_to`, `integral`, `floating_point`. Object concepts: `copyable`, `movable`, `semiregular`, `regular`. Comparison concepts. Callable concepts: `invocable`, `predicate`. Iterator and range concepts, which are Session 4.
 
@@ -735,7 +623,7 @@ One header correction for the table: `three_way_comparable` lives in `<compare>`
 
 Bridge: subsumption. Slow down.
 
-### 35. Subsumption: the more constrained overload wins · C++20 · target 1:05, ~3 min (slow down)
+### 29. Subsumption: the more constrained overload wins · C++20 · target 1:10, ~3 min (slow down)
 
 When two constrained overloads both match a call, the compiler needs a rule to pick one. That rule is subsumption.
 
@@ -767,7 +655,7 @@ Now connect it to the exercise. The notes say the exercise's `SerializableRange`
 
 Bridge: here's the trap.
 
-### 36. Subsumption only sees named concepts · C++20 · target 1:08, ~2 min (slow down)
+### 30. Subsumption only sees named concepts · C++20 · target 1:13, ~2 min (slow down)
 
 `Container2` is the same idea written differently: one `requires` block with `size`, `begin`, and `end`. Logically, it's exactly `HasSize` and more. Two overloads, `describe2(HasSize)` and `describe2(Container2)`.
 
@@ -791,7 +679,7 @@ That's the one subsumption rule that bites in practice, and the fix is always th
 
 Bridge: concepts can also ask questions about your own code.
 
-### 37. Concepts as questions about your API · C++20 · target 1:10, ~2 min
+### 31. Concepts as questions about your API · C++20 · target 1:15, ~2 min
 
 This is exercise task four, hand-typed from the solution.
 
@@ -813,7 +701,7 @@ This isn't constraining a template. It's asking. You can use the same concept in
 
 Bridge: some opinions on design.
 
-### 38. Concept design guidance · target 1:12, ~2 min
+### 32. Concept design guidance · target 1:17, ~1 min
 
 This slide is opinionated, and I'll say so.
 
@@ -835,51 +723,11 @@ Don't constrain for its own sake. A helper template used with two types in one `
 
 >> IF BEHIND: "Name the capability, prefer standard concepts, and constrain at library boundaries."
 
-Bridge: two C++20 lambda features that pair with concepts.
-
-### 39. Template lambdas and unevaluated lambdas · C++20 · target 1:14, ~2 min
-
-Top block. `sum14` is a C++14 generic lambda: `const auto& s`. It works, but inside the body you don't have a name for the element type. So the accumulator is a `double`, which is wrong for integers.
-
-`sum20` is a C++20 template lambda: `[]<typename T>(std::span<const T> s)`. Now `T` is a name. The accumulator is `T t{}`. **Template lambdas let you name the parameter types, constrain them, and use them in the body.**
-
-(pause)
-
-Bottom block, the practical one. In C++20 a lambda can appear in an unevaluated context, like `decltype`, and captureless lambdas are default-constructible. Two consequences.
-
-`std::set<std::string, decltype(less_by_size)>`: a set with a lambda comparator and no named comparator struct.
-
-And the line I want you to remember: `std::unique_ptr<FILE, decltype([](FILE* f) { if (f) std::fclose(f); })>`. **That's a RAII wrapper for any C handle in one declaration: no named deleter struct, no `std::function`, and no size overhead, because the deleter is an empty type.** Every embedded codebase has C APIs with open and close pairs. This is how you wrap them.
-
->> DO: Run `./build/demos/s03/demo_s03_template_lambdas`. Expected output: `6 6 a true`. Point at `a`: "the set is ordered by length, so the one-character string is first." Recovery: "Six, six, a, true."
-
->> IF AHEAD: One caution on lambdas in `decltype`. Every lambda expression has a unique type, and that includes a lambda written in a header and included into two translation units. Inside a function body or a `.cpp`, which is how the demo uses it, that's fine. In a namespace-scope type alias in a header that's used in function signatures across translation units, you're close to ODR trouble. For a deleter you'll reuse across files, a named struct with `operator()` is still the safe choice. Also, the demo file uses `FILE` and `fopen` without including `<cstdio>`; it compiles through transitive includes, but your code should include it.
-
->> IF BEHIND: "Template lambdas name their types; `decltype` of a lambda gives you a one-line RAII deleter."
-
-Bridge: values as template arguments, part two.
-
-### 40. Class types as template arguments · C++20 · target 1:16, ~2 min
-
-C++20 lets a class type be a non-type template parameter, if it's structural. **Structural means all members public, none mutable, and every member itself structural.** Scalars, arrays of structural types, and classes made of them.
-
-`FixedString` holds a `char` array of size `N` and copies a string literal into it. It's structural. So `template <FixedString Name> struct Sensor` takes a string literal as a template argument. `Sensor<"rpm">::name == "rpm"`. A compile-time string, as part of a type.
-
-(pause)
-
-Why can't the exercise's `SensorConfig` be a template argument? It has `string_view` members. `std::string_view` keeps its pointer and length as private members. Private members mean not structural. So any struct holding a `string_view` can't be an NTTP. If you replaced the `string_view` with a `FixedString`, it could be.
-
-**The `FixedString` idiom is in every modern library that wants compile-time names: format string checking, reflection-like registries, compile-time routing.**
-
->> DO: Optional, if not shown on slide 27: `./build/demos/s03/demo_s03_auto_nttp` prints `7 temp_core`. Point at `Sensor<"temp_core">::name`.
-
->> IF AHEAD: Floating-point values became allowed as NTTPs in C++20 too, compared by bit pattern, so `0.0` and `-0.0` are different template arguments and NaN payloads matter. And two `Sensor<"rpm">` written in different files are the same type, because template-argument equivalence for class types compares member by member. That's what makes a compile-time registry keyed by name work across translation units. Note that `FixedString`'s constructor copies `N` characters including the null; `view()` drops it with `N - 1`.
-
->> IF BEHIND: "Structural class types can be template arguments; `string_view` can't, which is why `SensorConfig` can't."
+>> IF AHEAD: Two C++20 features that pair with concepts are in the appendix. Slide 55: template lambdas, `[]<typename T>(std::span<const T>)`, and lambdas in unevaluated contexts, which give you a one-line RAII deleter: `std::unique_ptr<FILE, decltype([](FILE* f) { if (f) std::fclose(f); })>`. Slide 56: class types as template arguments, the `FixedString` idiom, and why the exercise's `SensorConfig` cannot be one (a `string_view` member is not structural).
 
 Bridge: back to error messages, one more time, side by side.
 
-### 41. Concepts vs SFINAE: the error messages · C++20 · target 1:18, ~1 min
+### 33. Concepts vs SFINAE: the error messages · C++20 · target 1:18, ~1 min
 
 Same constraint, same wrong call, `twice(2.5)`, GCC 14.
 
@@ -899,9 +747,7 @@ The right side says what was required and what failed to meet it. The left side 
 
 Bridge: the takeaway.
 
-### 42. Concepts takeaway · target 1:19, ~1 min
-
-Time check: 1:19, leave at 1:20.
+### 34. Concepts takeaway · target 1:19, ~1 min
 
 **Constrain every template parameter at a library boundary with the weakest meaningful concept that makes the body compile. Build concepts from named concepts so they subsume.**
 
@@ -911,13 +757,35 @@ Time check: 1:19, leave at 1:20.
 
 Monday morning: replace one `enable_if` with a concept, and compare the two error messages.
 
->> IF BEHIND: Read the bold lines. Move on.
+Time check: 1:20, and lab 3.3 starts now. Its TODO 2 is exactly that comparison, on a file small enough to read both errors in full.
 
-Bridge: last feature. C++23, and it fixes three things at once.
+>> IF BEHIND: Read the bold lines. Start the lab on time.
+
+After the lab: the last feature. C++23, and it fixes three things at once.
+
+### 35. Lab 3.3: concepts · target 1:20, ~10 min
+
+**Ten minutes, three TODOs. Name a requirement, put it on a template, then add a second overload that only a range satisfies. TODO 2 is the one with the error message: do it twice, once before the constraint and once after.**
+
+>> DO: Lab slide up, starter link in chat. One quiet minute. Then: "Before you write anything, uncomment the `to_json(Opaque{1})` line in `main`, build, and look at where the error is. Then comment it back and start TODO 1."
+
+What to watch for:
+
+- TODO 1: the concept is in the comment. The stumble is placing it above the `serialize` overloads; then `Serializable<int>` is false and the first `static_assert` fails. The concept asks about the overloads declared before it (slide 31's name-lookup note).
+- TODO 2, before the constraint: "no matching function for call to `serialize(const Opaque&)`", reported inside `to_json`, with "required from here" pointing back at `main` and three candidate notes. After: "no matching function for call to `to_json(Opaque)`", then "constraints not satisfied" and "the required expression `serialize(t)` is invalid", on the call site. **Same bug, same fix; the error moved from inside the template to the line that made the mistake, and it names the requirement.** Make everyone read both.
+- TODO 2: any of the four spellings works. The solution uses `template <Serializable T>`. Someone who writes `requires Serializable<T>` after the parameter list is also right.
+- TODO 3: the concept is in the comment; `#include <ranges>` is in the hint. GCC 14 happens to compile without the include through `<vector>`; libc++ may not. The loop needs a separator that starts empty and becomes `","` after the first element, or the output has a leading or trailing comma and does not match.
+- TODO 3: nobody should hit an ambiguity, and someone will ask why not. `std::vector<Reading>` is not `Serializable` (no `serialize` overload takes it), so only the range overload is viable. Point at the comment in the starter: if a type satisfied both, the overload whose constraint subsumes the other would win, and that only works because `SerializableRange` is written with named concepts.
+
+At seven minutes: solution link. Two minutes: the concept, the one-word constraint on `to_json`, the range overload. Then the two error messages one more time if anyone did not run the before version.
+
+>> ASK: "Where did the error move to?" Expect: "to the call", "to main". Then: "From three levels down inside a template to the line that made the mistake, and it says what was required. That is what concepts are for; everything else they do, `enable_if` could do worse."
+
+At ten minutes, move on. Block 4 is short and ends with the last lab at 1:45.
 
 ---
 
-### 43. Three problems, one feature · C++23 · target 1:20, ~2 min
+### 36. Three problems, one feature · C++23 · target 1:30, ~2 min
 
 Three problems you've probably all written around.
 
@@ -939,7 +807,7 @@ C++23 lets you declare that object as an explicit parameter and deduce it. The p
 
 Bridge: here's what it looks like.
 
-### 44. Explicit object parameter · C++23 · target 1:22, ~3 min (slow down)
+### 37. Explicit object parameter · C++23 · target 1:32, ~3 min (slow down)
 
 This is exercise task seven.
 
@@ -965,7 +833,7 @@ Inside the body there is no `this` pointer. You write `self.count`, `self.sum`. 
 
 Bridge: the `const` duplication case.
 
-### 45. Deduplicating `const` overloads · C++23 · target 1:25, ~3 min
+### 38. Deduplicating `const` overloads · C++23 · target 1:35, ~2 min
 
 `Config` holds a vector of names. The commented-out C++11 code is the familiar pair: a `const` `at` returning `const std::string&`, and a non-`const` `at` returning `std::string&`. Same body twice.
 
@@ -987,7 +855,7 @@ So the four-overload problem, `const` and non-`const` times lvalue and rvalue, c
 
 Bridge: CRTP.
 
-### 46. CRTP without the template parameter · C++23 · target 1:28, ~3 min
+### 39. CRTP without the template parameter · C++23 · target 1:37, ~2 min
 
 The commented code is classic CRTP. `template <typename Derived> struct Shape11`, and `draw()` does `static_cast<Derived*>(this)->draw_impl()`. `Circle` inherits from `Shape11<Circle>`, naming itself. It works, it's fast, and it's confusing the first time anyone sees it. It's also easy to get wrong: if `Square` accidentally inherits from `Shape11<Circle>`, copy-paste style, the `static_cast` is undefined behavior and it compiles cleanly.
 
@@ -1009,7 +877,7 @@ One correction to the slide's notes. The notes say the base is a plain struct yo
 
 Bridge: and recursive lambdas.
 
-### 47. Recursive lambdas · C++23 · target 1:31, ~2 min
+### 40. Recursive lambdas · C++23 · target 1:39, ~2 min
 
 `fib`: `[](this auto self, int n) -> int { return n < 2 ? n : self(n - 1) + self(n - 2); }`. The lambda's first parameter is itself. So it can call itself. **A recursive lambda with no `std::function` and no helper.**
 
@@ -1019,7 +887,7 @@ Before C++23 you either stored it in a `std::function`, which costs a type-erase
 
 Two details. `this auto self` is by value. The closure has no captures, so it's empty, and copying it costs nothing. And the explicit `-> int` return type is needed: the body calls `self` before the compiler has deduced the return type, so without it you get "use of `auto` before deduction".
 
-Second block, `Builder`: the chaining pattern from slide 44, generalized. `Builder{}.add("a").add("b")` moves the temporary through each call. `Builder b; b.add("a")` returns `b` by reference.
+Second block, `Builder`: the chaining pattern from slide 37, generalized. Lab 3.4's TODO 3 is this `Builder` with a derived class on top. `Builder{}.add("a").add("b")` moves the temporary through each call. `Builder b; b.add("a")` returns `b` by reference.
 
 The demo prints `55 ab`: `fib(10)` is 55.
 
@@ -1029,9 +897,7 @@ The demo prints `55 ab`: `fib(10)` is 55.
 
 Bridge: the takeaway.
 
-### 48. Deducing `this` takeaway · target 1:33, ~2 min
-
-Time check: 1:33, leave by 1:35.
+### 41. Deducing `this` takeaway · target 1:41, ~2 min
 
 **Declare the object as a parameter, `this Self&& self`, and the member function knows its type and value category.** One accessor instead of two or four. CRTP without the template parameter. Recursive lambdas.
 
@@ -1041,39 +907,64 @@ The by-value trick: `this auto self` for small types. A small type passed by val
 
 **Monday morning: find one `const`/non-`const` accessor pair and merge it.** Check your compiler first: deducing `this` needs GCC 14, Clang 18, or a recent MSVC. If your toolchain is older, this is the one feature today you'll have to wait for.
 
+Time check: leave by 1:43. Two minutes of diagnostics, then lab 3.4 at 1:45.
+
 >> IF BEHIND: Read the bold lines. Move on.
 
-Bridge: one live comparison, then the exercise.
+Bridge: one live comparison, then the last lab.
 
----
+### 42. Reading the diagnostics · demo · target 1:43, ~2 min
 
-### 49. Reading the diagnostics · demo · target 1:35, ~2 min
+Two minutes. This primes the at-home exercise's tasks two and eight.
 
-Two minutes. This primes tasks two and eight.
+This repeats the comparison from slide 23, so keep it short. **The thing new here is breaking the sensor table.**
 
-This repeats the comparison from slide 29, so keep it short. **The thing new here is breaking the sensor table.**
-
->> DO: Compiler Explorer tab 2: flash both panes for ten seconds and say only "starter, nine candidates; solution, the concept by name." Then switch to the editor. In the solution's `config.h` (or your scratch copy), on the sensor you identified before class, set `.min_valid = 500.0` so it is at or above its `max_valid`. Run `cmake --build build`. Expect: "static assertion failed: sensor configuration table is invalid", pointing at the `static_assert(validate(kSensors).empty(), ...)` line. Point at the message and the expression. Revert the edit immediately and rebuild once to confirm green. Recovery if the build is slow or the edit doesn't fail: "The `static_assert` message is what you'll see; try it yourself in task two."
+>> DO: Compiler Explorer tab 2: flash both panes for ten seconds and say only "starter, nine candidates; solution, the concept by name." Then switch to the editor. In the solution's `config.h` (or your scratch copy), on the sensor you identified before class, set `.min_valid = 500.0` so it is at or above its `max_valid`. Run `cmake --build build`. Expect: "static assertion failed: sensor configuration table is invalid", pointing at the `static_assert(validate(kSensors).empty(), ...)` line. Point at the message and the expression. Revert the edit immediately and rebuild once to confirm green. Recovery if the build is slow or the edit doesn't fail: "The `static_assert` message is what you'll see; try it yourself in task two at home."
 
 (pause)
 
-That's the whole pitch for task two. **A bad configuration table didn't make it to a binary.** You'll write the validator that does that.
+That's the whole pitch for the exercise's task two. **A bad configuration table didn't make it to a binary.** You wrote a small version of that validator in lab 3.1; at home you write the real one.
 
 Note what you saw: the message and the expression. The specific reason isn't in the error on our compilers. When you write your validator, keep its checks small and obvious, so the reader of a failed build can find the cause in seconds.
 
 >> IF BEHIND: Skip the Compiler Explorer reprise; only do the table break.
 
-Bridge: here's the exercise.
+Bridge: the last lab, and it is the whole of block four in one file.
 
-### 50. Exercise: compile time and concepts · target 1:37, ~20 min
+### 43. Lab 3.4: deducing this · target 1:45, ~10 min
 
-See the Exercise coaching section below for the full run of this slide.
+**Ten minutes, three TODOs, one feature. An accessor pair becomes one member, a `std::function` recursion becomes a lambda that names itself, and a builder chains from a derived class without CRTP. Build after each; the first three output lines must not change, and TODO 3 adds a fourth.**
 
-Short version to say: **Open `exercises/s03-compile-time/README.md`. In class, tasks one to three. At home, four to eight.** The build and test command is on the slide. `solution/` is next session's starter.
+>> DO: Lab slide up, starter link in chat. One quiet minute. Then: "The signature you need is in the comment above each TODO. Inside these functions there is no `this`; everything goes through `self`."
 
->> DO: Paste into chat: `cmake --build build && ctest --test-dir build -R s03 --output-on-failure`. Start a visible 20-minute timer.
+What to watch for:
 
-### 51. Session 3 takeaway · target 1:57, ~3 min
+- TODO 1: the signature is in the comment. The stumble is writing `this->items_` inside it: "'this' is unavailable for explicit object member functions". It is `self.items_`. `std::forward<Self>(self).items_[i]` and plain `self.items_[i]` both pass this lab; the forward matters when a temporary `Buffer` should hand out an rvalue, which `main` does not test. Mention it, do not block on it.
+- TODO 1: `b.at(1) = 25` still compiles after the change, and `cb.at(2)` still cannot be assigned to. `Self` deduced as `Buffer&` for the first and `const Buffer&` for the second; the return type followed. One body, both behaviors.
+- TODO 2: dropping the `-> int` gives "use of `<lambda>` before deduction of 'auto'". The body calls `self` before the return type is known, so it has to be stated. Also: someone will keep the `std::function<int(int)> fib =` on the left and only change the lambda. It compiles and prints 55, and the type erasure is still there. The fix is `auto fib =`.
+- TODO 3: the chaining trick is `Self&&` as the return type plus `return std::forward<Self>(self);`. People write `Self&` and return `self`; `fb.id(7)` still works, but the chained call on the temporary fails with "cannot bind non-const lvalue reference of type `FrameBuilder&` to an rvalue of type `FrameBuilder`".
+- TODO 3: before anyone changes anything, the uncommented chain fails with "'class Builder' has no member named 'build'": after `id(8)` the object is a `Builder`. That message is the problem statement; after the change, `self` is a `FrameBuilder&&` at every step and `build()` is found.
+- TODO 3, if asked about lifetime: `FrameBuilder{}` is a temporary, and it lives to the end of the full expression, so chaining through it and calling `build()` is safe. Binding `auto&& r = FrameBuilder{}.id(8);` would not be; `Self&&` does not extend anyone's lifetime. That is slide 37's IF AHEAD.
+
+At seven minutes: solution link. Two minutes: the one `at`, the lambda with `self`, and the two setters. Point at the last line of `main`: four calls on a temporary, no copy, no `static_cast`, no template parameter on `Builder`.
+
+>> ASK: "In `FrameBuilder{}.id(8).payload("pong").build()`, what type does `self` have inside `id` and inside `payload`?" Expect: "FrameBuilder", "an rvalue reference". Then: "`FrameBuilder&&` both times. The base class never names the derived type and never casts; the call site tells it. That is CRTP with the template parameter deleted."
+
+At ten minutes, move on: one minute for the at-home exercise, then the takeaway.
+
+### 44. Exercise: compile time and concepts · target 1:55, ~1 min to launch
+
+One minute. Open `exercises/s03-compile-time/README.md` at home.
+
+Tasks one to three are today's labs applied to the real program: the CRC table at compile time with a `static_assert` on `0x29B1`, a `consteval` validator for the sensor table, and constrained `serialize`. Then tasks four to eight. **Most of the new tests are `static_assert`s: if it compiles, they passed. And `s03_report_identical` still diffs your report against the starter's, byte for byte.**
+
+(beat)
+
+Task one has a snag in it on purpose: `std::as_bytes`. Appendix slide 49 says why. No toolchain at home? The README has Compiler Explorer links for the whole program, starter and solution. The solution is next week's starter, so finishing is optional, but reading it is not.
+
+>> DO: Paste into chat: `exercises/s03-compile-time/README.md` and `cmake --build build && ctest --test-dir build -R s03 --output-on-failure`.
+
+### 45. Session 3 takeaway · target 1:56, ~2 min
 
 Three functions ran at startup or per call, and now they run at build time. One class of bug, a bad configuration table, **cannot reach a running program.** The generic code got shorter, and its error messages got readable. And the report output didn't change by a single byte.
 
@@ -1083,7 +974,7 @@ Three functions ran at startup or per call, and now they run at build time. One 
 
 Point at the timeline handout: the `constexpr` row is the longest on it. That's the story of the first half of today in one row.
 
-Next session: ranges. The `SerializableRange` concept you wrote becomes `std::ranges::input_range`, and the report loop becomes a pipeline. Finish tasks four through eight before then; the solution is the Session 4 starter, so if you don't finish, you start from ours.
+Next session: ranges. The `SerializableRange` concept you wrote becomes `std::ranges::input_range`, and the report loop becomes a pipeline. Do the exercise before then; the solution is the Session 4 starter, so if you don't finish, you start from ours.
 
 (beat)
 
@@ -1091,35 +982,252 @@ Thanks. Questions in the chat, or stay on for five minutes.
 
 ---
 
-## Exercise coaching
+## Appendix slides (in the PDF, not presented)
 
-**Launch it in 60 seconds (1:37).** Say: "Open the README. Three tasks in class. Task one: the CRC table at compile time with a `static_assert` on `0x29B1`. Task two: a `consteval` validator for the sensor table. Task three: constrained `serialize`. The command is in chat. When `ctest -R s03` is green and the report test is still identical, you're done. Twenty minutes. Go." Then stop talking.
+These sections are kept for the `IF AHEAD` moments and for answering questions; the slides sit after the Further reading divider (deck slide 46).
 
-**What to say while they work.** Very little. At about 1:42, once: "If task one gives you an error about `as_bytes`, that's the snag the README promised. Look back at slide 12." At about 1:47, once: "If you're done with task one and two, task three's tests tell you exactly what each `serialize` call must produce. Read the test file."
+### A1. The two halves of today (deck slide 47)
 
-**What to watch for (from the README and deck notes):**
+**Making the compiler compute.** `constexpr` means a function *may* run at compile time. `consteval` means it *must*. `constinit` means a variable is initialized at compile time but stays mutable. The result is tables, checks, hashes, and configuration that cost nothing at runtime, and `static_assert` as a unit test that runs every time you build.
 
-- Task one, the `as_bytes` snag. This is deliberate. Let them find it. The fix is to write the CRC core over `std::span<const Byte>` for any one-byte `Byte` with `static_cast<unsigned char>` per element, and have the `string_view` overload forward to it.
-- Task one, forgetting `inline` on `kCrcTable` in the header, or leaving the old function-local static in `crc.cpp` and getting a duplicate definition.
-- Task one, `crc16` itself not `constexpr`, so the `static_assert` fails with "call to non-`constexpr` function".
-- Task two, `kSensors` still defined in `config.cpp`. The `static_assert` needs it visible in the header as `inline constexpr std::array<SensorConfig, 6>`.
-- Task two, writing `min_valid >= max_valid` instead of `!(min_valid < max_valid)`. Both pass on the real table; only one catches NaN. Mention it if you see it, don't block on it.
-- Task two, duplicate-name check: a nested loop over the span is fine and `constexpr`. People reach for `std::set` or `std::unordered_set`; at compile time a `std::vector` plus `std::sort` and `std::adjacent_find` works, or just the nested loop.
-- Task three, `bool` and `char` matching `std::integral auto`. If a test expects `serialize('x')` to be a string, the integral overload grabbed it. Check what the tests require.
-- Task three, writing `requires !StringLike<T>` without parentheses in a requires-clause (GCC: "expression must be enclosed in parentheses").
-- Task three, `serialize(std::string)` becoming ambiguous if anyone jumps ahead to a range overload without the `!StringLike` exclusion. That's task four; point them at slide 35.
+**Making the compiler check.** That's concepts. A template's requirements go in its signature, where the compiler can check them at the call site, and the error message names the requirement that failed.
+
+(beat)
+
+In between is a bridge. C++17 made templates readable with fold expressions and `if constexpr`. C++20 made them checkable with concepts. And C++23's deducing `this` removes the last big pile of boilerplate in class design.
+
+Keep "may, must, initialized" in your head for the first half. That's the whole vocabulary.
+
+Bridge: let's start where `constexpr` started, which was not very impressive.
+
+### A2. What a constant expression refuses · C++11 (deck slide 48)
+
+**Undefined behavior is not allowed in a constant expression.** That's been true since C++11, and it's the most underrated property of `constexpr`.
+
+Look at the code. `overflow(x)` returns `x + 1`. `at(a, i)` returns `a[i]`. Ordinary functions. Inside `SHOW_ERRORS`, three `static_assert`s. `overflow(INT_MAX)`: signed overflow. The compiler refuses: overflow in constant expression. `at({1, 2, 3}, 5)`: out of bounds. Refused. `uninit()`: reads an uninitialized `int`. Refused.
+
+(pause)
+
+**The compiler is a sanitizer for every `constexpr` call it evaluates, and it costs nothing at runtime.** Signed overflow, out-of-bounds access, uninitialized reads, use after lifetime ends, null dereference: all of those are hard errors during constant evaluation. Not warnings. Not "maybe the optimizer does something weird". Errors.
+
+So the advice is: write your lookup tables and protocol constants `constexpr`, add a `static_assert` or two, and you get UBSan and ASan for that code at build time, for free, on every build.
+
+>> DO: In the terminal, run `g++-14 -std=c++23 -fsyntax-only -DSHOW_ERRORS demos/s03/constexpr_limits.cpp`. Expect three or more errors: "overflow in constant expression", "array subscript value '5' is outside the bounds", and an uninitialized-read error, plus one from the `reinterpret_cast` on the next slide. Point at each message in turn. Recovery: "If the output scrolls past, the three lines to find are overflow, out of bounds, uninitialized. The comments in the file name them."
+
+>> IF AHEAD: The uninitialized case has a version wrinkle. Before C++20, a `constexpr` function couldn't even declare an uninitialized local. C++20 allows the declaration, but reading it during constant evaluation is still an error. The comment in the file notes Clang rejects the read even earlier, with its uninitialized-variable diagnostic. Also, this is only for what the compiler actually evaluates. A `constexpr` function called at runtime with `INT_MAX` overflows exactly like any other function. The sanitizer runs on the compile-time calls, which is why the `static_assert`s with edge cases are worth writing.
+
+>> IF BEHIND: "UB in a constant expression is a compile error; the compiler is your sanitizer."
+
+Bridge: there's one more thing it refuses, and you'll hit it in task one.
+
+### A3. Also refused: `reinterpret_cast` · C++11 (deck slide 49)
+
+`reinterpret_cast` is never allowed in a constant expression. Never. Not in C++11, not in C++26.
+
+Look at `first_two_bytes`. Under `SHOW_ERRORS`, it takes `s.data()`, reinterprets it as a pointer to `uint16_t`, and dereferences. That's the "read two bytes as a word" idiom you've seen in every protocol parser. In a constant expression, it's an error. The `#else` branch does it properly: two `static_cast`s to `unsigned char`, a shift, an OR.
+
+(pause)
+
+Why? **A constant expression has no memory to reinterpret, only values.** The compiler's evaluator tracks objects and their types. A `uint16_t` view of two `char`s isn't an object that exists, so there's nothing to read.
+
+**This is why `std::as_bytes` isn't `constexpr`, and it's the snag you'll hit in exercise task one.** The starter's `crc16` takes `std::as_bytes(...)` of the input. When you make `crc16` `constexpr` and add the `static_assert`, the compiler will tell you `as_bytes` isn't usable in a constant expression. The fix in the solution is a template over the byte type with `static_cast<unsigned char>` per byte. I'll let you find that yourselves.
+
+The rest of the list at the bottom: `goto` and inline `asm` can't be *executed* during constant evaluation. Calling a non-`constexpr` function is refused. `std::to_string` isn't `constexpr`, so for integers use `std::to_chars`, which is `constexpr` for integral types since C++23.
+
+>> ASK: "If you need to turn bytes into a `uint16_t` at compile time and you don't want to write shifts, what's the C++20 tool?" Expect: `std::bit_cast`. Say: "Right, and `bit_cast` is `constexpr` as long as neither type contains pointers, references, or unions. It copies the object representation. So `std::bit_cast<std::uint16_t>(std::array<unsigned char, 2>{...})` works at compile time. Watch the endianness: that gives you the host's byte order, which is exactly the bug the shift version avoids."
+
+>> IF AHEAD: The slide's list says "non-literal types (pre-C++20)". The precise history: C++20 made far more types literal (constexpr destructors, which is what lets `std::string` and `std::vector` work), and C++23 relaxed the rule further so a `constexpr` function can declare a variable of non-literal type, as long as that path isn't evaluated at compile time. Similarly, `asm` blocks became allowed to appear in C++20 and `goto` in C++23, but only on paths that aren't evaluated. The rule underneath all of it: a `constexpr` function only has to work for the calls you actually make at compile time.
+
+>> IF BEHIND: "`reinterpret_cast` is never `constexpr`; that's why `as_bytes` isn't, and you'll hit it in task one."
+
+Bridge: C++20 made the biggest jump. You can allocate.
+
+### A4. The rest of C++20 `constexpr` · C++20 (deck slide 50) (slow down)
+
+The subtitle lists them: virtual calls, `try`/`catch` blocks, `dynamic_cast`, changing the active member of a union. All allowed in `constexpr` functions in C++20. A `throw` still can't be evaluated at compile time, but the `try` block is allowed to exist.
+
+The code is about something more useful. **One function, two implementations: exact at compile time, fast at runtime.** Look at `power`. `if (std::is_constant_evaluated())`, the C++20 spelling, opens a branch that runs only during constant evaluation: a plain multiply loop. C++23 spells the same thing `if consteval`, and appendix slide 53 shows it. The `else` branch runs at runtime and calls `std::pow`, which is fast but not `constexpr` everywhere. The `static_assert` uses the compile-time branch.
+
+(pause)
+
+Now the trap, second block. Slow down here.
+
+`std::is_constant_evaluated()` is the C++20 library function that answers "am I being evaluated at compile time right now?" Look inside `SHOW_ERRORS`: someone wrote `if constexpr (std::is_constant_evaluated())`. That looks right. It's wrong.
+
+(pause)
+
+Here's why. The condition of an `if constexpr` is itself a constant expression. It's evaluated at compile time, always. So when the compiler asks "am I being constant-evaluated?" while evaluating that condition, the answer is yes. Always. **`is_constant_evaluated()` inside `if constexpr` is always true, so the runtime branch is dead code.** GCC 14 warns about it.
+
+The correct C++20 spelling is a plain `if`, line under the `#endif`. And the C++23 spelling is `if consteval`, which can't be misused that way, because there's no condition to put it in.
+
+>> DO: Run `./build/demos/s03/demo_s03_is_constant_evaluated`. Expected output: `1024 2`. Point at the `2`: "`trap()` was called at runtime, so the plain `if` correctly took the runtime path." Then compile with `-DSHOW_ERRORS` and point at the GCC warning about `is_constant_evaluated` always evaluating to true in `if constexpr`. Recovery: "The output is `1024 2`; the warning text is in the comment on line 24."
+
+>> ASK: "If the compile-time branch is a multiply loop and the runtime branch is `std::pow`, are you guaranteed they give the same answer?" (pause) Expect: "no". Say: "Correct. Floating point at compile time and at runtime can differ, in the last bit or more, depending on the library, FMA contraction, and flags like fast-math. If you write two implementations, you need a test that runs both paths on the same inputs. That's a real review point."
+
+>> IF AHEAD: There's a mirror-image trap. `std::is_constant_evaluated()` called in a function that isn't `constexpr` at all is always false. And in a `constexpr` function called to initialize a non-`constexpr` local, it's false even if the optimizer later folds the call. "Constant-evaluated" means the language required a constant, not that the compiler happened to compute it early. `if consteval` has the same semantics, minus the misuse. It's also needed to call a `consteval` function from inside a `constexpr` one: the `if consteval` branch is an immediate context, so the call is allowed there.
+
+>> IF BEHIND: "`if consteval` gives one function two implementations; `is_constant_evaluated` inside `if constexpr` is always true, so don't."
+
+Bridge: if `constexpr` means may, what's the keyword for must?
+
+### A5. `consteval` with a message · C++20 (deck slide 51)
+
+This is the pattern for exercise task two, the config validator.
+
+`Limit` has a name and a low and high bound. `validate` is `consteval` and returns a `std::string_view`. If the name is empty, return "limit has no name". If `lo` isn't less than `hi`, return "limit has lo >= hi". Otherwise return an empty view.
+
+Then `static_assert(validate(kRpm).empty(), "sensor limit is invalid");` 
+
+(beat)
+
+**An empty string means valid; a non-empty string is the reason it failed.** And because it's `consteval`, the validation can't accidentally become a runtime check that somebody disables in production.
+
+Notice the test is `!(l.lo < l.hi)` and not `l.lo >= l.hi`. That's on purpose. If a bound is NaN, every comparison is false. `lo >= hi` would be false and the check would pass. `!(lo < hi)` is true and the check catches it. That's a habit worth having in any range validation.
+
+(pause)
+
+In the exercise, `validate` takes a `std::span<const SensorConfig>` and checks names, units, ranges, and duplicate names across the whole table, and the `static_assert` guards `kSensors`.
+
+One honest caveat about the error you'll see. **The compiler prints your `static_assert` message and the failing expression. It does not print the string your validator returned.** So the message tells you the table is bad, and the code tells you which checks exist. C++26 lets you pass a computed string as the `static_assert` message, and then the reason prints directly.
+
+>> IF AHEAD: Show the C++26 form if you preloaded it (Compiler Explorer tab 4): `static_assert(validate(kRpm).empty(), validate(kRpm));` on Clang 18 with `-std=c++2c`. Break `kRpm` by swapping the bounds. Clang prints "static assertion failed due to requirement 'validate(kRpm).empty()': limit has lo >= hi". That's P2741, user-generated `static_assert` messages; GCC 14 has it too in C++26 mode. Until your project is on C++26, a cheap trick to get the reason into the error is to make each failing check call a non-`constexpr` function, or `throw` a string literal, inside `validate`: the compiler then points at the exact line that failed. It's uglier, but the error lands on the line that names the problem.
+
+>> IF BEHIND: "Return an empty `string_view` for valid and a reason for invalid, and `static_assert` on `.empty()`."
+
+Bridge: that's compute-and-check. Now for globals you need to change at runtime.
+
+### A6. `constinit`: initialized at compile time, mutable at runtime · C++20 (deck slide 52)
+
+There are three kinds of global, and C++20 finally named the one embedded code wants.
+
+**`constexpr` globals are immutable and constant-initialized. Plain globals are mutable and might be dynamically initialized, in an order you don't control across translation units. `constinit` is the middle one: mutable, and guaranteed constant-initialized.**
+
+Look at the code. `Counters` has two counters, `parsed` and `rejected`. `constinit Counters g_counters{};` That means the compiler guarantees `g_counters` is initialized before any code runs. It's in `.data` or `.bss` with its initial value. No constructor runs at startup.
+
+(pause)
+
+The commented line: `constinit int bad = fnv1a_runtime("x");` If the initializer isn't a constant expression, that's an error. That's the point. **`constinit` doesn't change what happens; it makes the compiler prove it.** Without it, someone changes an initializer, it silently becomes dynamic initialization, and now another translation unit's static constructor can read it before it's set. That's the static initialization order fiasco, and it's the kind of bug that shows up only when the link order changes.
+
+`constinit` isn't `const`. The demo's `main` does `++g_counters.parsed`, and the output shows `1`.
+
+>> ASK: "Why not just make the counters `constexpr`?" Expect: "because they need to change". Say: "Right. `constexpr` implies `const`. `constinit` is for exactly the globals that must change but must also be ready before anything runs: counters, state machines, error flags."
+
+>> IF AHEAD: `constinit` pairs well with `thread_local`. A `thread_local` variable with dynamic initialization makes every access go through a wrapper function that checks initialization. If you declare it `extern thread_local constinit int x;` in the header, every translation unit knows there's no dynamic initializer, and the compiler can access it directly. That's a measurable win in hot paths. Also, `constinit` applies only to variables with static or thread storage duration; on a local it's an error.
+
+>> IF BEHIND: "`constinit`: mutable global, initializer proven constant, no initialization-order fiasco."
+
+Bridge: C++23 cleaned up nearly everything else.
+
+### A7. Almost nothing left · C++23 (deck slide 53)
+
+C++23 removed most of the remaining restrictions. The subtitle: `if consteval`, static locals, non-literal variables, `constexpr std::unique_ptr`.
+
+The code shows static locals. `cached_or_computed` has `if consteval` on top. At compile time, just compute the factorial. At runtime, go to the `else` branch, which has a `static std::array<int, 13> cache`, and memoize. Before C++23, a `static` local anywhere in a `constexpr` function was an error, even on a branch that couldn't run at compile time. C++23 allows it, as long as the compile-time path doesn't touch it.
+
+(pause)
+
+**The bigger C++23 change is in the notes: a function may be `constexpr` as long as some call could be a constant expression.** The old rule required every path to be constant-evaluable. Now the compiler only checks what you actually evaluate.
+
+A code-review point on that example: the runtime cache is a function-local static that's written without synchronization. Call it from two threads and that's a data race. Good for a slide; in production, it needs an atomic or a lock, or it shouldn't be a cache.
+
+The bottom of the slide is what's still not `constexpr` in C++23: throwing exceptions, placement `new`, most of `<cmath>`, and `reinterpret_cast`, which is never. Throwing at compile time and placement `new` are C++26. Some of `<cmath>` became `constexpr` in C++23 (things like `fabs`, `floor`, `fmin`) and C++26 adds most of the rest.
+
+>> IF AHEAD: The table size 13 isn't random. 12 factorial is 479,001,600, which fits in a 32-bit `int`. 13 factorial is about 6.2 billion, which doesn't. So the cache covers 0 through 12 and the next index would overflow. That's a nice way to tie back to appendix slide 48: `static_assert(cached_or_computed(13) > 0)` would fail the build with an overflow error, and the runtime call would just be UB. Also from this slide's subtitle: `constexpr std::unique_ptr` (C++23) means RAII code can run at compile time, as long as the allocation is freed, same as the vector rule.
+
+>> IF BEHIND: "C++23 allows static locals and non-literal variables on runtime-only paths; almost nothing is left that can't be `constexpr`."
+
+Bridge: here's the whole story on one slide.
+
+### A8. The full timeline (deck slide 54)
+
+Twelve years from a glorified macro to nearly the whole language at compile time.
+
+C++11: single return, recursion. C++14: loops and locals, which is where the CRC loop becomes legal. C++17: lambdas, `if constexpr`, `std::array`, `inline constexpr` variables, which is where the CRC table lives. C++20: allocation, `vector` and `string`, `consteval`, `constinit`, which is the config validator. C++23: `if consteval`, static locals, and the relaxed rules that let the exercise's lookup functions move into headers. C++26: exceptions, placement `new`, and `static_assert` with a computed message.
+
+(beat)
+
+**Point at where each exercise function sits: every row has a piece of today's code on it.** And notice how much of this works on a C++17 compiler. If your certified toolchain is stuck at C++17, you still get the CRC table and most of the validation pattern, minus `consteval`.
+
+>> IF AHEAD: For the record on the C++23 row: `string_view` has been usable in constant expressions since C++17, and `std::optional` became fully `constexpr` in C++20 (P2231 was applied as a defect report against C++20). So `find_sensor` returning an `optional` in a `static_assert` doesn't actually need C++23; it needs a library new enough to have implemented the C++20 fixes.
+
+>> IF BEHIND: "Every standard expanded `constexpr`; the exercise functions sit on the C++14, 17, and 20 rows."
+
+Bridge: the takeaway.
+
+### A9. Template lambdas and unevaluated lambdas · C++20 (deck slide 55)
+
+Top block. `sum14` is a C++14 generic lambda: `const auto& s`. It works, but inside the body you don't have a name for the element type. So the accumulator is a `double`, which is wrong for integers.
+
+`sum20` is a C++20 template lambda: `[]<typename T>(std::span<const T> s)`. Now `T` is a name. The accumulator is `T t{}`. **Template lambdas let you name the parameter types, constrain them, and use them in the body.**
+
+(pause)
+
+Bottom block, the practical one. In C++20 a lambda can appear in an unevaluated context, like `decltype`, and captureless lambdas are default-constructible. Two consequences.
+
+`std::set<std::string, decltype(less_by_size)>`: a set with a lambda comparator and no named comparator struct.
+
+And the line I want you to remember: `std::unique_ptr<FILE, decltype([](FILE* f) { if (f) std::fclose(f); })>`. **That's a RAII wrapper for any C handle in one declaration: no named deleter struct, no `std::function`, and no size overhead, because the deleter is an empty type.** Every embedded codebase has C APIs with open and close pairs. This is how you wrap them.
+
+>> DO: Run `./build/demos/s03/demo_s03_template_lambdas`. Expected output: `6 6 a true`. Point at `a`: "the set is ordered by length, so the one-character string is first." Recovery: "Six, six, a, true."
+
+>> IF AHEAD: One caution on lambdas in `decltype`. Every lambda expression has a unique type, and that includes a lambda written in a header and included into two translation units. Inside a function body or a `.cpp`, which is how the demo uses it, that's fine. In a namespace-scope type alias in a header that's used in function signatures across translation units, you're close to ODR trouble. For a deleter you'll reuse across files, a named struct with `operator()` is still the safe choice. Also, the demo file uses `FILE` and `fopen` without including `<cstdio>`; it compiles through transitive includes, but your code should include it.
+
+>> IF BEHIND: "Template lambdas name their types; `decltype` of a lambda gives you a one-line RAII deleter."
+
+Bridge: values as template arguments, part two.
+
+### A10. Class types as template arguments · C++20 (deck slide 56)
+
+C++20 lets a class type be a non-type template parameter, if it's structural. **Structural means all members public, none mutable, and every member itself structural.** Scalars, arrays of structural types, and classes made of them.
+
+`FixedString` holds a `char` array of size `N` and copies a string literal into it. It's structural. So `template <FixedString Name> struct Sensor` takes a string literal as a template argument. `Sensor<"rpm">::name == "rpm"`. A compile-time string, as part of a type.
+
+(pause)
+
+Why can't the exercise's `SensorConfig` be a template argument? It has `string_view` members. `std::string_view` keeps its pointer and length as private members. Private members mean not structural. So any struct holding a `string_view` can't be an NTTP. If you replaced the `string_view` with a `FixedString`, it could be.
+
+**The `FixedString` idiom is in every modern library that wants compile-time names: format string checking, reflection-like registries, compile-time routing.**
+
+>> DO: Optional, if not shown on slide 20: `./build/demos/s03/demo_s03_auto_nttp` prints `7 temp_core`. Point at `Sensor<"temp_core">::name`.
+
+>> IF AHEAD: Floating-point values became allowed as NTTPs in C++20 too, compared by bit pattern, so `0.0` and `-0.0` are different template arguments and NaN payloads matter. And two `Sensor<"rpm">` written in different files are the same type, because template-argument equivalence for class types compares member by member. That's what makes a compile-time registry keyed by name work across translation units. Note that `FixedString`'s constructor copies `N` characters including the null; `view()` drops it with `N - 1`.
+
+>> IF BEHIND: "Structural class types can be template arguments; `string_view` can't, which is why `SensorConfig` can't."
+
+Bridge: back to error messages, one more time, side by side.
+## Running the labs
+
+The per-lab coaching is in the script at slides 13, 22, 35 and 43. The rhythm is the same every time:
+
+1. Lab slide up, starter link in chat, one quiet minute while people open the file. Then stay quiet for five more; answer chat, do not lecture.
+2. At seven minutes, paste the solution link and walk the three changes in two minutes. The debrief is the last word on the block's topic, so it is scripted.
+3. One question to the room, then move on at ten minutes whether or not people are done. Nothing later depends on finishing a lab.
+
+If the lecture runs late, the lab still starts within two minutes of its target; cut the slide before the takeaway instead. Block 2 is scripted for fifteen minutes so that block 1, the longest story in the course, has five minutes of slack before block 3 starts at 1:00. If a lab runs over because the room is engaged, that is the time to spend; block 4 is short and has no slack of its own.
+
+## The at-home exercise
+
+Launched at slide 44 in one minute; nothing is done in class. What to say when it comes up in chat during the week, and in next session's recap:
+
+- Task 1, the `as_bytes` snag. This is deliberate. The fix is to write the CRC core over `std::span<const Byte>` for any one-byte `Byte` with `static_cast<unsigned char>` per element, and have the `string_view` overload forward to it. Appendix slide 49 is the explanation: `reinterpret_cast` is never a constant expression. (Lab 3.1 TODO 1 was the rehearsal for the rest of the task.)
+- Task 1, forgetting `inline` on `kCrcTable` in the header, or leaving the old function-local static in `crc.cpp` and getting a duplicate definition.
+- Task 1, `crc16` itself not `constexpr`, so the `static_assert` fails with "call to non-`constexpr` function".
+- Task 2, `kSensors` still defined in `config.cpp`. The `static_assert` needs it visible in the header as `inline constexpr std::array<SensorConfig, 6>`. Lab 3.1 TODO 2 showed the same error in miniature: a `const` array of class type is not usable in a constant expression.
+- Task 2, writing `min_valid >= max_valid` instead of `!(min_valid < max_valid)`. Both pass on the real table; only one catches NaN. Mention it if you see it, don't block on it.
+- Task 2, duplicate-name check: a nested loop over the span is fine and `constexpr`. People reach for `std::set` or `std::unordered_set`; at compile time a `std::vector` plus `std::sort` and `std::adjacent_find` works, or just the nested loop.
+- Task 2, the error: only the `static_assert` message and the failed expression print, not the returned reason (GCC 13, Clang 18). Keep the checks small and obvious so the reader of a failed build can find the cause.
+- Task 3, `bool` and `char` matching `std::integral auto`. If a test expects `serialize('x')` to be a string, the integral overload grabbed it. Check what the tests require.
+- Task 3, writing `requires !StringLike<T>` without parentheses in a requires-clause (GCC: "expression must be enclosed in parentheses").
+- Task 3, `serialize(std::string)` becoming ambiguous if anyone jumps ahead to a range overload without the `!StringLike` exclusion. That's task four; slide 29 and lab 3.3's TODO 3 explain it.
+- Task 7: `this Self&& self` with no `this` pointer in the body; `self.count`, `self.sum`. Lab 3.4 TODO 1 and TODO 3 were the rehearsal.
 - Anyone on Clang 18 with libstdc++ instead of libc++ will have trouble with `std::expected` from Session 2; the repo's CMake adds `-stdlib=libc++` for Clang, so it's only people who changed that.
 
-**The 5-minutes-left call (1:52).** "Five minutes. If task one is green, you've got the main idea. Get the build green and commit; the rest is homework."
-
-**Debrief with the solution (1:55, two minutes max).** Open `solution/include/telemetry/crc.h`. Point at `make_crc_table`, `kCrcTable`, the byte-templated core with `static_cast`, and the `static_assert`. Then `config.h`: the `consteval validate` and its `static_assert`. Then `serialize.h`: the integral and floating-point abbreviated templates and `StringLike`. Say: "Count the lines in `serialize.h` versus the starter. Then do task eight at home and compare the errors." Don't walk tasks four to eight.
-
-**Closing.** Go to slide 51.
+Next session's recap slide should pick up whichever of these the chat shows most.
 
 ## Likely questions and answers
 
 **Our certified toolchain is stuck on C++17. What from today can we use?**
-Most of the first half and all of the C++17 template segment: relaxed `constexpr`, `constexpr` lambdas, `std::array` tables, `inline constexpr`, `static_assert` on table contents, fold expressions, `if constexpr`, CTAD, `auto` NTTPs. You lose `consteval`, `constinit`, compile-time allocation, concepts, and deducing `this`. The `validate` pattern works with plain `constexpr`; you just lose the guarantee that nobody calls it at runtime.
+Most of block one and all of block two: relaxed `constexpr`, `constexpr` lambdas, `std::array` tables, `inline constexpr`, `static_assert` on table contents, fold expressions, `if constexpr`, CTAD, `auto` NTTPs. You lose `consteval`, `constinit`, compile-time allocation, concepts, and deducing `this`. The `validate` pattern works with plain `constexpr`; you just lose the guarantee that nobody calls it at runtime.
 
 **Which compiler versions do we need for concepts and deducing `this`?**
 The course baseline is GCC 14 and Clang 18, and everything today is verified on both per the toolchain matrix. Roughly: concepts are usable from GCC 10 and Clang 10, with Clang's support maturing over the next several releases; deducing `this` needs GCC 14, Clang 18, or MSVC from VS 2022 17.2. Check your exact version on Compiler Explorer before you commit to a feature.
@@ -1146,7 +1254,7 @@ Yes. The compiler evaluates floating point at compile time with its own arithmet
 Usually the opposite. The table goes into `.rodata`, which on most microcontrollers is flash, and the code that built the table at runtime is gone, as is the RAM copy. What can grow is template instantiations: every distinct `Concept auto` argument type is another function. That's the same trade as any template.
 
 **GCC's concept error just says "constraints not satisfied". How do I see which part failed?**
-Add `-fconcepts-diagnostics-depth=2` or 3 to GCC to expand nested concepts in the error. Clang shows more of the nesting by default. And building concepts from small named pieces, as on slide 36, makes the failing piece name itself.
+Add `-fconcepts-diagnostics-depth=2` or 3 to GCC to expand nested concepts in the error. Clang shows more of the nesting by default. And building concepts from small named pieces, as on slide 30, makes the failing piece name itself.
 
 **Is `consteval` contagious? I get "not a constant expression" calling it from a `constexpr` function.**
 In C++20 as published, yes: calling a `consteval` function with a parameter from a `constexpr` function is an error. C++23's P2564, applied as a defect report, makes the enclosing `constexpr` function implicitly `consteval` instead; GCC 14 and recent Clang implement it. On older compilers, call the `consteval` function inside an `if consteval` branch, or make the caller `consteval`.
@@ -1155,6 +1263,8 @@ In C++20 as published, yes: calling a `consteval` function with a parameter from
 No. Explicit-object member functions can't be `virtual` or `static`, and they can't have `const` or ref-qualifiers after the parameter list, because the object parameter already expresses those. If you need runtime polymorphism, use a regular virtual function; deducing `this` is for static dispatch and value-category forwarding.
 
 ## Deck issues found
+
+Slide numbers in this list are the deck's numbering before the block restructure (see `docs/session-format.md`); the items are kept for the record.
 
 Status: fixed in the deck, demos, outline and README on 2026-10-02 (see scripts/README.md). Items kept for the record. Still open: the Compiler Explorer `<add short link>` placeholders in every demo file header.
 

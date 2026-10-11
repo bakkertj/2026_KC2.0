@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Package what attendees get for a session into dist/session-N.zip:
-#   the deck (PDF), the demo sources, the exercise (starter, tests, data, README; the solution
-#   only with --with-solution), and every handout as PDF and DOCX.
+#   the deck (PDF), the demo sources, the labs (Sessions 2 to 5, starters and solutions), the
+#   exercise (starter, tests, data, README; the solution only with --with-solution), and every
+#   handout as PDF and DOCX.
 # Never included: the speaking scripts, the outlines, the syllabus, the plan.
 #
 #   tools/package.sh 3                  # dist/session-3.zip
@@ -46,6 +47,11 @@ package_one() {
   [ "$with_solution" = 1 ] && cp -r "$ex"/solution "$dir/exercise/"
   cp exercises/common/doctest.h "$dir/exercise/"
 
+  if [ -d labs/"$s" ]; then                       # Sessions 2 to 5: the in-class labs, starters and solutions
+    mkdir -p "$dir/labs"
+    cp labs/"$s"/*.cpp "$dir/labs/"
+  fi
+
   cp handouts/out/*.pdf handouts/out/*.docx "$dir/handouts/"
 
   cat > "$dir/README.md" <<README
@@ -54,7 +60,9 @@ package_one() {
 - slides/: the deck as PDF
 - demos/: the source of every code example on the slides; each file's header has a Compiler
   Explorer link, and handouts/compiler-explorer-links.pdf lists them all (GCC 14, -std=c++23)
-- exercise/: the in-class exercise (README.md, starter/, tests/, data/)$( [ "$with_solution" = 1 ] && echo ", with solution/" )
+$( [ -d labs/"$s" ] && echo "- labs/: the four ten-minute labs done in class after each lecture block, each with its
+  finished *_solution.cpp beside it; the slides link to the same files on Compiler Explorer" )
+- exercise/: the telemetry exercise$( [ "$n" = 1 ] && echo " done in class" || echo ", at-home work" ) (README.md, starter/, tests/, data/)$( [ "$with_solution" = 1 ] && echo ", with solution/" )
 - handouts/: cheat sheets, the feature timeline, the toolchain support matrix, the adoption
   roadmap worksheet, and the Compiler Explorer links index, as PDF and DOCX
 

@@ -11,45 +11,44 @@
 
 ## Pace plan for a fast speaker
 
-| Checkpoint slide | Target clock |
+Four blocks: about twenty minutes of slides, then a ten-minute lab, four times. The lab is the checkpoint; if the lecture runs long, the lab still starts on time and the slides you did not reach are covered in the lab debrief or skipped (they are all in the deck's Further reading appendix for the PDF).
+
+| Checkpoint | Target clock |
 |---|---|
 | 1. Title | 0:00 |
-| 6. `std::string_view` (Views segment) | 0:10 |
-| 13. `span` at a hardware boundary | 0:28 |
-| 17. `std::optional` (Maybe, either, anything) | 0:35 |
-| 23. `std::visit` and the overload-set visitor | 0:48 |
-| 30. The error-handling landscape (expected) | 1:00 |
-| 38. Why `printf` and `iostream` both lost (Formatting) | 1:15 |
-| 48. C++17 tour, 1: `std::filesystem` (Library tour) | 1:30 |
-| 57. Interface design checklist (Exercise and close) | 1:40 |
-| 58. Exercise launched | 1:42 |
-| 59. Session 2 takeaway | 1:58 |
+| 6. `std::string_view` (block 1, Views) | 0:07 |
+| 12. Lab 2.1 launched | 0:20 |
+| 13. `std::optional` (block 2, Maybe, either, anything) | 0:30 |
+| 23. Lab 2.2 launched | 0:50 |
+| 24. The error-handling landscape (block 3, `expected` and formatting) | 1:00 |
+| 32. `std::format` | 1:13 |
+| 37. Lab 2.3 launched | 1:20 |
+| 38. C++17 tour, 1 (block 4, Library tour and the checklist) | 1:30 |
+| 48. Lab 2.4 launched | 1:42 |
+| 49. Exercise (at home), 50. Takeaway | 1:52 |
+| Done, with five minutes of slack | 1:55 |
 
-If you hit a checkpoint more than 3 minutes early, use the IF AHEAD material in the next segment rather than speeding on.
+If you hit a lab launch more than 2 minutes early, use the IF AHEAD material in the slide before it rather than starting the lab early; people need the clock to be predictable. If you are late, cut the slide before the takeaway, never the lab.
 
 Slow down deliberately on these four:
 
-- **Slide 8, the dangling rule.** It is the entire cost of every view type today. If they do not internalize "a view is a reference", every later slide on `string_view` and `span` is a footgun handed out for free.
-- **Slide 23, `std::visit` and `overloaded`.** Two lines of variadic inheritance plus CTAD. Half the room has never seen `using Fs::operator()...;`. Read it slowly, piece by piece.
-- **Slide 33, monadic `expected`.** The type changes at every step of the chain. Say the type out loud at each line or people lose the thread.
-- **Slide 42, `std::formatter`.** `parse` and `format`, the context template, inheriting from `formatter<string_view>`. This is the at-home task 4, and it is where people get stuck alone.
+- **Slide 7, the dangling rule.** It is the entire cost of every view type today. If they do not internalize "a view is a reference", every later slide on `string_view` and `span` is a footgun handed out for free. Lab 2.1's TODO 3 tests exactly this.
+- **Slide 18, `std::visit` and `overloaded`.** Two lines of variadic inheritance plus CTAD. Half the room has never seen `using Fs::operator()...;`. Read it slowly, piece by piece. Lab 2.2's TODO 3 has them write it.
+- **Slide 27, monadic `expected`.** The type changes at every step of the chain. Say the type out loud at each line or people lose the thread.
+- **Slide 35, `std::formatter`.** `parse` and `format`, the context template. Lab 2.3's TODO 3 and the at-home task 4 are where people get stuck alone.
 
 ## Before class checklist
 
-- Build both toolchains if you can. GCC 14 is the main build; a Clang 18 + libc++ build covers range formatting and `mdspan`:
-  - `cmake -S . -B build -G Ninja && cmake --build build && ctest --test-dir build -R s02 --output-on-failure`
-  - Optional: `CXX=clang++ cmake -S . -B build-clang -G Ninja && cmake --build build-clang` (the repo CMake adds `-stdlib=libc++` for Clang).
-- Run every s02 binary once so nothing surprises you: `for b in build/demos/s02/demo_s02_*; do echo "== $b"; $b; done`.
-- Demo files to have open, in this order, as editor tabs on the right: `string_view_basics.cpp`, `string_view_dangling.cpp`, `string_view_not_cstring.cpp`, `span_basics.cpp`, `span_bytes.cpp`, `transparent_compare.cpp`, `optional_basics.cpp`, `optional_monadic.cpp`, `variant_visit.cpp`, `variant_messages.cpp`, `any.cpp`, `expected_basics.cpp`, `expected_pipeline.cpp`, `expected_void.cpp`, `format_specs.cpp`, `print.cpp`, `formatter_custom.cpp`, `formatter_spec.cpp`, `format_ranges.cpp`, `format_to_buffer.cpp`, then the `tour_*.cpp` files.
-- Compiler Explorer tabs to preload in the Simple Browser (Clang 18 is the safest target for the error demos):
+- Build with GCC 14 and run the tests, labs included: `cmake -S . -B build -G Ninja && cmake --build build && ctest --test-dir build -R "s02|lab_s02" --output-on-failure`. Optional: a Clang 18 + libc++ build (`CXX=clang++ cmake -S . -B build-clang -G Ninja && cmake --build build-clang`) for range formatting and `mdspan`.
+- Run every s02 demo binary once so nothing surprises you: `for b in build/demos/s02/demo_s02_*; do echo "== $b"; $b; done`.
+- Open the four lab starters on Compiler Explorer in four tabs, from the links on slides 12, 23, 37 and 48, and do each lab yourself once: `lab1_views`, `lab2_optional_variant`, `lab3_expected_format`, `lab4_interface_checklist`. Keep the four solution links ready to paste at the seven-minute mark of each lab. The whole list, with links, is in `handouts/compiler-explorer-links.md` under "The in-class labs".
+- Demo files to have open as editor tabs on the right, in deck order: `string_view_basics.cpp`, `string_view_dangling.cpp`, `span_basics.cpp`, `span_bytes.cpp`, `optional_basics.cpp`, `optional_monadic.cpp`, `variant_visit.cpp`, `variant_messages.cpp`, `any.cpp`, `expected_basics.cpp`, `expected_pipeline.cpp`, `format_specs.cpp`, `print.cpp`, `formatter_custom.cpp`, then the `tour_*.cpp` files. (The appendix slides' demos, `string_view_not_cstring.cpp`, `transparent_compare.cpp`, `expected_void.cpp`, `formatter_spec.cpp`, `format_ranges.cpp`, `format_to_buffer.cpp`, only if you expect to use the IF AHEAD material.)
+- Compiler Explorer tabs to preload besides the labs (Clang 18 is the safest target for the error demos):
   1. `string_view_dangling.cpp` with `-std=c++23 -Wall -Wextra -Werror -DSHOW_ERRORS`, Clang 18.
   2. `optional_monadic.cpp` with the trap line uncommented (call it on a local `std::optional` and on a temporary), GCC 14.
   3. A three-liner: `#include <format>` and `auto s = std::format("{:d}", 3.14);`, GCC 14, `-std=c++23`.
-  4. The `mdspan` snippet from slide 14, Clang 18 with `-stdlib=libc++`, or GCC trunk.
-  5. `tour_flat_map.cpp` on GCC trunk (15+).
-  6. `format_ranges.cpp` on GCC 15 or Clang + libc++, in case your local build is GCC 14.
-- Have the exercise ready: `exercises/s02-vocabulary-types/README.md` open, and confirm `ctest --test-dir build -R s02_report_identical` passes on the starter as-is. Know where `solution/parser.h` is; you show it at the debrief.
-- Have the handouts path ready to paste in chat: `handouts/toolchain-support-matrix.md`, `handouts/cheat-sheet-vocabulary-types.md`.
+- Have the exercise README ready to paste for the at-home launch: `exercises/s02-vocabulary-types/README.md`. Confirm `ctest --test-dir build -R s02_report_identical` passes on the starter as-is.
+- Have the handouts path ready to paste in chat: `handouts/toolchain-support-matrix.md`, `handouts/cheat-sheet-vocabulary-types.md`, `handouts/compiler-explorer-links.md`.
 
 ---
 
@@ -69,17 +68,17 @@ Let's look at how the two hours break down.
 
 ### 2. Agenda · target 0:01, ~1 min
 
-Seven blocks. Ten minutes of recap and the core idea. Then twenty-five minutes on views, `string_view` and `span`. Twenty-five on `optional`, `variant`, and `any`. Fifteen on `std::expected`, which is the one I most want you to leave with. Fifteen on formatting. Ten minutes of fast library tour. And then the guided exercise.
-
-The exercise starter is last session's solution. **If you finished Session 1's exercise, bring your version; if not, take ours, it's the same program.**
+Four blocks. **Twenty minutes of me, ten minutes of you, four times.** Block one is views, `string_view` and `span`. Block two is `optional`, `variant`, and `any`. Block three is `std::expected`, which is the one I most want you to leave with, and formatting. Block four is a fast library tour and the interface checklist.
 
 (beat)
 
-The library tour at the end is deliberately fast. It's a catalog, not a lesson. Screenshot it, and come back to it when you need it.
+Each lab is one file on Compiler Explorer with three TODOs. The slide that launches it has the link; you need nothing installed. If you built the repo, the same files are under `labs/`.
+
+The telemetry exercise is at-home work this time. Its first three tasks are today's labs applied to the real program, so you will have done them once already. **Last session was too much of me talking. This one is built so you type every half hour.**
 
 Before the new material, a quick look back at what tripped people up last time.
 
-### 3. Session 1 recap · target 0:02, ~3 min
+### 3. Session 1 recap · target 0:02, ~2 min
 
 Here's what the Session 1 solution looks like. Same telemetry program, same output, but six comparison operators collapsed into one spaceship, `using` instead of `typedef`, structured bindings, `[[nodiscard]]` on everything that returns something you shouldn't ignore, `from_chars` instead of `atof`, and `inline constexpr` constants instead of macros.
 
@@ -103,7 +102,7 @@ Since C++20, the `<version>` header defines a `__cpp_lib_` macro for every libra
 
 That starter still has some C++11-shaped interfaces in it. Let's name them.
 
-### 4. What is a vocabulary type? · target 0:05, ~3 min
+### 4. What is a vocabulary type? · target 0:04, ~2 min
 
 **A vocabulary type is a type that appears in interfaces so that caller and callee agree on meaning without reading a comment.**
 
@@ -133,7 +132,7 @@ And each row is a task in today's exercise. Row one is task 1, `expected`. Row t
 
 Before we fix them one by one, here's the whole vocabulary on one slide.
 
-### 5. The ownership vocabulary · target 0:08, ~2 min
+### 5. The ownership vocabulary · target 0:06, ~1 min
 
 This is the slide people screenshot. It comes back at the end as the interface checklist, filled in.
 
@@ -151,7 +150,7 @@ Notice the pattern. The two views at the top of the new rows don't own anything.
 
 Let's start with the borrowers.
 
-### 6. `std::string_view` · C++17 · target 0:10, ~3 min
+### 6. `std::string_view` · C++17 · target 0:07, ~3 min
 
 Left side, C++11. A function that counts commas. It takes `const std::string&`, because that's what we were all taught. Look at the comments at the bottom left. Call it with a string literal, `"a,b"`, and it constructs a temporary `std::string`, which may allocate, just to count commas. Call it with a buffer and a length from a C API, and there's no overload at all. So people wrote three overloads, or they wrote one that forces everybody to make a `std::string`.
 
@@ -173,31 +172,9 @@ This is `split` in the exercise, at-home task 5: it returns a vector of views in
 
 >> IF BEHIND: `string_view` is a pointer and a length, passed by value, and one signature now takes literals, strings, and slices with no allocation.
 
-What can you actually do with one?
+The operations slide is in the appendix: `substr`, `remove_prefix`, `starts_with`, `contains`, all O(1) or a search, none of them copying. Here is the price.
 
-### 7. `string_view` operations · C++17 · target 0:13, ~2 min
-
-**Everything you can do without owning the characters, and all of it is O(1) or a search.**
-
-Walk the `ops` function on the right with me. Line 31 on the right: `line.substr(0, 5)`. On a `std::string`, `substr` allocates a new string. On a `string_view` it returns a smaller view. Constant time, no copy.
-
-Line 32: `remove_prefix(2)`. This mutates the view itself, not the characters. It just moves the start pointer forward. That's how a hand-written tokenizer walks a line: chop off the front, look again.
-
-Lines 33 and 34: `starts_with` is C++20, `contains` is C++23. And those exist on `std::string` too now, so the `find(...) != npos` and `compare(0, n, ...)` idioms can go.
-
-(beat)
-
-Line 35: `find`, exactly like `std::string`.
-
->> DO: The output you just ran was `1725, 1 1 2`. Point at it: `head` is `1725,`; after dropping two characters the view starts at `25,temp...`, so `starts_with("25")` is 1, `contains("temp")` is 1, and the first comma is at index 2. Point at the `printf` on line 36: `%.*s` with an explicit length. That's how you print a view with C I/O, because, spoiler for slide 9, there's no NUL at the end.
-
->> IF AHEAD: `substr` on a view still bounds-checks `pos`: if `pos > size()` it throws `std::out_of_range`. So it's not a free-for-all. Meanwhile `remove_prefix(n)` with `n > size()` is undefined behavior, no check. In review, any `remove_prefix` should have a size check right above it or an obvious invariant.
-
->> IF BEHIND: `substr` and `remove_prefix` on a view are O(1) and copy nothing; `starts_with`, `ends_with`, and `contains` are C++20 and C++23 conveniences.
-
-Now the price of all this.
-
-### 8. The dangling rule · C++17 · target 0:15, ~4 min
+### 7. The dangling rule · C++17 · target 0:10, ~3 min
 
 Slow down here. This slide is the entire cost of every view type we'll see today.
 
@@ -235,33 +212,9 @@ So here's the rule I want you to use in review:
 
 >> IF AHEAD: Two practical tools. First, AddressSanitizer: the comment on line 40 says it, run `dangling()` under `-fsanitize=address` and numbers one and four fail loudly with heap-use-after-free. If your project has a sanitizer CI job, these get caught in testing even when the compiler misses them. Second, a subtle one in `sensor_of` itself: if the line has no comma, `find` returns `npos`, and `npos + 1` wraps to zero, so `substr(0)` returns the whole line. That's well-defined, and here it's even arguably fine, but `npos + 1` is a pattern worth stopping on in review every time you see it.
 
-The second half of the price is subtler.
+The second half of the price, the missing NUL terminator, is in the appendix: a view is not a C string, so `%.*s`, not `%s`. Lab 2.1 will remind you. Now, when not to use one.
 
-### 9. A `string_view` is not a C string · C++17 · target 0:19, ~2 min
-
-**A `string_view` has no NUL terminator. Anything that walks to a NUL reads past the end.**
-
-Look at `bad` on the right, line 11. `std::strtod(field.data(), nullptr)`. `strtod` doesn't know there's a length. It reads until it finds something that isn't part of a number. `field.data()` points into the middle of somebody else's buffer.
-
-In the demo, `field` is the first five characters of `"41.25,99"`. So `bad` "works": `strtod` reads `41.25`, hits the comma, stops. That's luck.
-
-(pause)
-
-Change the data so the next character is a digit, say the field is `"41.2"` and the buffer says `"41.25"`, and `bad` returns 41.25 instead of 41.2. Wrong answer, no crash, no warning. And if the field is at the very end of a buffer that isn't NUL-terminated, a packet from a socket, a memory-mapped file, a DMA region, it reads past the end of the buffer.
-
-The fix is `ok`, line 15: copy into a `std::string` and call `c_str()`. Yes, that's an allocation. That's the honest cost of calling a C API that wants a NUL.
-
-**The exercise hits this exactly once: the `strtod` fallback under `#ifndef __cpp_lib_to_chars` has to copy the field.** That's the libc++ path from the recap. It's the one place in the parser that still allocates.
-
->> DO: Terminal: `./build/demos/s02/demo_s02_string_view_not_cstring`. Expect `41.250000 41.250000`. Say: "Both right. That's the dangerous part." Optional live edit: on line 21 change `substr(0, 5)` to `substr(0, 4)`, rebuild, rerun: `bad` still prints 41.25, `ok` prints 41.2. Recovery: if the rebuild is slow, describe it and move on.
-
->> IF AHEAD: This is why `from_chars` is the right tool with views: it takes a begin and an end pointer, so it can't read past the end. Same for `std::string_view::find` versus `strchr`. A review heuristic: grep for `.data()` on anything that's a `string_view`. Every hit is either passed with a length, `%.*s` style, or it's a bug. In a MISRA or AUTOSAR shop, this is the same class of finding as unbounded `strlen` on external data.
-
->> IF BEHIND: A view has no NUL; any C API that needs one gets `std::string(sv).c_str()`, and that's the one copy the exercise keeps.
-
-So when do you still take a `std::string`?
-
-### 10. When to still take `const std::string&` · C++17 · target 0:21, ~2 min
+### 8. When to still take `const std::string&` · C++17 · target 0:13, ~2 min
 
 Three rules, and the third one is the one people miss.
 
@@ -285,7 +238,7 @@ And never `const std::string_view&`. It's already two words. Pass by value.
 
 `string_view` was for characters. Now the same idea for everything else.
 
-### 11. `std::span` · C++20 · target 0:23, ~3 min
+### 9. `std::span` · C++20 · target 0:15, ~2 min
 
 Left side: `mean_cpp11(const std::vector<double>&)`. **It says "a vector" when it means "some doubles".**
 
@@ -309,33 +262,9 @@ In the exercise this is at-home task 6: `value_range`, `compute_stats`, and `top
 
 >> IF BEHIND: `span<const T>` is "some T's I don't own"; it takes vectors, arrays, C arrays, slices, and pointer-plus-count with no copy.
 
-Some mechanics before the embedded use case.
+The mechanics slide (`first`, `last`, `subspan`, static extent, `as_bytes`) is in the appendix; you will use `subspan` in the lab. The embedded use case.
 
-### 12. `span` mechanics · C++20 · target 0:26, ~2 min
-
-Six bullets, quickly.
-
-Dynamic extent: `std::span<T>` is a pointer and a size, sixteen bytes. Static extent: `std::span<T, 8>` is just a pointer, because the size is in the type. **Static extent is the embedded case: the size is checked at compile time when you build the span from an array.** A function that takes exactly an eight-byte header can say so, and passing a twelve-byte array doesn't compile.
-
-`span<const T>` reads; `span<T>` writes through. The constness of the elements is in the template argument, not on the span.
-
-`first(n)`, `last(n)`, `subspan(offset, n)`: slicing without copying.
-
-`as_bytes` and `as_writable_bytes`: reinterpret the same memory as a span of `std::byte`. Next slide.
-
-(beat)
-
-No bounds checking on `operator[]`. Like a raw pointer. And there's no `.at()` until C++26. If you want checking today, you turn on your library's hardening mode, libstdc++'s `_GLIBCXX_ASSERTIONS` or libc++'s hardening modes, in debug and test builds.
-
-And the same lifetime rule as `string_view`. **A parameter, yes. A member, only if you know who owns the memory.**
-
->> IF AHEAD: Constness gotcha: a `const std::span<int>` still lets you write the ints. The span is const, the elements aren't. It's a pointer, so `int* const` versus `const int*`. In review, if a function only reads, the parameter must say `span<const T>`, and the `const` on the span itself means nothing. Second gotcha: `span<T>` converts implicitly to `span<const T>`, and dynamic to static extent needs an explicit construction, so the conversions go in the safe direction only.
-
->> IF BEHIND: Static extent puts the size in the type; `span<const T>` is the read-only one; no bounds checks; same lifetime rule as `string_view`.
-
-Here's where this pays off for us.
-
-### 13. `span` at a hardware boundary · C++20 · target 0:28, ~3 min
+### 10. `span` at a hardware boundary · C++20 · target 0:17, ~2 min
 
 **Buffers, register windows, DMA descriptors: a pointer and a length, made into a type.**
 
@@ -361,54 +290,9 @@ In the exercise, `crc16` becomes `crc16(std::span<const std::byte>)` with a `str
 
 >> IF BEHIND: `span<const std::byte>` is "some bytes", `as_bytes` gets you there from any span, and `std::byte` refuses arithmetic on purpose.
 
-One slide on the multidimensional version.
-### 14. `std::mdspan`: a preview · C++23 · target 0:31, ~1 min
+`mdspan` and transparent comparators are in the appendix if you want them. The takeaway.
 
-One slide, for anyone who has image buffers, sensor grids, or matrices.
-
-**`mdspan` is `span` with a shape: a multidimensional view over the same flat memory, with no copy.**
-
-Line 2 of the code: a 3 by 4 view over a flat array of twelve floats. Line 3: `m[1, 2]`. That's the C++23 multidimensional subscript operator, a comma inside the brackets, which used to be the comma operator and is now a real multi-argument `operator[]`. Line 4: the same thing with the extents decided at run time.
-
-(beat)
-
-The interesting part is the layout policy. `layout_right` is row-major, C order. `layout_left` is column-major, Fortran and MATLAB order. `layout_stride` is arbitrary strides. Same buffer, different interpretation, no copy. If you've ever written `buf[row * cols + col]` by hand and gotten the order wrong once, this is for you.
-
-Availability: libc++ has it, which is our Clang build; libstdc++ gets it in GCC 15.
-
->> DO: Compiler Explorer tab 4: the slide snippet, Clang 18 with `-stdlib=libc++ -std=c++23`, or GCC trunk. Add `std::println("{}", buf[6]);` (or a `printf`) and show `7`: row 1, column 2 in a 4-wide row is index 6. Recovery: if the tab misbehaves, skip it; this slide is a preview.
-
->> IF BEHIND: `mdspan` is a shaped view over flat memory with row-major or column-major layout; GCC 15 or libc++ today.
-
-Back to strings, and a lookup that allocates when it shouldn't.
-
-### 15. Transparent comparators · C++14 · target 0:32, ~2 min
-
-**Looking up a `string_view` key in a `map<string, T>` used to construct a `std::string` per lookup.**
-
-Look at the `plain` map on the right, line 10. `std::map<std::string, int>`. In `lookups`, line 14, to search it with a view you have to build a `std::string`. That's a construction every lookup, and for any key longer than the small-string buffer, a heap allocation. In a hot path that's real.
-
-Line 11: the same map with a third template argument, `std::less<>`. Empty angle brackets. That's the C++14 "transparent" comparator: it compares any two things that can be compared with `<`. Because it's transparent, `find` gets a template overload that takes any key type. Line 15: `transparent.find(key)` compares the view against the stored strings directly. No temporary.
-
-(pause)
-
-**Add `std::less<>` to every `std::map` and `std::set` keyed by `std::string`.** It costs nothing.
-
-For `unordered_map` you need C++20, and you need both a transparent hash and a transparent equality, `std::equal_to<>`. The slide mentions just the hash; you need both, or the heterogeneous `find` overload doesn't appear.
-
-In the exercise, at-home task 9: `StatsBySensor` gets `std::less<>` so that `find("rpm")` works from a literal.
-
->> DO: Terminal: `./build/demos/s02/demo_s02_transparent_compare`. Expect `1`. Not exciting; the point is it compiled. Optional: on Compiler Explorer, change `transparent.find(key)` to `plain.find(key)` and show the error: no conversion from `string_view` to `const std::string&`. Recovery: skip the edit.
-
->> ASK: Why isn't `std::less<>` the default for `std::map<std::string, T>`? (Expect: backward compatibility. Making it transparent changes overload resolution for existing code, and some key types have conversions that would behave differently.) Say: "Right. It's opt-in because the default was fixed in 1998."
-
->> IF AHEAD: For `unordered_map`, the transparent hash is a small struct: `struct SvHash { using is_transparent = void; std::size_t operator()(std::string_view s) const { return std::hash<std::string_view>{}(s); } };`, then `std::unordered_map<std::string, int, SvHash, std::equal_to<>>`. The `is_transparent` typedef is the magic marker in both cases; that's literally what the library checks for.
-
->> IF BEHIND: `std::less<>` as the third template argument lets `find` take a `string_view` with no temporary string.
-
-That's the views segment.
-
-### 16. Views takeaway · target 0:34, ~1 min
+### 11. Views takeaway · target 0:19, ~1 min
 
 **`string_view` and `span` are the same idea: a non-owning view of contiguous memory, passed by value.**
 
@@ -420,11 +304,29 @@ As parameters, that rule is free. The caller's buffer outlives the call. As memb
 
 Monday morning: find one `const std::string&` parameter that only reads, and change it to `std::string_view`. One. Check that every caller still compiles. That's it.
 
-Time check: this should be 0:35. The next segment has the most new types, so keep moving.
+Time check: 0:20, and lab 2.1 starts now. Block 2 has the most new types, so keep moving when you come back.
 
-Now the types that hold their value.
+After the lab: the types that hold their value.
 
-### 17. `std::optional` · C++17 · target 0:35, ~2 min
+### 12. Lab 2.1: views over data · target 0:20, ~10 min
+
+**Ten minutes. Three TODOs, in order. Build and run after each one. The link is on the slide; the same file is `labs/s02/lab1_views.cpp` if you built the repo.**
+
+>> DO: Put the lab slide up and paste the starter link into chat. Say nothing for the first minute while people get the file open. Then: "The output tells you whether each step worked. The label line prints garbage until TODO 3 is done; that is deliberate."
+
+What to watch for:
+
+- TODO 1: people change the parameters and then also "fix" the calls in `main`. Nothing in `main` needs to change; that is the point of `string_view`. If someone's build breaks here, they changed `text.compare(...)`: it still exists on `string_view`.
+- TODO 2: `checksum(raw + 2, 3)` is the one that needs thought. `std::span(raw).subspan(2, 3)`, or `std::span(raw + 2, 3)`. Both are right; the first says what it means.
+- TODO 3: the fix is `std::string`, not `const std::string&` and not `std::string_view` with a `static`. If someone says "but it printed fine for me", that is the lesson: undefined behavior is not required to misbehave.
+
+At seven minutes, paste the solution link. Walk the three diffs in two minutes, slowest on TODO 3.
+
+>> ASK: "Which of the three would your code review have caught?" Expect: one and two, because they are visible in the signature; three only if someone knows the rule. Then: "That is why the rule is on its own slide."
+
+At ten minutes, move on whether or not people are done. Nothing in block 2 depends on this lab.
+
+### 13. `std::optional` · C++17 · target 0:30, ~2 min
 
 Left side, C++11: `find_cpp11` returns `const SensorConfig*`. `nullptr` means not found.
 
@@ -444,7 +346,7 @@ In the exercise, this is in-class task 2: `find_sensor` returns `std::optional<S
 
 How do you use one?
 
-### 18. `optional` mechanics · C++17 · target 0:37, ~2 min
+### 14. `optional` mechanics · C++17 · target 0:32, ~2 min
 
 **A `T` plus a `bool`, with pointer-like syntax and no allocation.**
 
@@ -470,7 +372,7 @@ Size: `sizeof(std::optional<double>)` is sixteen on our platforms. The `bool` pl
 
 Where should it appear in an interface?
 
-### 19. `optional` as return, member, parameter · C++17 · target 0:39, ~2 min
+### 15. `optional` as return, member, parameter · C++17 · target 0:34, ~2 min
 
 This is an opinionated slide, and I'm telling you it's opinionated.
 
@@ -492,7 +394,7 @@ And never `std::optional<bool>`. Three states, two names. `if (flag)` tests "is 
 
 Now the C++23 part, which removes the nested ifs.
 
-### 20. Monadic `optional` · C++23 · target 0:41, ~3 min
+### 16. Monadic `optional` · C++23 · target 0:36, ~3 min
 
 Left side, C++17: `units_cpp17`. Look up the sensor; if it's not there, return empty; otherwise return its units. Three lines, one `if`. Fine. Now imagine four lookups deep. That's the shape that grows into an arrow of nested ifs.
 
@@ -520,31 +422,9 @@ In the exercise, at-home task 8: the report's units lookup becomes exactly the `
 
 >> IF BEHIND: `and_then` for steps that can fail, `transform` for steps that can't, `or_else` to recover; no nested ifs.
 
-There's one trap in `transform` that the exercise makes you hit on purpose.
+There's one trap in `transform`, the pointer-to-member one, that the at-home exercise makes you hit on purpose; it's in the appendix. Now the "which one" type.
 
-### 21. The pointer-to-member trap · C++23 · target 0:44, ~2 min
-
-The obvious way to write that units lookup is: `find_sensor(name).transform(&SensorConfig::units)`. A pointer to member as the projection. Ranges algorithms accept that happily. It doesn't compile here, and the error is a wall of text.
-
-Why? Invoking a pointer to data member on an object gives you a **reference** to that member, not a copy. On a temporary optional, it's an rvalue reference, `string_view&&`. On a named optional, it's an lvalue reference, `string_view&`. `transform` wants to build an `optional` of whatever the function returns.
-
-(pause)
-
-**And `optional` of a reference type is ill-formed in C++23.** So it fails either way. The slide says "on a temporary", but I checked: GCC and Clang reject it on a named optional too. It's not about temporaries; it's about references.
-
-The fix is the lambda you saw: `[](const SensorConfig& c) { return c.units; }`. That returns by value, so `transform` builds an `optional<string_view>`.
-
->> DO: Compiler Explorer tab 2: `optional_monadic.cpp` with the trap uncommented, GCC 14, `-std=c++23`. Expect an error from inside `<optional>`: a static assertion failing on `is_object_v<...&>`, or "union member has reference type". Scroll to the first line that mentions your file, and show that the actual cause, "a reference type", is buried three screens down. Recovery: if the tab is broken, read the README's task 8 line instead: "read the compiler error once".
-
-**Read the error once, so the next time you see it, you know it in five seconds.** That's why the exercise asks you to try it.
-
->> IF AHEAD: This is a value-category bug, and the supplemental deck on value categories explains the general rule: `std::invoke` with a pointer-to-data-member on an xvalue yields an xvalue of the member. C++26 adds `optional<T&>`, so the lvalue case may start compiling there, giving you an optional that refers into the original. Which may be what you want, or may be a dangling reference. Another reason to prefer the explicit lambda: it says "copy" out loud.
-
->> IF BEHIND: `transform(&T::member)` doesn't compile because it yields a reference and `optional<T&>` doesn't exist in C++23; use a lambda that returns by value.
-
-From "maybe one" to "exactly one of several".
-
-### 22. `std::variant` · C++17 · target 0:46, ~2 min
+### 17. `std::variant` · C++17 · target 0:39, ~2 min
 
 Left side, C++11: the tagged union. An enum saying which member is live, a union of `int` and `double`, and a `std::string` sitting beside the union because it can't go inside: non-trivial types in a union needed hand-written constructors and destructors.
 
@@ -566,7 +446,7 @@ And the string just works. Variant runs the right constructor and destructor for
 
 A chain of `holds_alternative` checks is a switch the compiler can't verify. Here's one it can.
 
-### 23. `std::visit` and the overload-set visitor · C++17 · target 0:48, ~3 min
+### 18. `std::visit` and the overload-set visitor · C++17 · target 0:41, ~3 min
 
 Slow down here. Two lines of template code that appear in every codebase that uses variant.
 
@@ -602,7 +482,7 @@ One honest qualifier: that's only true if the new type doesn't implicitly conver
 
 Now a real use.
 
-### 24. Variant in practice: a message set · C++17 · target 0:51, ~3 min
+### 19. Variant in practice: a message set · C++17 · target 0:44, ~3 min
 
 **A protocol with a fixed set of message types is a variant, not a class hierarchy.**
 
@@ -628,25 +508,9 @@ Size is the largest alternative, plus a small index, rounded up for alignment. N
 
 >> IF BEHIND: A closed protocol is a variant of plain structs; visit is exhaustive; virtual is for open sets of types.
 
-A few details, fast.
+The details slide (`monostate`, `valueless_by_exception`) is in the appendix. One more type, briefly.
 
-### 25. `variant` details worth knowing · C++17 · target 0:54, ~1 min
-
-Fast slide. Six bullets, one sentence each.
-
-A variant default-constructs its **first** alternative. **If "empty" is a legitimate state, put `std::monostate` first.** That's the one that comes up in practice.
-
-`valueless_by_exception()`: true only if an exception was thrown while switching alternatives, after the old one was destroyed. Rare. `visit` throws `bad_variant_access` on it.
-
-Comparison and hashing work if every alternative supports them. Alternatives may repeat, `variant<int, int>`, and then you use `get<0>`, not `get<int>`. `visit` with two variants dispatches on both: double dispatch for free. And C++26 adds member `visit`.
-
-(beat)
-
->> IF BEHIND: Use `std::monostate` first when "empty" is a state; the rest is reference material.
-
-And the type for when you can't name the alternatives.
-
-### 26. `std::any` · C++17 · target 0:55, ~2 min
+### 20. `std::any` · C++17 · target 0:47, ~1 min
 
 **Sometimes the set of types is genuinely open, and only the caller knows what it put in.**
 
@@ -670,7 +534,7 @@ It heap-allocates for anything bigger than its small internal buffer, which is a
 
 So how do you choose?
 
-### 27. Choosing between them · target 0:57, ~1 min
+### 21. Choosing between them · target 0:48, ~1 min
 
 Same idea as the ownership table, from the other direction: start from what you need.
 
@@ -680,29 +544,13 @@ Maybe one `T`: `optional`, not a pointer, not a sentinel, not `pair<T, bool>`. E
 
 (pause)
 
-And the last row: a `T`, or the reason there's no `T`. That's `expected`, and that's the next segment.
+And the last row: a `T`, or the reason there's no `T`. That's `expected`, and that's block 3, after the lab.
 
 >> IF BEHIND: Skip the walk-through: "Start from the need: maybe, one of a fixed set, open set, anything, borrowed, or value-or-reason."
 
-A minute on where these came from.
+Where these came from, Boost and a decade of proposals, is in the appendix. The takeaway.
 
-### 28. Where these came from · target 0:58, ~1 min
-
-This is the optional history slide. If you're behind, skip it.
-
-**These types were in production use in Boost for over a decade before they were standardized.** Boost.Optional shipped in 2003, Boost.Variant very shortly after. Optional nearly made C++14 and was pulled into a technical specification in 2013. Variant took longest because of one question: what state is the variant in if assigning a new alternative throws? The answer, "valueless by exception", settled in 2016, and `optional`, `variant`, and `any` all landed in C++17.
-
-`expected` followed the same path: Boost.Outcome and `tl::expected` in the field, adopted for C++23 in 2022.
-
-(beat)
-
-The point: the designs are not experimental. Adopting them is low risk.
-
->> IF BEHIND: Skip the slide: "These were proven in Boost for over a decade; the designs aren't experimental."
-
-The segment in three lines.
-
-### 29. Maybe, either, anything: takeaway · target 0:59, ~1 min
+### 22. Maybe, either, anything: takeaway · target 0:49, ~1 min
 
 **`optional` replaces every sentinel value and every `bool` plus out-parameter.**
 
@@ -714,9 +562,26 @@ The segment in three lines.
 
 Monday morning: find one function that returns `-1` or `nullptr` for "not found", and give it an `optional` return type.
 
-Time check: 1:00. `optional` told you "no". Now the type that tells you why.
+Time check: 0:50, lab 2.2 now. `optional` told you "no". After the lab, the type that tells you why.
 
-### 30. The error-handling landscape · target 1:00, ~2 min
+### 23. Lab 2.2: maybe, either · target 0:50, ~10 min
+
+**Ten minutes, three TODOs. Part A is `optional`, part B is `variant`. Do them in order; part B is the long one.**
+
+>> DO: Lab slide up, starter link in chat. One quiet minute.
+
+What to watch for:
+
+- TODO 1: `find_unit("rpm").value_or("?")` is a `string_view`; printing it with `%s` is the same bug as slide 9. `std::string(...)`, or `%.*s`. Half the room will hit this and it is a good thing: it is the dangling-rule's cousin.
+- TODO 2: one line. If someone reaches for `and_then`, ask what the lambda returns. `transform` wraps the plain `double` for you; `and_then` expects the lambda to return the `optional` itself.
+- TODO 3: the `push_back` calls in `main` change too: `Reading{3, 11.5}` instead of the five-field brace soup. People who keep the old `log.push_back({...})` lines get a long error about no matching constructor. Point at the variant's converting constructor: push the alternative, not the variant.
+- Anyone done early: delete the `Fault` lambda from the `overloaded` and read the error. Exhaustive by construction.
+
+At seven minutes: solution link, two-minute walk-through. Spend most of it on the `overloaded` block: three lambdas, one `visit`, no enum, no switch.
+
+>> ASK: "What happens when you add a fourth message kind next month and forget `handle()`?" Expect: "it doesn't compile." Then: "With the enum-and-switch version it compiled and dropped the message on the floor."
+
+### 24. The error-handling landscape · target 1:00, ~2 min
 
 Six ways to report failure in C++, five columns.
 
@@ -740,7 +605,7 @@ One correction to the "Ignorable?" column for `optional` and `expected`. The typ
 
 Here's the payoff.
 
-### 31. `std::expected` · C++23 · target 1:02, ~2 min
+### 25. `std::expected` · C++23 · target 1:02, ~2 min
 
 Left side, C++11: `parse_cpp11`. Returns `bool`, writes the result through one pointer, writes the error through another. **The caller can ignore all three.** And notice: if the parse fails, what's in `*out`? Line 15 on the right of the file: `from_chars` wrote into it, maybe. Nobody knows. The caller has to remember not to look.
 
@@ -762,7 +627,7 @@ This is `parse_record` from the exercise, in-class task 1.
 
 Mechanics, quickly, because they mirror `optional`.
 
-### 32. `expected` mechanics · C++23 · target 1:04, ~2 min
+### 26. `expected` mechanics · C++23 · target 1:04, ~2 min
 
 **Same shape as `optional`, plus an `error()` side.**
 
@@ -782,7 +647,7 @@ Why the `std::unexpected` wrapper at all? Because `T` and `E` can be the same ty
 
 Now the part that makes it better than error codes: composition.
 
-### 33. Monadic `expected`: a pipeline · C++23 · target 1:06, ~3 min
+### 27. Monadic `expected`: a pipeline · C++23 · target 1:06, ~3 min
 
 Slow down. The type changes at every step, so I'm going to say it out loud at each line.
 
@@ -822,7 +687,7 @@ One constraint: every stage in an `and_then` chain must use the **same** error t
 
 What should `E` be?
 
-### 34. Designing the error type · C++23 · target 1:09, ~2 min
+### 28. Designing the error type · C++23 · target 1:09, ~1 min
 
 Four options.
 
@@ -844,7 +709,7 @@ And the rule: **mark every `expected`-returning function `[[nodiscard]]`.** The 
 
 Now the debate.
 
-### 35. `expected` vs exceptions · C++23 · target 1:11, ~2 min
+### 29. `expected` vs exceptions · C++23 · target 1:10, ~1 min
 
 **Not a replacement. A second tool, for a different kind of failure.**
 
@@ -864,29 +729,9 @@ Here's my position. **In an embedded or safety-critical codebase that already ba
 
 >> IF BEHIND: Exceptions for constructors and truly exceptional failures; `expected` for expected failures, hot paths, and no-exceptions builds.
 
-One special case left.
+The `expected<void, E>` case is in the appendix: same type, no value, for "did it work". The takeaway.
 
-### 36. `expected<void, E>` · C++23 · target 1:13, ~1 min
-
-**"Did it work, and if not, why?" No value to return, but a reason to report.**
-
-`write`, line 12 on the right. Returns `expected<void, IoError>`. Failure: `std::unexpected(IoError::NotOpen)`. Success, line 15: `return {};`. An empty brace is the success value.
-
-Line 19: `if (auto r = write(...); !r)`, the C++17 if-with-initializer. Test, then `r.error()`.
-
-(beat)
-
-This replaces `bool write(...)` plus a global or thread-local "last error". And this is the one where `[[nodiscard]]` on the function matters most, because there's no value to tempt the caller into checking.
-
-The slide mentions coroutines. That's a Session 5 preview, and to be precise: the standard doesn't make `expected` awaitable. You'd write that adapter yourself. It pairs naturally; it's not built in.
-
->> DO: Terminal: `./build/demos/s02/demo_s02_expected_void`. Expect a single `0`: the `"hello"` write succeeded and printed nothing, and `write("x", false).has_value()` is 0. Recovery: read it aloud.
-
->> IF BEHIND: `expected<void, E>` is success-or-reason; `return {};` is success; mark it `[[nodiscard]]`.
-
-The segment, in one sentence.
-
-### 37. `expected` takeaway · target 1:14, ~1 min
+### 30. `expected` takeaway · target 1:11, ~1 min
 
 **`expected<T, E>` is `optional<T>` with a reason, and it's the piece that makes "no exceptions" a policy rather than a workaround.**
 
@@ -896,9 +741,9 @@ Use it for failures you expect. Keep exceptions for the ones you don't.
 
 Monday morning: take one `bool f(..., Error* err)` function and give it an `expected` return.
 
-Time check: 1:15. Formatting next, and it's the most immediately gratifying segment of the day.
+Time check: 1:11. No lab yet; formatting is the second half of this block, and it's the most immediately gratifying part of the day. The lab at 1:20 covers both.
 
-### 38. Why `printf` and `iostream` both lost · target 1:15, ~1 min
+### 31. Why `printf` and `iostream` both lost · target 1:12, ~1 min
 
 We've had two output systems for thirty years, and both lost.
 
@@ -916,7 +761,7 @@ If your codebase is pre-C++20: `{fmt}` is the library `std::format` was standard
 
 Here's what it looks like.
 
-### 39. `std::format` · C++20 · target 1:16, ~2 min
+### 32. `std::format` · C++20 · target 1:13, ~2 min
 
 Left side, C++11: `snprintf` into a 64-byte buffer, return it as a string. A buffer, a size, and a format string checked by nobody.
 
@@ -938,7 +783,7 @@ This is `serialize(double)` in the exercise.
 
 The syntax is the only new thing to learn.
 
-### 40. The format spec mini-language · C++20 · target 1:18, ~2 min
+### 33. The format spec mini-language · C++20 · target 1:15, ~1 min
 
 **Everything `printf`'s percent could do, in a syntax you can read.**
 
@@ -958,7 +803,7 @@ Walk the comments on the right. Line 26: `{:.3f}`, precision, 3.142. Line 27: `{
 
 Now let's print it.
 
-### 41. `std::print` and `std::println` · C++23 · target 1:20, ~1 min
+### 34. `std::print` and `std::println` · C++23 · target 1:16, ~1 min
 
 Left side: `fprintf` with `%-16s`, `.c_str()`, and a cast to `unsigned long`. Right side: `std::println(out, "{:<16} n={} mean={:.3f}", name, n, mean)`. The `.c_str()` is gone, the cast is gone, and the newline is implicit.
 
@@ -976,7 +821,7 @@ The slide says `println()` with no arguments prints a newline. That overload is 
 
 The big win: your own types.
 
-### 42. `std::formatter` for your own types · C++20 · target 1:21, ~2 min
+### 35. `std::formatter` for your own types · C++20 · target 1:17, ~2 min
 
 Slow down. This is at-home task 4, and it's where people get stuck alone.
 
@@ -1004,9 +849,417 @@ Bottom block, the struct, `Record`. Two members to write.
 
 >> IF BEHIND: Enum-like types inherit `formatter<string_view>`; structs write `parse` and a templated `format` that calls `format_to`.
 
-What if your type needs its own spec?
+Formatters with their own spec, formatting ranges, `format_to` into a fixed buffer, and the migration path are all in the appendix. The takeaway.
 
-### 43. A formatter with its own spec · C++20 · target 1:23, ~2 min
+### 36. Formatting takeaway · target 1:19, ~1 min
+
+**`std::format` is `printf` with the format string checked by the compiler and user types allowed. `std::print` is `printf` ergonomics for it.**
+
+(pause)
+
+Monday morning: write one `std::formatter` for your most-logged type, and delete the `to_string` helper it replaces.
+
+Time check: 1:20, lab 2.3 now. After it, seven fast slides of library tour and the checklist. I'm going to move quickly; the tour is a catalog, and every slide has a demo file you can run later.
+
+### 37. Lab 2.3: or this error, and formatting · target 1:20, ~10 min
+
+**Ten minutes, three TODOs. `expected` first, then one line of chaining, then a `formatter`. The third one is the at-home task 4 in miniature.**
+
+>> DO: Lab slide up, starter link in chat. One quiet minute.
+
+What to watch for:
+
+- TODO 1: forgetting `std::unexpected(...)` around the error. The compiler error is long because `expected` tries to build a `Reading` from a `ParseError`. Say once, to everyone: "Every error return needs `std::unexpected` around it."
+- TODO 1: the success return is just `return Reading{...};`. No wrapping. People wrap it in `std::expected<...>{...}` and it works, but it is noise.
+- TODO 2: `and_then(check_range)` works because `check_range` already returns an `expected`. If someone writes `transform(check_range)`, the result type becomes `expected<expected<...>>` and the error message is memorable. Let them read it, then say the rule: `transform` for functions that cannot fail, `and_then` for ones that can.
+- TODO 3: the shape is in the comment; the stumble is the `format()` signature. Template on the context, `const`, return `std::format_to(ctx.out(), ...)`. If the `println` still will not compile after the specialization is in, the specialization is in the wrong namespace (it must be `std::formatter<Reading>`, at global scope with the `std::` qualifier or inside `namespace std`).
+
+At seven minutes: solution link. Two minutes: show `parse_reading`'s new signature next to the old one, then the one-line `validated`, then the formatter.
+
+>> ASK: "Four output lines. Which stage produced each failure?" Expect: `temp,x` is the parser, the empty line is the parser, `temp,900` is `check_range`. "And the caller cannot tell the difference, and does not need to. One `if`, one `error()`."
+
+### 38. C++17 tour, 1: `std::filesystem` · C++17 · target 1:30, ~1 min
+
+**Portable paths, directory iteration, and file queries, without a platform layer.**
+
+Line 11 on the right: `operator/` joins path components with the right separator. Line 12: `filename`, `extension`, `parent_path`. Line 15: `exists`. Line 16: iterate a directory. Line 20: `remove_all` with an `error_code`.
+
+(beat)
+
+**Every operation has two overloads: one that throws, one that takes `std::error_code&` and never throws.** If your codebase bans exceptions, use the second, always.
+
+>> DO: Terminal: `./build/demos/s02/demo_s02_tour_filesystem`. Expect `run1.csv .csv /tmp/telemetry`, then `exists: false`, and no directory listing, because the demo creates the directory but never the file. Recovery: none needed.
+
+>> IF BEHIND: `std::filesystem` gives portable paths and directory iteration, with a non-throwing `error_code` overload for everything.
+
+### 39. C++17 tour, 2: small library additions · C++17 · target 1:31, ~1 min
+
+**The ones you'll actually use.**
+
+`clamp`, `gcd`, `lcm`. `invoke` calls anything callable the same way. `apply` unpacks a tuple into arguments.
+
+The sleepers are lines 24 to 27: map `merge` and `extract`. `merge` splices nodes from one map into another without reallocating; anything with a key that already exists stays behind in the source. `extract` takes a node out, and you can **change its key in place** and put it back. Before C++17, changing a key meant erase and reinsert, with an allocation each way.
+
+(beat)
+
+`std::reduce` is an order-agnostic sum: preview for Session 4 and parallel algorithms.
+
+>> DO: Terminal: `./build/demos/s02/demo_s02_tour_cpp17`. Expect `100`, `6 12`, `5`, `5`, `2 1 1`, `2 21`. Point at `2 1 1`: `x` stayed in `b` because `a` already had one. Recovery: read it aloud.
+
+>> IF BEHIND: `merge` and `extract` move map nodes without reallocating; the rest is small helpers.
+
+### 40. C++20 tour, 1: `<bit>` and `source_location` · C++20 · target 1:32, ~1 min
+
+**Bit twiddling without compiler intrinsics, and logging without macros.**
+
+Line 17: `std::bit_cast<std::uint32_t>(f)`. The bytes of the float, reinterpreted. No undefined behavior, and it's `constexpr`. That replaces the `memcpy` idiom, the type-punning union, and the pointer cast, which is UB.
+
+Then `popcount`, `has_single_bit` for "is a power of two", `bit_width`, `rotl`, and `std::endian::native`. These used to be `__builtin_popcount` and friends.
+
+(beat)
+
+And `source_location`: the `log` function at the top takes it as a default argument, so it captures the **caller's** file and line. **No more `__FILE__` and `__LINE__` macros in logging APIs.**
+
+>> DO: Terminal: `./build/demos/s02/demo_s02_tour_bit`. Expect `3F800000`, `4`, `true`, `8`, `00000003`, `true`, and a log line with the file name, line 29, and the function name. Recovery: read it aloud.
+
+>> IF BEHIND: `bit_cast` replaces type-punning safely; `source_location` as a default argument replaces logging macros.
+
+### 41. C++20 tour, 2: containers and numerics · C++20 · target 1:33, ~1 min
+
+**Small things that each remove a line.**
+
+`std::erase_if` on any container: **the end of the erase-remove idiom.** `starts_with` and `ends_with`. `contains` on associative containers: no more `find() != end()`. `std::to_array` from a literal. `std::ssize`: signed size, which ends the `-Wsign-compare` warning in index loops. `midpoint`, which doesn't overflow the way `(a + b) / 2` does. And `std::numbers::pi`, so you can delete your `#define PI`.
+
+(beat)
+
+>> DO: Terminal: `./build/demos/s02/demo_s02_tour_cpp20`. Expect `1 3 5`, `true true`, `true`, `3 3`, `2 2.5`, `3.14159 1.41421`. Recovery: read it aloud.
+
+>> IF BEHIND: `erase_if`, `contains`, `ssize`, `midpoint`, `numbers::pi`; each deletes an idiom.
+
+### 42. C++20 tour, 3: `<chrono>` calendars and time zones · C++20 · target 1:34, ~1 min
+
+**The exercise's timestamp is a `long long`. It could have a type, and print itself.**
+
+Line 11: `sys_time<milliseconds>`: milliseconds since the epoch, as a type. Line 12: format it with `{:%F %T}`, no `strftime`. Line 14: truncate to a day. Line 15: `year_month_day`. Line 17: the weekday. Line 19: add a month, and the calendar arithmetic handles month lengths.
+
+(beat)
+
+Time zones need the tz database. libstdc++ 13 and later ship support; check your libc++ version.
+
+>> DO: Terminal: `./build/demos/s02/demo_s02_tour_chrono`. Expect `2024-08-30 06:40:01.000 UTC`, `2024 Aug 30`, `Fri`, `2024-09-30`. Recovery: read it aloud.
+
+>> IF AHEAD: Calendar arithmetic can produce invalid dates on purpose: January 31 plus one month is February 31, and `ymd.ok()` returns false. You decide whether to clamp or roll over, which is exactly the decision hand-written date code always got silently wrong.
+
+>> IF BEHIND: `sys_time<milliseconds>` gives a raw timestamp a type and lets it format itself.
+
+### 43. C++23 tour, 1: `flat_map`, `stacktrace`, `move_only_function` · C++23 · target 1:35, ~1 min
+
+Three additions with uneven availability today.
+
+**`flat_map` is sorted vectors with a map interface: cache-friendly, cheap to iterate, expensive to insert.** Right for a table built once and read many times, like the sensor table.
+
+`std::stacktrace::current()`: "where am I", without a debugger. libstdc++ only today, and you link `-lstdc++exp`.
+
+(beat)
+
+`move_only_function`: a `std::function` that can hold a lambda capturing a `unique_ptr`. That matters for task queues, Session 5.
+
+>> DO: If you're on GCC: `./build/demos/s02/demo_s02_tour_stacktrace`; expect a few frames with `fail` and `main`. `flat_map`: Compiler Explorer tab 5, GCC trunk, expect `pressure 400`, `rpm 12000`, `temp_core 125`, then `3`. Locally on GCC 14 you'll get the "not available" line, which is the gate working. Recovery: show the slide code and move on.
+
+>> IF BEHIND: `flat_map` for build-once tables, `stacktrace` for error paths, `move_only_function` for task queues; all gated on feature-test macros.
+
+### 44. C++23 tour, 2: strings, bytes, and C APIs · C++23 · target 1:36, ~1 min
+
+**Odds and ends that each close a long-standing gap.**
+
+`std::string::contains`. Finally. `std::byteswap`: the endian conversion everybody has a macro for, now `constexpr`. And `resize_and_overwrite`: write directly into a string's uninitialized capacity, here with `snprintf`, and return the length you actually used. No zero-fill first.
+
+(beat)
+
+Not on the slide but in the demo file: `std::out_ptr`, which adapts a `unique_ptr` to a C API that fills in a `T**`. Every C library has that shape.
+
+>> DO: Terminal: `./build/demos/s02/demo_s02_tour_cpp23`. Expect `true`, `3412`, `rpm=4811`, then on GCC `5` and `7` from `move_only_function` and `out_ptr`. Recovery: read it aloud.
+
+>> IF BEHIND: `contains`, `byteswap`, `resize_and_overwrite`, and `out_ptr` for C APIs.
+
+### 45. Deprecated and removed in the library · target 1:37, ~1 min
+
+Fast. Things to grep for.
+
+The big ones: `auto_ptr`, `random_shuffle`, `bind1st` are gone since C++17. `std::iterator` as a base class is deprecated; it's still there in C++23, but it warns. `std::aligned_storage` is deprecated in C++23. `<codecvt>` and `strstream` are removed in C++26.
+
+(beat)
+
+**`aligned_storage` is the one that bites embedded code**, in any hand-rolled small-buffer optimization. The replacement is `alignas(T) std::byte buf[sizeof(T)];`.
+
+Library deprecation warnings come from `-Wdeprecated-declarations`, on by default, so under `-Werror` a compiler upgrade can turn these into build breaks. Clang-tidy's `modernize-` checks fix many of them.
+
+>> IF BEHIND: Grep for `auto_ptr`, `random_shuffle`, `std::iterator`, and `aligned_storage`; the last becomes `alignas(T) std::byte buf[sizeof(T)]`.
+
+### 46. Support matrix for this session · target 1:38, ~2 min
+
+**Every row on this slide was discovered building this course repo.**
+
+`expected`: fine on GCC 14, fine on Clang 18 with libc++, missing on Clang 18 with libstdc++. That's why the repo builds Clang with libc++. `from_chars` for double: missing on libc++ before 20. Range formatting, `flat_map`, `mdspan`: GCC 15. `stacktrace`: GCC only. `move_only_function` and `out_ptr`: newer libc++.
+
+(pause)
+
+**The tool is the last line: `<version>` and the `__cpp_lib_` macros. Test the feature, not the compiler version.** That's the recap slide coming back. The details are in `handouts/toolchain-support-matrix.md`.
+
+>> ASK: What compiler is your production code on, and is it the one you develop with? (Expect: some say an older GCC for a certified or customer-mandated toolchain, sometimes years behind.) Say: "That's normal in our industry. So the question isn't 'is it in C++23', it's 'is it in our toolchain', and the macros answer that in code."
+
+>> IF AHEAD: For older toolchains, the bridges are well known: `{fmt}` for `format` and `print`, `tl::expected` for `expected`, `gsl::span` or `tcb::span` for `span`. Their APIs are close enough that a later switch to `std::` is mostly a rename. The pattern: wrap them in your own namespace alias, so the switch is a one-line change.
+
+>> IF BEHIND: Support varies by library; `<version>` and `__cpp_lib_` macros are how code adapts.
+
+The whole session on one page.
+
+### 47. Interface design checklist · target 1:40, ~2 min
+
+**This is the screenshot slide. Everything on it is in today's solution.**
+
+Read-only text: `string_view` by value. Read-only contiguous elements: `span<const T>`. A buffer to write: `span<T>`. A value you keep: by value, then `std::move`. Maybe a result: `optional`. A result or a reason: `expected` with `[[nodiscard]]`. One of a fixed set: `variant`. One owner: `unique_ptr`. Borrowed and non-null: `T&`. Text output: `format` and `print` with a `formatter`.
+
+(pause)
+
+Take the screenshot now. Then apply it.
+
+### 48. Lab 2.4: the checklist, applied · target 1:42, ~10 min
+
+**Ten minutes. Three C++11 signatures, each hiding something the type system could say. Rewrite each one using the checklist from the last slide, then fix the callers. No hints on the slide: the checklist is the hint.**
+
+>> DO: Lab slide up, starter link in chat. Leave the checklist slide in your notes; people will ask you to go back to it. Go back to it once, for five seconds, then return to the lab slide.
+
+What to watch for:
+
+- `load_config`: the error enum is given in the TODO; people spend time on naming anyway. Nudge: "two values, `NotFound` and `BadRate`, the names are in the comment." The caller's `if (rc == 0)` becomes `if (auto cfg = load_config(path))`.
+- `average`: two changes in one. `std::span<const double>` replaces the vector-plus-two-indices, and `std::optional<double>` replaces the `bool`-plus-out-param. The callers pass `all.subspan(2, 3)`; people write `std::span(samples).subspan(2, 5)` from habit (begin, end) and get the wrong average. The second argument is a count.
+- `limits_for`: the easy one, if they remember that an `optional` can hold a struct. `return Limits{0, 12000};` converts implicitly.
+- Anyone done early: ask them to write the fourth signature themselves: `void log_line(const char* fmt, ...)` to `std::print`.
+
+At seven minutes: solution link. Put the three new signatures on screen next to the three old ones. That picture is the session.
+
+>> ASK: "For each one: which comment did the new signature delete?" Expect: "returns 0 or an error number", "false if the slice is empty", "lo and hi are only valid if true". Then: "Those comments were the interface. Now the types are."
+
+### 49. Exercise: vocabulary types · target 1:52, ~1 min to launch
+
+One minute. Open `exercises/s02-vocabulary-types/README.md` at home.
+
+Tasks one to three are today's labs 2.2 and 2.3 applied to the real program: `expected` for the parser, `optional` for the lookups, `println` for the report. Then tasks four to nine. **The test `s02_report_identical` diffs your report against the starter's. One space off and it fails. That's the point: the behavior must not change.**
+
+(beat)
+
+No toolchain at home? The README has Compiler Explorer links for the whole program, starter and solution. The solution is next week's starter, so finishing is optional, but reading it is not.
+
+### 50. Session 2 takeaway · target 1:53, ~2 min
+
+**A modern interface says what it means.** `optional` means "maybe". `expected` means "or this error". `string_view` means "I'll only look". `span` means "a contiguous run I don't own".
+
+(pause)
+
+**The information that used to live in comments, sentinels, and out-parameters now lives in the signature, where the compiler can see it.**
+
+Next session is compile time. The CRC table, the configuration table, and the `serialize` overload set are the targets: `constexpr`, `consteval`, concepts, and deducing `this`. Today's solution is next session's starter, so if you don't finish tasks 4 to 9, take ours.
+
+The support matrix and the feature timeline handouts are updated for today. Thanks, everyone.
+
+---
+
+## Appendix slides (in the PDF, not presented)
+
+These sections are kept for the `IF AHEAD` moments and for answering questions; the slides sit after the Further reading divider (deck slide 51).
+
+### A1. `string_view` operations · C++17 (deck slide 52)
+
+**Everything you can do without owning the characters, and all of it is O(1) or a search.**
+
+Walk the `ops` function on the right with me. Line 31 on the right: `line.substr(0, 5)`. On a `std::string`, `substr` allocates a new string. On a `string_view` it returns a smaller view. Constant time, no copy.
+
+Line 32: `remove_prefix(2)`. This mutates the view itself, not the characters. It just moves the start pointer forward. That's how a hand-written tokenizer walks a line: chop off the front, look again.
+
+Lines 33 and 34: `starts_with` is C++20, `contains` is C++23. And those exist on `std::string` too now, so the `find(...) != npos` and `compare(0, n, ...)` idioms can go.
+
+(beat)
+
+Line 35: `find`, exactly like `std::string`.
+
+>> DO: The output you just ran was `1725, 1 1 2`. Point at it: `head` is `1725,`; after dropping two characters the view starts at `25,temp...`, so `starts_with("25")` is 1, `contains("temp")` is 1, and the first comma is at index 2. Point at the `printf` on line 36: `%.*s` with an explicit length. That's how you print a view with C I/O, because, spoiler for slide 9, there's no NUL at the end.
+
+>> IF AHEAD: `substr` on a view still bounds-checks `pos`: if `pos > size()` it throws `std::out_of_range`. So it's not a free-for-all. Meanwhile `remove_prefix(n)` with `n > size()` is undefined behavior, no check. In review, any `remove_prefix` should have a size check right above it or an obvious invariant.
+
+>> IF BEHIND: `substr` and `remove_prefix` on a view are O(1) and copy nothing; `starts_with`, `ends_with`, and `contains` are C++20 and C++23 conveniences.
+
+Now the price of all this.
+
+### A2. A `string_view` is not a C string · C++17 (deck slide 53)
+
+**A `string_view` has no NUL terminator. Anything that walks to a NUL reads past the end.**
+
+Look at `bad` on the right, line 11. `std::strtod(field.data(), nullptr)`. `strtod` doesn't know there's a length. It reads until it finds something that isn't part of a number. `field.data()` points into the middle of somebody else's buffer.
+
+In the demo, `field` is the first five characters of `"41.25,99"`. So `bad` "works": `strtod` reads `41.25`, hits the comma, stops. That's luck.
+
+(pause)
+
+Change the data so the next character is a digit, say the field is `"41.2"` and the buffer says `"41.25"`, and `bad` returns 41.25 instead of 41.2. Wrong answer, no crash, no warning. And if the field is at the very end of a buffer that isn't NUL-terminated, a packet from a socket, a memory-mapped file, a DMA region, it reads past the end of the buffer.
+
+The fix is `ok`, line 15: copy into a `std::string` and call `c_str()`. Yes, that's an allocation. That's the honest cost of calling a C API that wants a NUL.
+
+**The exercise hits this exactly once: the `strtod` fallback under `#ifndef __cpp_lib_to_chars` has to copy the field.** That's the libc++ path from the recap. It's the one place in the parser that still allocates.
+
+>> DO: Terminal: `./build/demos/s02/demo_s02_string_view_not_cstring`. Expect `41.250000 41.250000`. Say: "Both right. That's the dangerous part." Optional live edit: on line 21 change `substr(0, 5)` to `substr(0, 4)`, rebuild, rerun: `bad` still prints 41.25, `ok` prints 41.2. Recovery: if the rebuild is slow, describe it and move on.
+
+>> IF AHEAD: This is why `from_chars` is the right tool with views: it takes a begin and an end pointer, so it can't read past the end. Same for `std::string_view::find` versus `strchr`. A review heuristic: grep for `.data()` on anything that's a `string_view`. Every hit is either passed with a length, `%.*s` style, or it's a bug. In a MISRA or AUTOSAR shop, this is the same class of finding as unbounded `strlen` on external data.
+
+>> IF BEHIND: A view has no NUL; any C API that needs one gets `std::string(sv).c_str()`, and that's the one copy the exercise keeps.
+
+So when do you still take a `std::string`?
+
+### A3. `span` mechanics · C++20 (deck slide 54)
+
+Six bullets, quickly.
+
+Dynamic extent: `std::span<T>` is a pointer and a size, sixteen bytes. Static extent: `std::span<T, 8>` is just a pointer, because the size is in the type. **Static extent is the embedded case: the size is checked at compile time when you build the span from an array.** A function that takes exactly an eight-byte header can say so, and passing a twelve-byte array doesn't compile.
+
+`span<const T>` reads; `span<T>` writes through. The constness of the elements is in the template argument, not on the span.
+
+`first(n)`, `last(n)`, `subspan(offset, n)`: slicing without copying.
+
+`as_bytes` and `as_writable_bytes`: reinterpret the same memory as a span of `std::byte`. Next slide.
+
+(beat)
+
+No bounds checking on `operator[]`. Like a raw pointer. And there's no `.at()` until C++26. If you want checking today, you turn on your library's hardening mode, libstdc++'s `_GLIBCXX_ASSERTIONS` or libc++'s hardening modes, in debug and test builds.
+
+And the same lifetime rule as `string_view`. **A parameter, yes. A member, only if you know who owns the memory.**
+
+>> IF AHEAD: Constness gotcha: a `const std::span<int>` still lets you write the ints. The span is const, the elements aren't. It's a pointer, so `int* const` versus `const int*`. In review, if a function only reads, the parameter must say `span<const T>`, and the `const` on the span itself means nothing. Second gotcha: `span<T>` converts implicitly to `span<const T>`, and dynamic to static extent needs an explicit construction, so the conversions go in the safe direction only.
+
+>> IF BEHIND: Static extent puts the size in the type; `span<const T>` is the read-only one; no bounds checks; same lifetime rule as `string_view`.
+
+Here's where this pays off for us.
+
+### A4. `std::mdspan`: a preview · C++23 (deck slide 55)
+
+One slide, for anyone who has image buffers, sensor grids, or matrices.
+
+**`mdspan` is `span` with a shape: a multidimensional view over the same flat memory, with no copy.**
+
+Line 2 of the code: a 3 by 4 view over a flat array of twelve floats. Line 3: `m[1, 2]`. That's the C++23 multidimensional subscript operator, a comma inside the brackets, which used to be the comma operator and is now a real multi-argument `operator[]`. Line 4: the same thing with the extents decided at run time.
+
+(beat)
+
+The interesting part is the layout policy. `layout_right` is row-major, C order. `layout_left` is column-major, Fortran and MATLAB order. `layout_stride` is arbitrary strides. Same buffer, different interpretation, no copy. If you've ever written `buf[row * cols + col]` by hand and gotten the order wrong once, this is for you.
+
+Availability: libc++ has it, which is our Clang build; libstdc++ gets it in GCC 15.
+
+>> DO: Compiler Explorer tab 4: the slide snippet, Clang 18 with `-stdlib=libc++ -std=c++23`, or GCC trunk. Add `std::println("{}", buf[6]);` (or a `printf`) and show `7`: row 1, column 2 in a 4-wide row is index 6. Recovery: if the tab misbehaves, skip it; this slide is a preview.
+
+>> IF BEHIND: `mdspan` is a shaped view over flat memory with row-major or column-major layout; GCC 15 or libc++ today.
+
+Back to strings, and a lookup that allocates when it shouldn't.
+
+### A5. Transparent comparators · C++14 (deck slide 56)
+
+**Looking up a `string_view` key in a `map<string, T>` used to construct a `std::string` per lookup.**
+
+Look at the `plain` map on the right, line 10. `std::map<std::string, int>`. In `lookups`, line 14, to search it with a view you have to build a `std::string`. That's a construction every lookup, and for any key longer than the small-string buffer, a heap allocation. In a hot path that's real.
+
+Line 11: the same map with a third template argument, `std::less<>`. Empty angle brackets. That's the C++14 "transparent" comparator: it compares any two things that can be compared with `<`. Because it's transparent, `find` gets a template overload that takes any key type. Line 15: `transparent.find(key)` compares the view against the stored strings directly. No temporary.
+
+(pause)
+
+**Add `std::less<>` to every `std::map` and `std::set` keyed by `std::string`.** It costs nothing.
+
+For `unordered_map` you need C++20, and you need both a transparent hash and a transparent equality, `std::equal_to<>`. The slide mentions just the hash; you need both, or the heterogeneous `find` overload doesn't appear.
+
+In the exercise, at-home task 9: `StatsBySensor` gets `std::less<>` so that `find("rpm")` works from a literal.
+
+>> DO: Terminal: `./build/demos/s02/demo_s02_transparent_compare`. Expect `1`. Not exciting; the point is it compiled. Optional: on Compiler Explorer, change `transparent.find(key)` to `plain.find(key)` and show the error: no conversion from `string_view` to `const std::string&`. Recovery: skip the edit.
+
+>> ASK: Why isn't `std::less<>` the default for `std::map<std::string, T>`? (Expect: backward compatibility. Making it transparent changes overload resolution for existing code, and some key types have conversions that would behave differently.) Say: "Right. It's opt-in because the default was fixed in 1998."
+
+>> IF AHEAD: For `unordered_map`, the transparent hash is a small struct: `struct SvHash { using is_transparent = void; std::size_t operator()(std::string_view s) const { return std::hash<std::string_view>{}(s); } };`, then `std::unordered_map<std::string, int, SvHash, std::equal_to<>>`. The `is_transparent` typedef is the magic marker in both cases; that's literally what the library checks for.
+
+>> IF BEHIND: `std::less<>` as the third template argument lets `find` take a `string_view` with no temporary string.
+
+That's the views segment.
+
+### A6. The pointer-to-member trap · C++23 (deck slide 57)
+
+The obvious way to write that units lookup is: `find_sensor(name).transform(&SensorConfig::units)`. A pointer to member as the projection. Ranges algorithms accept that happily. It doesn't compile here, and the error is a wall of text.
+
+Why? Invoking a pointer to data member on an object gives you a **reference** to that member, not a copy. On a temporary optional, it's an rvalue reference, `string_view&&`. On a named optional, it's an lvalue reference, `string_view&`. `transform` wants to build an `optional` of whatever the function returns.
+
+(pause)
+
+**And `optional` of a reference type is ill-formed in C++23.** So it fails either way. The slide says "on a temporary", but I checked: GCC and Clang reject it on a named optional too. It's not about temporaries; it's about references.
+
+The fix is the lambda you saw: `[](const SensorConfig& c) { return c.units; }`. That returns by value, so `transform` builds an `optional<string_view>`.
+
+>> DO: Compiler Explorer tab 2: `optional_monadic.cpp` with the trap uncommented, GCC 14, `-std=c++23`. Expect an error from inside `<optional>`: a static assertion failing on `is_object_v<...&>`, or "union member has reference type". Scroll to the first line that mentions your file, and show that the actual cause, "a reference type", is buried three screens down. Recovery: if the tab is broken, read the README's task 8 line instead: "read the compiler error once".
+
+**Read the error once, so the next time you see it, you know it in five seconds.** That's why the exercise asks you to try it.
+
+>> IF AHEAD: This is a value-category bug, and the supplemental deck on value categories explains the general rule: `std::invoke` with a pointer-to-data-member on an xvalue yields an xvalue of the member. C++26 adds `optional<T&>`, so the lvalue case may start compiling there, giving you an optional that refers into the original. Which may be what you want, or may be a dangling reference. Another reason to prefer the explicit lambda: it says "copy" out loud.
+
+>> IF BEHIND: `transform(&T::member)` doesn't compile because it yields a reference and `optional<T&>` doesn't exist in C++23; use a lambda that returns by value.
+
+From "maybe one" to "exactly one of several".
+
+### A7. `variant` details worth knowing · C++17 (deck slide 58)
+
+Fast slide. Six bullets, one sentence each.
+
+A variant default-constructs its **first** alternative. **If "empty" is a legitimate state, put `std::monostate` first.** That's the one that comes up in practice.
+
+`valueless_by_exception()`: true only if an exception was thrown while switching alternatives, after the old one was destroyed. Rare. `visit` throws `bad_variant_access` on it.
+
+Comparison and hashing work if every alternative supports them. Alternatives may repeat, `variant<int, int>`, and then you use `get<0>`, not `get<int>`. `visit` with two variants dispatches on both: double dispatch for free. And C++26 adds member `visit`.
+
+(beat)
+
+>> IF BEHIND: Use `std::monostate` first when "empty" is a state; the rest is reference material.
+
+And the type for when you can't name the alternatives.
+
+### A8. Where these came from (deck slide 59)
+
+This is the optional history slide. If you're behind, skip it.
+
+**These types were in production use in Boost for over a decade before they were standardized.** Boost.Optional shipped in 2003, Boost.Variant very shortly after. Optional nearly made C++14 and was pulled into a technical specification in 2013. Variant took longest because of one question: what state is the variant in if assigning a new alternative throws? The answer, "valueless by exception", settled in 2016, and `optional`, `variant`, and `any` all landed in C++17.
+
+`expected` followed the same path: Boost.Outcome and `tl::expected` in the field, adopted for C++23 in 2022.
+
+(beat)
+
+The point: the designs are not experimental. Adopting them is low risk.
+
+>> IF BEHIND: Skip the slide: "These were proven in Boost for over a decade; the designs aren't experimental."
+
+The segment in three lines.
+
+### A9. `expected<void, E>` · C++23 (deck slide 60)
+
+**"Did it work, and if not, why?" No value to return, but a reason to report.**
+
+`write`, line 12 on the right. Returns `expected<void, IoError>`. Failure: `std::unexpected(IoError::NotOpen)`. Success, line 15: `return {};`. An empty brace is the success value.
+
+Line 19: `if (auto r = write(...); !r)`, the C++17 if-with-initializer. Test, then `r.error()`.
+
+(beat)
+
+This replaces `bool write(...)` plus a global or thread-local "last error". And this is the one where `[[nodiscard]]` on the function matters most, because there's no value to tempt the caller into checking.
+
+The slide mentions coroutines. That's a Session 5 preview, and to be precise: the standard doesn't make `expected` awaitable. You'd write that adapter yourself. It pairs naturally; it's not built in.
+
+>> DO: Terminal: `./build/demos/s02/demo_s02_expected_void`. Expect a single `0`: the `"hello"` write succeeded and printed nothing, and `write("x", false).has_value()` is 0. Recovery: read it aloud.
+
+>> IF BEHIND: `expected<void, E>` is success-or-reason; `return {};` is success; mark it `[[nodiscard]]`.
+
+The segment, in one sentence.
+
+### A10. A formatter with its own spec · C++20 (deck slide 61)
 
 **`parse` sees the text between the colon and the closing brace. It can mean whatever your type needs.**
 
@@ -1028,7 +1281,7 @@ Here's the subtle part. **`parse` runs at compile time when the format string is
 
 Now containers.
 
-### 44. Formatting ranges · C++23 · target 1:25, ~1 min
+### A11. Formatting ranges · C++23 (deck slide 62)
 
 **Printing a vector used to be a loop. Now it's `"{}"`.**
 
@@ -1044,7 +1297,7 @@ Availability: libc++ has it, GCC gets it in 15. **Gate it on `__cpp_lib_format_r
 
 And for embedded: no allocation.
 
-### 45. Formatting without allocating · C++20 · target 1:26, ~2 min
+### A12. Formatting without allocating · C++20 (deck slide 63)
 
 **Embedded and hot paths: format into a buffer you already own.**
 
@@ -1068,7 +1321,7 @@ Lines 21 to 23: a format string from a variable. That's `vformat`, and it loses 
 
 How do you get a big codebase there?
 
-### 46. Migration · target 1:28, ~1 min
+### A13. Migration (deck slide 64)
 
 The table is mechanical. Drop `c_str()` and the casts: `%lu` and `%zu` are just `{}`. Width and alignment move after the colon. `%08.3f` becomes `{:08.3f}`, same order. `std::hex` becomes `{:x}`, with no sticky state. `ostringstream` becomes `std::format`. `snprintf` becomes `format_to_n`.
 
@@ -1083,213 +1336,28 @@ In-class task 3 is this table applied to `report.cpp`. And the diff test catches
 >> IF BEHIND: The translation is mechanical, and `modernize-use-std-print` automates the `printf` cases.
 
 The segment in two sentences.
+## Running the labs
 
-### 47. Formatting takeaway · target 1:29, ~1 min
+The per-lab coaching is in the script at slides 12, 23, 37 and 48. The rhythm is the same every time:
 
-**`std::format` is `printf` with the format string checked by the compiler and user types allowed. `std::print` is `printf` ergonomics for it.**
+1. Lab slide up, starter link in chat, one quiet minute while people open the file. Then stay quiet for five more; answer chat, do not lecture.
+2. At seven minutes, paste the solution link and walk the three changes in two minutes. The debrief is the last word on the block's topic, so it is scripted.
+3. One question to the room, then move on at ten minutes whether or not people are done. Nothing later depends on finishing a lab.
 
-(pause)
+If the lecture runs late, the lab still starts within two minutes of its target; cut the slide before the takeaway instead. If a lab runs over because the room is engaged, take the time out of block 4's library tour, which is the only part of the deck built to be skimmed.
 
-Monday morning: write one `std::formatter` for your most-logged type, and delete the `to_string` helper it replaces.
+## The at-home exercise
 
-Time check: 1:30. Ten fast slides of library tour, then the exercise. I'm going to move quickly; this is a catalog, and every slide has a demo file you can run later.
+Launched at slide 49 in one minute; nothing is done in class. What to say when it comes up in chat during the week, and in next session's recap:
 
-### 48. C++17 tour, 1: `std::filesystem` · C++17 · target 1:30, ~1 min
+- Task 1: returning `ParseError::Empty` without `std::unexpected`. The error is long, because `expected` tries to convert a `ParseError` into a `Record`. "Every error return needs `std::unexpected(...)` around it." (Lab 2.3 TODO 1 was the rehearsal.)
+- Task 1: deleting `ParseError::None` breaks other code: a `switch` with a `None` case, a `to_string`, tests that compare against `None`. That is the compiler showing every place that relied on the fake value. Fix each one; do not add it back.
+- Task 2: `if (cfg == nullptr)` stops compiling. An optional compares against `std::nullopt`, or better, just `if (!cfg)`. Call sites using `cfg->` keep working.
+- Task 3: leaving `\n` at the end of the format string with `println`. Double newline, and the diff test fails. The most common failure on this task.
+- Task 3: `%-16s` becomes `{:16}` (strings left-align by default) but `%5s` must become `{:>5}` (`printf` right-aligns).
+- Task 4 (`formatter<Status>`): inherit from `formatter<string_view>` and forward; Lab 2.3 TODO 3 wrote the from-scratch version.
 
-**Portable paths, directory iteration, and file queries, without a platform layer.**
-
-Line 11 on the right: `operator/` joins path components with the right separator. Line 12: `filename`, `extension`, `parent_path`. Line 15: `exists`. Line 16: iterate a directory. Line 20: `remove_all` with an `error_code`.
-
-(beat)
-
-**Every operation has two overloads: one that throws, one that takes `std::error_code&` and never throws.** If your codebase bans exceptions, use the second, always.
-
->> DO: Terminal: `./build/demos/s02/demo_s02_tour_filesystem`. Expect `run1.csv .csv /tmp/telemetry`, then `exists: false`, and no directory listing, because the demo creates the directory but never the file. Recovery: none needed.
-
->> IF BEHIND: `std::filesystem` gives portable paths and directory iteration, with a non-throwing `error_code` overload for everything.
-
-### 49. C++17 tour, 2: small library additions · C++17 · target 1:31, ~1 min
-
-**The ones you'll actually use.**
-
-`clamp`, `gcd`, `lcm`. `invoke` calls anything callable the same way. `apply` unpacks a tuple into arguments.
-
-The sleepers are lines 24 to 27: map `merge` and `extract`. `merge` splices nodes from one map into another without reallocating; anything with a key that already exists stays behind in the source. `extract` takes a node out, and you can **change its key in place** and put it back. Before C++17, changing a key meant erase and reinsert, with an allocation each way.
-
-(beat)
-
-`std::reduce` is an order-agnostic sum: preview for Session 4 and parallel algorithms.
-
->> DO: Terminal: `./build/demos/s02/demo_s02_tour_cpp17`. Expect `100`, `6 12`, `5`, `5`, `2 1 1`, `2 21`. Point at `2 1 1`: `x` stayed in `b` because `a` already had one. Recovery: read it aloud.
-
->> IF BEHIND: `merge` and `extract` move map nodes without reallocating; the rest is small helpers.
-
-### 50. C++20 tour, 1: `<bit>` and `source_location` · C++20 · target 1:32, ~1 min
-
-**Bit twiddling without compiler intrinsics, and logging without macros.**
-
-Line 17: `std::bit_cast<std::uint32_t>(f)`. The bytes of the float, reinterpreted. No undefined behavior, and it's `constexpr`. That replaces the `memcpy` idiom, the type-punning union, and the pointer cast, which is UB.
-
-Then `popcount`, `has_single_bit` for "is a power of two", `bit_width`, `rotl`, and `std::endian::native`. These used to be `__builtin_popcount` and friends.
-
-(beat)
-
-And `source_location`: the `log` function at the top takes it as a default argument, so it captures the **caller's** file and line. **No more `__FILE__` and `__LINE__` macros in logging APIs.**
-
->> DO: Terminal: `./build/demos/s02/demo_s02_tour_bit`. Expect `3F800000`, `4`, `true`, `8`, `00000003`, `true`, and a log line with the file name, line 29, and the function name. Recovery: read it aloud.
-
->> IF BEHIND: `bit_cast` replaces type-punning safely; `source_location` as a default argument replaces logging macros.
-
-### 51. C++20 tour, 2: containers and numerics · C++20 · target 1:33, ~1 min
-
-**Small things that each remove a line.**
-
-`std::erase_if` on any container: **the end of the erase-remove idiom.** `starts_with` and `ends_with`. `contains` on associative containers: no more `find() != end()`. `std::to_array` from a literal. `std::ssize`: signed size, which ends the `-Wsign-compare` warning in index loops. `midpoint`, which doesn't overflow the way `(a + b) / 2` does. And `std::numbers::pi`, so you can delete your `#define PI`.
-
-(beat)
-
->> DO: Terminal: `./build/demos/s02/demo_s02_tour_cpp20`. Expect `1 3 5`, `true true`, `true`, `3 3`, `2 2.5`, `3.14159 1.41421`. Recovery: read it aloud.
-
->> IF BEHIND: `erase_if`, `contains`, `ssize`, `midpoint`, `numbers::pi`; each deletes an idiom.
-
-### 52. C++20 tour, 3: `<chrono>` calendars and time zones · C++20 · target 1:34, ~1 min
-
-**The exercise's timestamp is a `long long`. It could have a type, and print itself.**
-
-Line 11: `sys_time<milliseconds>`: milliseconds since the epoch, as a type. Line 12: format it with `{:%F %T}`, no `strftime`. Line 14: truncate to a day. Line 15: `year_month_day`. Line 17: the weekday. Line 19: add a month, and the calendar arithmetic handles month lengths.
-
-(beat)
-
-Time zones need the tz database. libstdc++ 13 and later ship support; check your libc++ version.
-
->> DO: Terminal: `./build/demos/s02/demo_s02_tour_chrono`. Expect `2024-08-30 06:40:01.000 UTC`, `2024 Aug 30`, `Fri`, `2024-09-30`. Recovery: read it aloud.
-
->> IF AHEAD: Calendar arithmetic can produce invalid dates on purpose: January 31 plus one month is February 31, and `ymd.ok()` returns false. You decide whether to clamp or roll over, which is exactly the decision hand-written date code always got silently wrong.
-
->> IF BEHIND: `sys_time<milliseconds>` gives a raw timestamp a type and lets it format itself.
-
-### 53. C++23 tour, 1: `flat_map`, `stacktrace`, `move_only_function` · C++23 · target 1:35, ~1 min
-
-Three additions with uneven availability today.
-
-**`flat_map` is sorted vectors with a map interface: cache-friendly, cheap to iterate, expensive to insert.** Right for a table built once and read many times, like the sensor table.
-
-`std::stacktrace::current()`: "where am I", without a debugger. libstdc++ only today, and you link `-lstdc++exp`.
-
-(beat)
-
-`move_only_function`: a `std::function` that can hold a lambda capturing a `unique_ptr`. That matters for task queues, Session 5.
-
->> DO: If you're on GCC: `./build/demos/s02/demo_s02_tour_stacktrace`; expect a few frames with `fail` and `main`. `flat_map`: Compiler Explorer tab 5, GCC trunk, expect `pressure 400`, `rpm 12000`, `temp_core 125`, then `3`. Locally on GCC 14 you'll get the "not available" line, which is the gate working. Recovery: show the slide code and move on.
-
->> IF BEHIND: `flat_map` for build-once tables, `stacktrace` for error paths, `move_only_function` for task queues; all gated on feature-test macros.
-
-### 54. C++23 tour, 2: strings, bytes, and C APIs · C++23 · target 1:36, ~1 min
-
-**Odds and ends that each close a long-standing gap.**
-
-`std::string::contains`. Finally. `std::byteswap`: the endian conversion everybody has a macro for, now `constexpr`. And `resize_and_overwrite`: write directly into a string's uninitialized capacity, here with `snprintf`, and return the length you actually used. No zero-fill first.
-
-(beat)
-
-Not on the slide but in the demo file: `std::out_ptr`, which adapts a `unique_ptr` to a C API that fills in a `T**`. Every C library has that shape.
-
->> DO: Terminal: `./build/demos/s02/demo_s02_tour_cpp23`. Expect `true`, `3412`, `rpm=4811`, then on GCC `5` and `7` from `move_only_function` and `out_ptr`. Recovery: read it aloud.
-
->> IF BEHIND: `contains`, `byteswap`, `resize_and_overwrite`, and `out_ptr` for C APIs.
-
-### 55. Deprecated and removed in the library · target 1:37, ~1 min
-
-Fast. Things to grep for.
-
-The big ones: `auto_ptr`, `random_shuffle`, `bind1st` are gone since C++17. `std::iterator` as a base class is deprecated; it's still there in C++23, but it warns. `std::aligned_storage` is deprecated in C++23. `<codecvt>` and `strstream` are removed in C++26.
-
-(beat)
-
-**`aligned_storage` is the one that bites embedded code**, in any hand-rolled small-buffer optimization. The replacement is `alignas(T) std::byte buf[sizeof(T)];`.
-
-Library deprecation warnings come from `-Wdeprecated-declarations`, on by default, so under `-Werror` a compiler upgrade can turn these into build breaks. Clang-tidy's `modernize-` checks fix many of them.
-
->> IF BEHIND: Grep for `auto_ptr`, `random_shuffle`, `std::iterator`, and `aligned_storage`; the last becomes `alignas(T) std::byte buf[sizeof(T)]`.
-
-### 56. Support matrix for this session · target 1:38, ~2 min
-
-**Every row on this slide was discovered building this course repo.**
-
-`expected`: fine on GCC 14, fine on Clang 18 with libc++, missing on Clang 18 with libstdc++. That's why the repo builds Clang with libc++. `from_chars` for double: missing on libc++ before 20. Range formatting, `flat_map`, `mdspan`: GCC 15. `stacktrace`: GCC only. `move_only_function` and `out_ptr`: newer libc++.
-
-(pause)
-
-**The tool is the last line: `<version>` and the `__cpp_lib_` macros. Test the feature, not the compiler version.** That's the recap slide coming back. The details are in `handouts/toolchain-support-matrix.md`.
-
->> ASK: What compiler is your production code on, and is it the one you develop with? (Expect: some say an older GCC for a certified or customer-mandated toolchain, sometimes years behind.) Say: "That's normal in our industry. So the question isn't 'is it in C++23', it's 'is it in our toolchain', and the macros answer that in code."
-
->> IF AHEAD: For older toolchains, the bridges are well known: `{fmt}` for `format` and `print`, `tl::expected` for `expected`, `gsl::span` or `tcb::span` for `span`. Their APIs are close enough that a later switch to `std::` is mostly a rename. The pattern: wrap them in your own namespace alias, so the switch is a one-line change.
-
->> IF BEHIND: Support varies by library; `<version>` and `__cpp_lib_` macros are how code adapts.
-
-The whole session on one page.
-
-### 57. Interface design checklist · target 1:40, ~1 min
-
-**This is the screenshot slide. Everything on it is in today's solution.**
-
-Read-only text: `string_view` by value. Read-only contiguous elements: `span<const T>`. A buffer to write: `span<T>`. A value you keep: by value, then `std::move`. Maybe a result: `optional`. A result or a reason: `expected` with `[[nodiscard]]`. One of a fixed set: `variant`. One owner: `unique_ptr`. Borrowed and non-null: `T&`. Text output: `format` and `print` with a `formatter`.
-
-(pause)
-
-Take the screenshot now. Then the exercise.
-
-### 58. Exercise: vocabulary types · target 1:41, ~1 min to launch
-
-Open `exercises/s02-vocabulary-types/README.md`.
-
-Three in-class tasks. One: `parse_record` returns `std::expected<Record, ParseError>`, and delete `ParseError::None`. Two: `find_sensor` returns `optional<SensorConfig>`, and `parse_status` returns `optional<Status>`. Three: every `fprintf` in the report becomes `std::println`.
-
-**The test `s02_report_identical` diffs your report against the starter's. One space off and it fails. That's the point: the behavior must not change.**
-
-(pause)
-
-The command is on the slide. Run it after each task, not at the end. Tasks 4 to 9 are for home. See the exercise coaching section below for the next sixteen minutes.
-
-### 59. Session 2 takeaway · target 1:58, ~2 min
-
-**A modern interface says what it means.** `optional` means "maybe". `expected` means "or this error". `string_view` means "I'll only look". `span` means "a contiguous run I don't own".
-
-(pause)
-
-**The information that used to live in comments, sentinels, and out-parameters now lives in the signature, where the compiler can see it.**
-
-Next session is compile time. The CRC table, the configuration table, and the `serialize` overload set are the targets: `constexpr`, `consteval`, concepts, and deducing `this`. Today's solution is next session's starter, so if you don't finish tasks 4 to 9, take ours.
-
-The support matrix and the feature timeline handouts are updated for today. Thanks, everyone.
-
----
-
-## Exercise coaching
-
-**Launch, in 60 seconds (at 1:41).** Put the README on screen, then say: "Three tasks, about sixteen minutes. Start with task 1, `expected` for the parser. Run the tests after each task. If you're on Clang, the CMake already uses libc++, which is where `expected` lives on Clang 18. Ask in chat any time. I'll call five minutes." Paste into chat: `cmake --build build && ctest --test-dir build -R s02 --output-on-failure`.
-
-**What to say while they start.** "The diff test is your safety net. If it goes red after task 3, the first thing to check is newlines."
-
-**What to watch for** (scan chat and any shared screens):
-
-- Task 1: returning `ParseError::Empty` without `std::unexpected`. The error is long, because `expected` tries to convert a `ParseError` into a `Record`. Say: "Every error return needs `std::unexpected(...)` around it."
-- Task 1: deleting `ParseError::None` breaks other code: a `switch` with a `None` case, a `to_string`, tests that compare against `None`. That's the compiler showing you every place that relied on the fake value. Fix each one; don't add it back.
-- Task 1: in `load_stream`, using `parsed.error()` inside the success branch, or `*parsed` in the error branch. Point at the declare-and-test `if` form.
-- Task 2: `if (cfg == nullptr)` stops compiling. An optional compares against `std::nullopt`, or better, just `if (!cfg)`. Call sites using `cfg->` keep working, which is a nice surprise.
-- Task 2: forgetting the call site where the old out-parameter `status_from_string(text, &out)` was used.
-- Task 3: leaving `\n` at the end of the format string with `println`. That's a double newline, and the diff test fails. The most common failure on this task.
-- Task 3: `%-16s` translated to `{:16}` (works for strings, since strings left-align by default) versus `%5s` translated to `{:5}` (wrong: `printf` right-aligns, so it needs `{:>5}`). And leftover `static_cast<unsigned long>`: harmless, but delete it.
-- Anyone done early: point them at task 4, `formatter<Status>`, or task 8 to read the pointer-to-member error.
-
-**Five minutes left (at about 1:53).** "Five minutes. If task 3 isn't green, that's fine: the solution is next week's starter. If you're stuck on a compile error, paste the first ten lines into chat."
-
-**Debrief (1:56, about 2 minutes).** Open the solution's `parser.h`. Read the `parse_record` signature aloud: "`std::expected<Record, ParseError>`. That's the whole contract, no comment needed." Show one `std::unexpected` return and the `if (auto parsed = parse_record(line))` in `load_stream`. Then one `println` line in `report.cpp` next to its old `fprintf` if you have it. Say: "The program computes exactly the same thing. The diff test proves it. What changed is that the signatures now say what the comments used to." Then go to slide 59.
-
-**Closing.** Slide 59 as scripted.
-
----
+Next session's recap slide should pick up whichever of these the chat shows most.
 
 ## Likely questions and answers
 
@@ -1329,6 +1397,8 @@ A: Each `print` call writes its formatted output in one operation, so lines from
 ---
 
 ## Deck issues found
+
+Slide numbers in this list are the deck's numbering before the block restructure (see `docs/session-format.md`); the items are kept for the record.
 
 Status: fixed in the deck, demos, outline and README on 2026-10-02 (see scripts/README.md). Items kept for the record. Still open: the Compiler Explorer `<add short link>` placeholders in every demo file header.
 

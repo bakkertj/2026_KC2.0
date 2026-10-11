@@ -1,0 +1,4 @@
+sum: 10 4.0
+true count: 3
+int 42 | real 2.500000 | text hi
+pair 3 0.25, contains(0.5): 1

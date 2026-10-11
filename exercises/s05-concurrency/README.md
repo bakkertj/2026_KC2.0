@@ -18,7 +18,7 @@ A data race is a test failure. Clang users: the repo's CMake adds `-fexperimenta
 
 ## At home, first (the core of the exercise)
 
-Unlike the earlier sessions, the in-class exercise today is the roadmap workshop (task 8, about 20 minutes on the clock). Tasks 1 to 3 are the heart of this exercise and are done at home; the next session's solution walk-through covers them.
+Unlike the earlier sessions, the one piece of this exercise done in class is the roadmap worksheet (task 8, block 4's ten-minute lab). Tasks 1 to 3 are the heart of this exercise and are done at home; lab 5.1 rehearsed `jthread`, `scoped_lock` and the semaphore on a small file, and the retrospective's solution walk-through covers them.
 
 1. **A bounded queue on semaphores.** Write `BoundedQueue<T, Capacity>` in a new `queue.h`: a `std::mutex`, a `std::queue<T>`, and two `std::counting_semaphore`s, `slots` (initialized to `Capacity`, the producer acquires one per push) and `items` (initialized to 0, the consumer acquires one per pop). `push` blocks when full; `pop` blocks when empty. Add `close()`: mark closed, release one extra `items` count so a blocked `pop` wakes, and have `pop` return `std::nullopt` once closed and drained. Note that `counting_semaphore`'s count is a `std::ptrdiff_t`, and the course's `-Wsign-conversion` will tell you if you forget.
 
@@ -36,7 +36,7 @@ Unlike the earlier sessions, the in-class exercise today is the roadmap workshop
 
 7. **clang-tidy.** Run `clang-tidy -p build --checks='modernize-*' solution/src/*.cpp` (the repo's `.clang-tidy` already selects the checks). Fix what it flags. Then run it on the Session 1 starter and compare the count: that difference is this course.
 
-8. **Your roadmap (in class).** Open `handouts/adoption-roadmap-template.md` and fill in the tier-1 column for a codebase you own. That is the last exercise of the course and the only one without a solution.
+8. **Your roadmap (in class, as block 4's lab).** Open `handouts/adoption-roadmap-template.md` and fill in the tier-1 column for a codebase you own. That is the last exercise of the course and the only one without a solution.
 
 ## Checking your work
 
