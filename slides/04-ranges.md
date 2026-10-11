@@ -694,13 +694,13 @@ Notes: 0:50. Lab 4.2, then C++23 at 1:00.
 
 ## Lab 4.2: views <span class="clock">10 minutes</span>
 
-Open [`labs/s04/lab2_views.cpp`](https://godbolt.example/labs/s04/lab2_views.cpp). Three TODOs, in order; build and run after each.
+Open [`labs/s04/lab2_views.cpp`](https://godbolt.org/z/8oe1E7aMb). Three TODOs, in order; build and run after each.
 
 1. Three eager loops and two scratch vectors: one lazy pipeline, `rs | views::filter(not fault) | views::transform(value) | views::take(3)`, in a range-for
 2. All non-fault values into a `std::vector<double>`: the same pipeline with `| std::ranges::to<std::vector>()` in place of the loop
 3. The `const` view trap: uncomment the two `hot` lines, read the error, drop the `const`; then explain to your neighbor why `const std::vector&` is fine and `const filter_view` is not
 
-At seven minutes: [solution](https://godbolt.example/labs/s04/lab2_views_solution.cpp). Locally: `ctest -R lab_s04_lab2`.
+At seven minutes: [solution](https://godbolt.org/z/je5qz167a). Locally: `ctest -R lab_s04_lab2`.
 
 <!--
 Notes: TODO 1: take(3) must come after the filter; put it first and the output becomes
@@ -983,13 +983,13 @@ Notes: 1:20. Lab 4.3, then block 4, the algorithms by standard, at 1:30.
 
 ## Lab 4.3: C++23 ranges <span class="clock">10 minutes</span>
 
-Open [`labs/s04/lab3_cpp23_ranges.cpp`](https://godbolt.example/labs/s04/lab3_cpp23_ranges.cpp). Three TODOs, in order; build and run after each. The output must not change.
+Open [`labs/s04/lab3_cpp23_ranges.cpp`](https://godbolt.org/z/8jGxP9Yhj). Three TODOs, in order; build and run after each. The output must not change.
 
 1. The hand-written group-by (a "previous sensor" and two indices): `for (auto group : rs | std::views::chunk_by(same_sensor))`, with `group.size()` and `group.front()`
 2. `std::accumulate` with begin/end and an unpacking lambda: `std::ranges::fold_left(rs | std::views::transform(&Reading::value), 0.0, std::plus<>{})`
 3. An index loop whose index is only printed: `for (auto [idx, r] : rs | std::views::enumerate)` (libstdc++ 14 has it; libc++ 18 does not)
 
-At seven minutes: [solution](https://godbolt.example/labs/s04/lab3_cpp23_ranges_solution.cpp). Locally: `ctest -R lab_s04_lab3`.
+At seven minutes: [solution](https://godbolt.org/z/7vPYaxrMq). Locally: `ctest -R lab_s04_lab3`.
 
 <!--
 Notes: TODO 1: same_sensor takes two Readings and compares .sensor; chunk_by only groups
@@ -1145,12 +1145,12 @@ Demo file: demos/s04/same_task_three_ways.cpp
 
 ## Lab 4.4: the same task, three ways <span class="clock">10 minutes</span>
 
-Open [`labs/s04/lab4_three_ways.cpp`](https://godbolt.example/labs/s04/lab4_three_ways.cpp). The task: the three highest non-fault readings, highest first, as `"sensor=value"` strings. `top3_cpp11` is done; write the other two. `main` prints `all three agree` when they match it.
+Open [`labs/s04/lab4_three_ways.cpp`](https://godbolt.org/z/KjKMWebeW). The task: the three highest non-fault readings, highest first, as `"sensor=value"` strings. `top3_cpp11` is done; write the other two. `main` prints `all three agree` when they match it.
 
 1. `top3_cpp17`: `copy_if` with a lambda, `sort` with a lambda, `transform` into a `std::back_inserter` for the labels, the count bounded with `std::min`
 2. `top3_ranges`: `filter | ranges::to<vector>`, `ranges::sort` with `std::ranges::greater` and the projection `&Reading::value`, then `take(3) | transform(label) | to<vector>`
 
-At seven minutes: [solution](https://godbolt.example/labs/s04/lab4_three_ways_solution.cpp). Locally: `ctest -R lab_s04_lab4`.
+At seven minutes: [solution](https://godbolt.org/z/ofz3r1Ed3). Locally: `ctest -R lab_s04_lab4`.
 
 <!--
 Notes: Two TODOs, not three: each is a whole function. Say first that the starter prints

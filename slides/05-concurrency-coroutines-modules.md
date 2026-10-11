@@ -480,13 +480,13 @@ hands them between a function and its caller without a thread at all.
 
 ## Lab 5.1: jthread, stop_token, scoped_lock, semaphores <span class="clock">10 minutes</span>
 
-Open [`labs/s05/lab1_jthread_stop_token.cpp`](https://godbolt.example/labs/s05/lab1_jthread_stop_token.cpp) on Compiler Explorer. Three TODOs, in order; build and run after each. The three output lines must not change. The execution pane runs real threads.
+Open [`labs/s05/lab1_jthread_stop_token.cpp`](https://godbolt.org/z/b48KPoeYf) on Compiler Explorer. Three TODOs, in order; build and run after each. The three output lines must not change. The execution pane runs real threads.
 
 1. `thread` + `atomic<bool>` flag + `join()`: `sampler` takes a `std::stop_token` first, polls `stop_requested()`, and becomes a `std::jthread`. Delete the flag and the join; the destructor requests stop and joins
 2. Two `lock_guard`s in `transfer`, deadlock-prone in opposite orders: one `std::scoped_lock lock(from.m, to.m);`. Then start `t2` **before** joining `t1`: it cannot deadlock now
 3. The owner spins on `g_ready`: a `std::binary_semaphore ready{0}`; the worker calls `ready.release()`, the owner `ready.acquire()`
 
-At seven minutes: [solution](https://godbolt.example/labs/s05/lab1_jthread_stop_token_solution.cpp). Locally: `ctest -R lab_s05_lab1`.
+At seven minutes: [solution](https://godbolt.org/z/MTjWGoscr). Locally: `ctest -R lab_s05_lab1`.
 
 <!--
 Notes: Stay quiet for the first five minutes. TODO 1: `std::jthread t(sampler,
@@ -861,13 +861,13 @@ Notes: Transition: the last feature is the one that changes the build.
 
 ## Lab 5.2: std::generator <span class="clock">10 minutes</span>
 
-Open [`labs/s05/lab2_generator.cpp`](https://godbolt.example/labs/s05/lab2_generator.cpp) on Compiler Explorer (GCC 14: `<generator>` is libstdc++ only). Three TODOs, in order; build and run after each.
+Open [`labs/s05/lab2_generator.cpp`](https://godbolt.org/z/sThP6cG19) on Compiler Explorer (GCC 14: `<generator>` is libstdc++ only). Three TODOs, in order; build and run after each.
 
 1. `squares(n)` builds a whole `vector`: rewrite it as `std::generator<int> squares(int n)` with `co_yield i * i`. `main`'s loop does not change; with `take(2)`, 3 to 10 are never computed
 2. `parse_all` parses every line up front: make it `std::generator<Reading> readings(std::string_view log)` that `co_yield`s each `Reading` as its line is parsed. In `main`, add `| std::views::take(2)` and watch the order of `parsed:` and `use:`. Is the third line parsed?
 3. In `squares`, add a local `Guard` whose destructor prints `generator frame destroyed`, and a `puts("generator finished")` **after** the loop. With `take(2)`, which of the two prints?
 
-At seven minutes: [solution](https://godbolt.example/labs/s05/lab2_generator_solution.cpp). Locally: `ctest -R lab_s05_lab2`.
+At seven minutes: [solution](https://godbolt.org/z/xfPP7zP7c). Locally: `ctest -R lab_s05_lab2`.
 
 <!--
 Notes: Compiler Explorer preset is GCC 14.2, so it just works; anyone who switched to Clang
@@ -1208,13 +1208,13 @@ Notes: Transition to the workshop.
 
 ## Lab 5.3: deprecated and removed, fixed <span class="clock">10 minutes</span>
 
-Open [`labs/s05/lab3_deprecations.cpp`](https://godbolt.example/labs/s05/lab3_deprecations.cpp) on Compiler Explorer (GCC 14, `-Wdeprecated`). It compiles, with **six warnings**. Goal: zero warnings, same output line. Seven numbered lines; each comment names the replacement.
+Open [`labs/s05/lab3_deprecations.cpp`](https://godbolt.org/z/vE4bx1dfE) on Compiler Explorer (GCC 14, `-Wdeprecated`). It compiles, with **six warnings**. Goal: zero warnings, same output line. Seven numbered lines; each comment names the replacement.
 
 1. `std::iterator` base, `auto_ptr`, `random_shuffle`: the five member typedefs, `make_unique`, `shuffle` with a seeded `std::mt19937`
 2. `bind2nd`, `result_of`: a lambda, `std::invoke_result_t<decltype(&by_id), Sensor, Sensor>` (`result_of` compiles silently on libstdc++; fix it anyway)
 3. `aligned_storage_t`, `++` on a `volatile`: `alignas(Sensor) std::byte raw[sizeof(Sensor)]`, and read, modify, write as three statements
 
-At seven minutes: [solution](https://godbolt.example/labs/s05/lab3_deprecations_solution.cpp). Locally: `ctest -R lab_s05_lab3`.
+At seven minutes: [solution](https://godbolt.org/z/bzMd3x6j9). Locally: `ctest -R lab_s05_lab3`.
 
 <!--
 Notes: Modules cannot run as one Compiler Explorer file, so this block's lab is the

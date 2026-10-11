@@ -1,6 +1,6 @@
 // Lab 5.3 solution: deprecated and removed, fixed (C++14 through C++23)
 // Session: s05
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/bzMd3x6j9
 // godbolt: -Wdeprecated
 #include <algorithm>
 #include <cstddef>

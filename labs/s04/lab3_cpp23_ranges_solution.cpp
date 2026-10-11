@@ -1,6 +1,6 @@
 // Lab 4.3 solution: C++23 ranges (chunk_by, fold_left, enumerate)
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/7vPYaxrMq
 #include <algorithm>
 #include <cstdio>
 #include <functional>

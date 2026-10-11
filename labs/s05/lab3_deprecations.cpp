@@ -1,6 +1,6 @@
 // Lab 5.3: deprecated and removed, fixed (C++14 through C++23)
 // Session: s05
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/vE4bx1dfE
 // Ten minutes. This file compiles under -std=c++23 with libstdc++, but every marked line
 // uses something a later standard deprecated or removed, and the compiler says so. Goal:
 // zero warnings, same output. Each line names its replacement in the comment; the slides

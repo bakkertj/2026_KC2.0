@@ -1,6 +1,6 @@
 // Lab 4.2 solution: views (lazy pipelines, ranges::to, and the const trap)
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/je5qz167a
 #include <cstdio>
 #include <ranges>
 #include <string>

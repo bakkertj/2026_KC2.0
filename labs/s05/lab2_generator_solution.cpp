@@ -1,6 +1,6 @@
 // Lab 5.2 solution: std::generator (lazy sequences as coroutines)
 // Session: s05
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/xfPP7zP7c
 #include <cstdio>
 #include <generator>
 #include <ranges>

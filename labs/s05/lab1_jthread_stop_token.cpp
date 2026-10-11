@@ -1,6 +1,6 @@
 // Lab 5.1: jthread, stop_token, scoped_lock, semaphores
 // Session: s05
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/b48KPoeYf
 // Ten minutes, three TODOs in order. Build and run after each one; the output must not
 // change. (On Compiler Explorer the execution pane runs real threads.)
 // Finished version: lab1_jthread_stop_token_solution.cpp

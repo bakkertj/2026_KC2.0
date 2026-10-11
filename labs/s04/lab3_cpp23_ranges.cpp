@@ -1,6 +1,6 @@
 // Lab 4.3: C++23 ranges (chunk_by, fold_left, enumerate)
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/8jGxP9Yhj
 // Ten minutes, three TODOs in order. Build and run after each one; the output must not
 // change. Finished version: lab3_cpp23_ranges_solution.cpp
 #include <algorithm>

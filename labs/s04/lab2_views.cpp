@@ -1,6 +1,6 @@
 // Lab 4.2: views (lazy pipelines, ranges::to, and the const trap)
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/8oe1E7aMb
 // Ten minutes, three TODOs in order. Build and run after each one.
 // Finished version: lab2_views_solution.cpp
 #include <cstdio>

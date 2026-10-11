@@ -1,6 +1,6 @@
 // Lab 5.1 solution: jthread, stop_token, scoped_lock, semaphores
 // Session: s05
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/MTjWGoscr
 #include <chrono>
 #include <cstdio>
 #include <mutex>

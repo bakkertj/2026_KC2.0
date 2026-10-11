@@ -1,6 +1,6 @@
 // Lab 4.4 solution: the same task, three ways (C++11 loops, C++17 algorithms, C++20/23 ranges)
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/ofz3r1Ed3
 #include <algorithm>
 #include <cstdio>
 #include <functional>

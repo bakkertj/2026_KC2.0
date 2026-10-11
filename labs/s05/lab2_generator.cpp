@@ -1,6 +1,6 @@
 // Lab 5.2: std::generator (lazy sequences as coroutines)
 // Session: s05
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/sThP6cG19
 // Ten minutes, three TODOs in order. Build and run after each one.
 // Needs libstdc++ 14 (GCC 14) for <generator>. Finished version: lab2_generator_solution.cpp
 #include <cstdio>

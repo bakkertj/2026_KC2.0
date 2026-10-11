@@ -1,6 +1,6 @@
 // Lab 4.4: the same task, three ways (C++11 loops, C++17 algorithms, C++20/23 ranges)
 // Session: s04
-// Compiler Explorer: <add short link>
+// Compiler Explorer: https://godbolt.org/z/KjKMWebeW
 // Ten minutes. The task: the three highest non-fault readings, highest first, as
 // "sensor=value" strings. top3_cpp11 is done. Write top3_cpp17 with <algorithm> and
 // lambdas, then top3_ranges with constrained algorithms and views. main() checks that all

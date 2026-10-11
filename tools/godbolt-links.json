@@ -134,5 +134,17 @@
  "labs/s03/lab4_deducing_this.cpp#run": "https://godbolt.org/z/jorfr6M1v",
  "labs/s03/lab4_deducing_this_solution.cpp#run": "https://godbolt.org/z/15Maa46WP",
  "labs/s04/lab1_constrained_algorithms.cpp#run": "https://godbolt.org/z/h7dM73Kc8",
- "labs/s04/lab1_constrained_algorithms_solution.cpp#run": "https://godbolt.org/z/67zbenxKq"
+ "labs/s04/lab1_constrained_algorithms_solution.cpp#run": "https://godbolt.org/z/67zbenxKq",
+ "labs/s04/lab2_views.cpp#run": "https://godbolt.org/z/8oe1E7aMb",
+ "labs/s04/lab2_views_solution.cpp#run": "https://godbolt.org/z/je5qz167a",
+ "labs/s04/lab3_cpp23_ranges.cpp#run": "https://godbolt.org/z/8jGxP9Yhj",
+ "labs/s04/lab3_cpp23_ranges_solution.cpp#run": "https://godbolt.org/z/7vPYaxrMq",
+ "labs/s04/lab4_three_ways.cpp#run": "https://godbolt.org/z/KjKMWebeW",
+ "labs/s04/lab4_three_ways_solution.cpp#run": "https://godbolt.org/z/ofz3r1Ed3",
+ "labs/s05/lab1_jthread_stop_token.cpp#run": "https://godbolt.org/z/b48KPoeYf",
+ "labs/s05/lab1_jthread_stop_token_solution.cpp#run": "https://godbolt.org/z/MTjWGoscr",
+ "labs/s05/lab2_generator.cpp#run": "https://godbolt.org/z/sThP6cG19",
+ "labs/s05/lab2_generator_solution.cpp#run": "https://godbolt.org/z/xfPP7zP7c",
+ "labs/s05/lab3_deprecations.cpp#run": "https://godbolt.org/z/vE4bx1dfE",
+ "labs/s05/lab3_deprecations_solution.cpp#run": "https://godbolt.org/z/bzMd3x6j9"
 }
