@@ -154,6 +154,34 @@ exercise (task 5). Demo file: demos/s02/string_view_basics.cpp
 
 <!-- _class: feature dense -->
 
+## `string_view` at a glance <span class="badge cpp17">C++17</span>
+
+<p class="problem">Everything you will use on a view, with the one trap per row.</p>
+
+| Call | What it does | Watch for |
+|---|---|---|
+| `std::string_view sv = str;` / `= "lit"` / `{ptr, len}` | view a `std::string`, a literal, or a buffer | no copy; `sv` dies with what it views |
+| `sv.size()`, `sv.empty()`, `sv.data()` | length, emptiness, pointer to the first char | `data()` is **not** NUL-terminated |
+| `sv[i]`, `sv.front()`, `sv.back()` | element access, unchecked | `sv.at(i)` is the checked one |
+| `sv.substr(pos, n)` | a smaller view, O(1) | throws if `pos > size()` |
+| `sv.remove_prefix(n)`, `sv.remove_suffix(n)` | shrink the view in place, O(1) | `n > size()` is UB |
+| `sv.find(x)`, `rfind`, `find_first_of`, ... | search, same names as `std::string` | returns `npos` when absent |
+| `sv.starts_with(x)`, `sv.ends_with(x)` | prefix and suffix tests | C++20 |
+| `sv.contains(x)` | substring test | C++23 |
+| `sv == other`, `<`, `<=>`, `sv.compare(other)` | compare the characters | never the pointers |
+| `std::string(sv)` | own a copy, when you must keep it | explicit on purpose |
+
+<!--
+Notes: One minute, a screenshot slide. Everything on it is O(1) except the searches. The two
+rows people get wrong are data() (no terminator: printf needs %.*s or a std::string) and
+remove_prefix past the end (no check, undefined). The operations demo in the appendix walks
+the same calls on a real line. Demo file: demos/s02/string_view_basics.cpp
+-->
+
+---
+
+<!-- _class: feature dense -->
+
 ## The dangling rule <span class="badge cpp17">C++17</span>
 
 <p class="problem">A view is a reference. It is valid exactly as long as the thing it views.</p>
@@ -412,6 +440,34 @@ optional<T&> does not exist (C++26 adds it); use a pointer or std::reference_wra
 
 ---
 
+<!-- _class: feature dense -->
+
+## `optional` at a glance <span class="badge cpp17">C++17</span> <span class="badge cpp23">C++23</span>
+
+<p class="problem">A T plus a bool. Ask, then access; or let the monadic calls do both.</p>
+
+| Call | What it does | Watch for |
+|---|---|---|
+| `std::optional<T> o;` / `= value` | empty, or holding a `T` | inline, no allocation; `std::nullopt` is "empty" |
+| `o.has_value()`, `if (o)` | is there a value | `if (auto o = f())` asks and scopes |
+| `*o`, `o->member` | access, unchecked | UB when empty, like a null pointer |
+| `o.value()` | access, checked | throws `std::bad_optional_access` |
+| `o.value_or(fallback)` | the value, or `fallback` | returns a `T` **by value** (a copy) |
+| `o.emplace(args...)`, `o.reset()`, `o = std::nullopt` | build in place, make empty | `emplace` destroys any old value first |
+| `o.transform(f)` | `f(T)` returns `U`; you get `optional<U>` | C++23; `f` cannot fail |
+| `o.and_then(f)` | `f(T)` returns `optional<U>`; you get that | C++23; `f` may return empty |
+| `o.or_else(f)` | `f()` runs only when empty; returns `optional<T>` | C++23; the fallback that computes |
+
+<!--
+Notes: One minute. The row to point at is value_or: it copies, and with an optional<string_view>
+the result is a string_view, which is lab 2.2's TODO 1 stumble. transform versus and_then:
+plain result means transform; optional result means and_then (transform there gives
+optional<optional<U>>). optional<T&> does not exist until C++26. Demo file:
+demos/s02/optional_basics.cpp
+-->
+
+---
+
 ## `optional` as return, member, parameter <span class="badge cpp17">C++17</span>
 
 - **Return type:** yes. "Maybe a result" is what it is for. Replaces `-1`, `nullptr`, `""`, `bool` + out-param.
@@ -520,6 +576,34 @@ void inspect(const Value& v) {
 Notes: A type-safe tagged union. Exactly one alternative is alive; the variant knows which.
 get<T> throws on the wrong type; get_if returns nullptr; index() gives the position. Demo file:
 demos/s02/variant_visit.cpp
+-->
+
+---
+
+<!-- _class: feature dense -->
+
+## `variant` at a glance <span class="badge cpp17">C++17</span>
+
+<p class="problem">Exactly one of a fixed set, and the variant knows which.</p>
+
+| Call | What it does | Watch for |
+|---|---|---|
+| `std::variant<A, B, C> v;` | holds a default-constructed `A` | the **first** alternative; use `std::monostate` first for "empty" |
+| `v = B{...};`, `v.emplace<C>(args...)` | switch to another alternative | converting assignment; the old value is destroyed |
+| `v.index()` | which alternative, 0-based | matches declaration order |
+| `std::holds_alternative<B>(v)` | is it currently a `B` | compile error if `B` is not in the list |
+| `std::get<B>(v)`, `std::get<1>(v)` | the `B` inside, by reference | throws `std::bad_variant_access` if it is not a `B` |
+| `std::get_if<B>(&v)` | pointer to the `B`, or `nullptr` | takes a pointer; pairs with `if (auto* b = ...)` |
+| `std::visit(f, v)` | call `f` with whichever is inside | `f` must accept **every** alternative: exhaustive |
+| `std::visit(overloaded{...}, v)` | one lambda per alternative | the idiom from the next slide |
+| `v == w`, `v < w`, `std::hash` | compare index first, then value | only if every alternative supports it |
+| `v.valueless_by_exception()` | a conversion threw mid-assignment | rare; `visit` throws on it |
+
+<!--
+Notes: One minute. Two ways to look inside: ask-then-get (holds_alternative/get, or get_if in
+one step) for one alternative in one place, and visit for all of them. The difference that
+matters is on the next slide: a chain of holds_alternative checks compiles unchanged when you
+add a fourth type; visit does not. Demo file: demos/s02/variant_visit.cpp
 -->
 
 ---

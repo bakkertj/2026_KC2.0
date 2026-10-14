@@ -1,6 +1,6 @@
 # Session 2 deck outline: Vocabulary Types and the Standard Library
 
-One line per slide. Badge in brackets; "2col" is before/after; "demo" is live; "evo" is a timeline slide. Originally 59 slides for 100 minutes of lecture plus a 20-minute exercise; now 64 slides: 50 presented in four lecture-plus-lab blocks and 13 in a Further reading appendix (see the block table).
+One line per slide. Badge in brackets; "2col" is before/after; "demo" is live; "evo" is a timeline slide. Originally 59 slides for 100 minutes of lecture plus a 20-minute exercise; now 67 slides: 53 presented in four lecture-plus-lab blocks and 13 in a Further reading appendix (see the block table).
 
 ## Block structure (current deck)
 
@@ -8,12 +8,14 @@ The deck now runs as four blocks of about twenty minutes of lecture and a ten-mi
 
 | Block | Deck slides | Lab |
 |---|---|---|
-| 1. Views (0:00) | 1 to 11: opening (1 to 5), `string_view` (6), the dangling rule (7), `const std::string&` (8), `span` (9, 10), takeaway (11) | 12. Lab 2.1 `labs/s02/lab1_views.cpp` (0:20) |
-| 2. Maybe, either, anything (0:30) | 13 to 22: `optional` (13 to 16), `variant` (17 to 19), `any` (20), choosing (21), takeaway (22) | 23. Lab 2.2 `lab2_optional_variant.cpp` (0:50) |
-| 3. `expected` and formatting (1:00) | 24 to 36: `expected` (24 to 30), `format`/`print`/`formatter` (31 to 36) | 37. Lab 2.3 `lab3_expected_format.cpp` (1:20) |
-| 4. Library tour and checklist (1:30) | 38 to 47: tour (38 to 44), deprecated (45), support matrix (46), checklist (47) | 48. Lab 2.4 `lab4_interface_checklist.cpp` (1:42) |
-| Close | 49 at-home exercise, 50 takeaway | |
-| Further reading (not presented) | 51 divider; 52 `string_view` operations, 53 not a C string, 54 `span` mechanics, 55 `mdspan`, 56 transparent comparators, 57 pointer-to-member trap, 58 `variant` details, 59 where these came from, 60 `expected<void>`, 61 formatter with its own spec, 62 formatting ranges, 63 formatting without allocating, 64 migration | |
+| 1. Views (0:00) | 1 to 12: opening (1 to 5), `string_view` (6), `string_view` at a glance (7), the dangling rule (8), `const std::string&` (9), `span` (10, 11), takeaway (12) | 13. Lab 2.1 `labs/s02/lab1_views.cpp` (0:20) |
+| 2. Maybe, either, anything (0:30) | 14 to 25: `optional` (14, 15), `optional` at a glance (16), `optional` as return/member/parameter (17), monadic `optional` (18), `variant` (19), `variant` at a glance (20), `visit` (21), variant in practice (22), `any` (23), choosing (24), takeaway (25) | 26. Lab 2.2 `lab2_optional_variant.cpp` (0:50) |
+| 3. `expected` and formatting (1:00) | 27 to 39: `expected` (27 to 33), `format`/`print`/`formatter` (34 to 39) | 40. Lab 2.3 `lab3_expected_format.cpp` (1:20) |
+| 4. Library tour and checklist (1:30) | 41 to 50: tour (41 to 47), deprecated (48), support matrix (49), checklist (50) | 51. Lab 2.4 `lab4_interface_checklist.cpp` (1:42) |
+| Close | 52 at-home exercise, 53 takeaway | |
+| Further reading (not presented) | 54 divider; 55 `string_view` operations, 56 not a C string, 57 `span` mechanics, 58 `mdspan`, 59 transparent comparators, 60 pointer-to-member trap, 61 `variant` details, 62 where these came from, 63 `expected<void>`, 64 formatter with its own spec, 65 formatting ranges, 66 formatting without allocating, 67 migration | |
+
+The three "at a glance" slides (7, 16, 20) are one-minute reference tables of each type's functions, added after Session 1's feedback that the code used the calls without ever listing them.
 
 The telemetry exercise is at-home work; its former in-class tasks 1 to 3 are the first at-home tasks.
 

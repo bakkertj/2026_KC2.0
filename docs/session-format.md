@@ -18,13 +18,13 @@ The telemetry exercise (`exercises/s0N-*`) is unchanged but is now entirely at-h
 
 Lecture time per session drops from about 100 minutes to about 75. The slides that no longer fit were not deleted: each deck ends with a **Further reading** appendix, after the takeaway slide, that attendees get in the PDF and the speaker skips live. The scripts' `IF AHEAD` material points at them. The lists below are by the slide's title in the deck before the change.
 
-### Session 2 (59 slides to 50 live, including 4 lab slides, + 13 appendix)
+### Session 2 (59 slides to 53 live, including 4 lab slides and three one-minute "at a glance" API tables, + 13 appendix)
 
-- Block 1, Views (0:00): title, agenda, recap, what is a vocabulary type, ownership vocabulary, `string_view`, the dangling rule, when to still take `const std::string&`, `span`, `span` at a hardware boundary, views takeaway. **Lab 2.1** views.
-- Block 2, Maybe, either, anything (0:30): `optional`, mechanics, as return/member/parameter, monadic `optional`, `variant`, `visit` and `overloaded`, variant in practice, `any` (one minute), choosing between them, takeaway. **Lab 2.2** optional and variant.
+- Block 1, Views (0:00): title, agenda, recap, what is a vocabulary type, ownership vocabulary, `string_view`, `string_view` at a glance, the dangling rule, when to still take `const std::string&`, `span`, `span` at a hardware boundary, views takeaway. **Lab 2.1** views.
+- Block 2, Maybe, either, anything (0:30): `optional`, mechanics, `optional` at a glance, as return/member/parameter, monadic `optional`, `variant`, `variant` at a glance, `visit` and `overloaded`, variant in practice, `any` (one minute), choosing between them, takeaway. **Lab 2.2** optional and variant.
 - Block 3, `expected` and formatting (1:00): the landscape, `expected`, mechanics, monadic pipeline, designing the error type, `expected` vs exceptions, takeaway, why `printf` and `iostream` both lost, `format`, the spec mini-language (one minute), `print`/`println`, `formatter` for your own types, formatting takeaway. **Lab 2.3** expected and format.
 - Block 4, Library tour and close (1:30): the seven tour slides, deprecated and removed, support matrix, interface design checklist. **Lab 2.4** the checklist applied (1:42). Exercise (at home) and takeaway.
-- Appendix (deck slides 52 to 64): `string_view` operations, not a C string, `span` mechanics, `mdspan` preview, transparent comparators, the pointer-to-member trap, `variant` details, where these came from, `expected<void, E>`, a formatter with its own spec, formatting ranges, formatting without allocating, migration.
+- Appendix (deck slides 55 to 67): `string_view` operations, not a C string, `span` mechanics, `mdspan` preview, transparent comparators, the pointer-to-member trap, `variant` details, where these came from, `expected<void, E>`, a formatter with its own spec, formatting ranges, formatting without allocating, migration.
 
 ### Session 3 (51 slides to 45 live, including 4 lab slides, + 10 appendix)
 
