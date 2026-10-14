@@ -29,7 +29,7 @@ Four blocks. Each one is about twenty minutes of slides, then a ten-minute lab y
 | 1. Views over data: `string_view`, `span` | 0:00 | 0:20 |
 | 2. Maybe, either, anything: `optional`, `variant`, `any` | 0:30 | 0:50 |
 | 3. Error handling and output: `expected`, `format`, `print` | 1:00 | 1:20 |
-| 4. Library tour and the interface checklist | 1:30 | 1:42 |
+| 4. Library tour and the interface checklist | 1:30 | 1:44 |
 
 The telemetry exercise is at-home work this time; the last slide launches it. Slides we skip live are in a **Further reading** appendix at the end of the PDF.
 
@@ -294,6 +294,33 @@ mean({v.data() + 2, 2});       // pointer + count, the C interface
 Notes: The vector& version said "a vector" when it meant "some doubles". A C array, a std::array,
 a slice, or a pointer+count all become a span with no copy. This is value_range,
 compute_stats and top_n_by_value in the exercise (task 6). Demo file: demos/s02/span_basics.cpp
+-->
+
+---
+
+<!-- _class: feature dense -->
+
+## `span` at a glance <span class="badge cpp20">C++20</span>
+
+<p class="problem">A pointer and a count, for any contiguous run of T. Everything on it is O(1).</p>
+
+| Call | What it does | Watch for |
+|---|---|---|
+| `std::span<const T> s = vec;` / `= arr` / `{ptr, n}` | view a vector, `std::array`, C array, or pointer + count | no copy; `s` dies with the storage |
+| `std::span<T>` vs `std::span<const T>` | writable view vs read-only view | take `const T` unless you write through it |
+| `std::span<T, N>` | static extent: size is part of the type | deduced from a C array or `std::array` |
+| `s.size()`, `s.size_bytes()`, `s.empty()`, `s.data()` | count, byte count, emptiness, pointer | `data()` is the C interface out |
+| `s[i]`, `s.front()`, `s.back()` | element access, unchecked | no `at()` until C++26 |
+| `s.first(n)`, `s.last(n)`, `s.subspan(off, n)` | smaller spans, O(1) | out of range is UB, not an exception |
+| `for (auto& x : s)`, `s.begin()`, `s.end()` | iterate like a container | works with every algorithm |
+| `std::as_bytes(s)`, `std::as_writable_bytes(s)` | the same memory as `span<const std::byte>` | the hardware-boundary call on the next slide |
+| `std::span{v}.subspan(1, 2)` as an argument | a slice, with no temporary container | the C++11 version copied |
+
+<!--
+Notes: One minute. The row to point at is subspan: count, not end index (lab 2.4 catches
+people on this). No bounds checking anywhere; a span is as safe as the indices you give it,
+which is still safer than a pointer and a separately carried length. Demo file:
+demos/s02/span_basics.cpp
 -->
 
 ---
@@ -588,16 +615,16 @@ demos/s02/variant_visit.cpp
 
 | Call | What it does | Watch for |
 |---|---|---|
-| `std::variant<A, B, C> v;` | holds a default-constructed `A` | the **first** alternative; use `std::monostate` first for "empty" |
-| `v = B{...};`, `v.emplace<C>(args...)` | switch to another alternative | converting assignment; the old value is destroyed |
+| `std::variant<A, B, C> v;` | holds a default-constructed `A` | the **first** alternative; put `std::monostate` first for "empty" |
+| `v = B{...};`, `v.emplace<C>(args...)` | switch to another alternative | the old value is destroyed |
 | `v.index()` | which alternative, 0-based | matches declaration order |
 | `std::holds_alternative<B>(v)` | is it currently a `B` | compile error if `B` is not in the list |
 | `std::get<B>(v)`, `std::get<1>(v)` | the `B` inside, by reference | throws `std::bad_variant_access` if it is not a `B` |
-| `std::get_if<B>(&v)` | pointer to the `B`, or `nullptr` | takes a pointer; pairs with `if (auto* b = ...)` |
-| `std::visit(f, v)` | call `f` with whichever is inside | `f` must accept **every** alternative: exhaustive |
+| `std::get_if<B>(&v)` | pointer to the `B`, or `nullptr` | takes a pointer; `if (auto* b = ...)` |
+| `std::visit(f, v)` | call `f` with whichever is inside | `f` must accept **every** alternative, all returning one type |
 | `std::visit(overloaded{...}, v)` | one lambda per alternative | the idiom from the next slide |
-| `v == w`, `v < w`, `std::hash` | compare index first, then value | only if every alternative supports it |
-| `v.valueless_by_exception()` | a conversion threw mid-assignment | rare; `visit` throws on it |
+| `std::visit(f, v, w)` | dispatch on two variants at once | `f` needs an overload for every pair |
+| `v == w`, `v < w`, `std::hash` | comparisons, index first | only if every alternative supports them |
 
 <!--
 Notes: One minute. Two ways to look inside: ask-then-get (holds_alternative/get, or get_if in
@@ -683,33 +710,28 @@ sizeof is the largest alternative plus an index. Demo file: demos/s02/variant_me
 
 ---
 
-<!-- _class: feature -->
+<!-- _class: feature dense -->
 
-## `std::any` <span class="badge cpp17">C++17</span>
+## `std::any` at a glance <span class="badge cpp17">C++17</span>
 
-<p class="problem">Sometimes the set of types is genuinely open and only the caller knows what it put in.</p>
+<p class="problem">Anything at all, and only the caller knows what it put in. Rarely the right tool.</p>
 
-<!-- snippet: demos/s02/any.cpp#any -->
-```cpp
-std::map<std::string, std::any> properties;   // a bag of values whose types are known only to the caller
+| Call | What it does | Watch for |
+|---|---|---|
+| `std::any a;` / `a = 3;` / `a = std::string("x");` | empty, then holding whatever you assign | the type is erased; only the value's `typeid` survives |
+| `a.has_value()`, `a.reset()` | is there a value; make it empty | |
+| `a.type() == typeid(int)` | ask what is inside | `typeid`, not a template parameter |
+| `std::any_cast<int>(a)` | the `int` inside, by value | throws `std::bad_any_cast` if it is not an `int` |
+| `std::any_cast<int>(&a)` | pointer to the `int`, or `nullptr` | the no-throw form; pairs with `if (auto* p = ...)` |
+| `std::make_any<T>(args...)`, `a.emplace<T>(args...)` | build in place | |
+| `std::map<std::string, std::any>` | a property bag | the one honest use case, with plugin boundaries and scripting bridges |
 
-void use() {
-    properties["retries"] = 3;
-    properties["name"] = std::string("gimbal");
-
-    int r = std::any_cast<int>(properties["retries"]);            // throws std::bad_any_cast if wrong
-    if (auto* s = std::any_cast<std::string>(&properties["name"])) {   // nullptr if wrong
-        std::printf("%d %s\n", r, s->c_str());
-    }
-    // properties["retries"].type() == typeid(int)
-}
-```
-
-Heap-allocates for anything larger than a pointer or two. Honest advice: plugin boundaries, scripting bridges, property bags. If you can name the alternatives, use `variant`.
+Heap-allocates for anything larger than a pointer or two. **If you can name the alternatives, use `variant`.**
 
 <!--
-Notes: any is the type people reach for and regret. It is the right tool about once per codebase.
-Demo file: demos/s02/any.cpp
+Notes: One minute. any is the type people reach for and regret: every read is a cast that can
+fail at runtime, which is exactly what variant and visit prevent at compile time. It is the
+right tool about once per codebase. Demo file: demos/s02/any.cpp
 -->
 
 ---
@@ -865,6 +887,33 @@ ParseError why = parse("7").error_or(ParseError::Empty);           // C++23: the
 <!--
 Notes: The unexpected() wrapper is what makes `return v;` and `return unexpected(e);` unambiguous
 even when T and E are the same type. Demo file: demos/s02/expected_basics.cpp
+-->
+
+---
+
+<!-- _class: feature dense -->
+
+## `expected` at a glance <span class="badge cpp23">C++23</span>
+
+<p class="problem">optional's API, plus an error side. Every row has a twin on the optional slide.</p>
+
+| Call | What it does | Watch for |
+|---|---|---|
+| `std::expected<T, E> r = value;` | success: holds a `T` | a plain `return value;` builds it |
+| `return std::unexpected(err);` | failure: holds an `E` | the wrapper is what makes `T == E` unambiguous |
+| `r.has_value()`, `if (r)` | did it succeed | `if (auto r = f())` asks and scopes |
+| `*r`, `r->member` | the value, unchecked | UB on the error state |
+| `r.value()`, `r.error()` | the value, checked; the error | `value()` throws `bad_expected_access<E>` carrying the `E` |
+| `r.value_or(x)`, `r.error_or(e)` | value or fallback; error or fallback | both copy |
+| `r.transform(f)` | `f(T)` returns `U`; you get `expected<U, E>` | `f` cannot fail |
+| `r.and_then(f)` | `f(T)` returns `expected<U, E>`; you get that | `f` can fail with the same `E` |
+| `r.transform_error(g)`, `r.or_else(g)` | map the error type; recover from an error | `transform_error` at layer boundaries |
+| `std::expected<void, E>` | "did it work", no value | `has_value()` and `error()` still apply |
+
+<!--
+Notes: One minute. Read it against the optional table: same shape, one extra column of calls
+for the error side. The two to point at: unexpected() on every error return (lab 2.3 TODO 1),
+and transform versus and_then (TODO 2). Demo file: demos/s02/expected_basics.cpp
 -->
 
 ---
@@ -1087,6 +1136,34 @@ tests keep tmpfile(). Demo file: demos/s02/print.cpp
 
 ---
 
+<!-- _class: feature dense -->
+
+## `format`, `print`, `println` at a glance <span class="badge cpp20">C++20</span> <span class="badge cpp23">C++23</span>
+
+<p class="problem">One format-string syntax, five ways to send the result somewhere.</p>
+
+| Call | What it does | Watch for |
+|---|---|---|
+| `std::format("{} {:.3f}", a, b)` | build a `std::string` | C++20; the format string is checked at compile time |
+| `std::format_to(out, "...", args)` | write through an output iterator | `std::back_inserter(str)`, or a buffer |
+| `std::format_to_n(buf, n, "...", args)` | write at most `n` characters | returns `.out` and the untruncated `.size` |
+| `std::formatted_size("...", args)` | how long it would be | size a buffer first |
+| `std::vformat(str, std::make_format_args(args...))` | a run-time format string | errors become `std::format_error` at run time |
+| `std::print("...", args)` | format straight to `stdout` | C++23; no `std::string` in between |
+| `std::println("...", args)` | the same, plus a newline | C++23; `print(stderr, ...)` and `println(stream, ...)` replace `fprintf` |
+| `{}`, `{0} {1}`, `{:<16}`, `{:04X}`, `{:.3f}` | the spec mini-language | `{{` and `}}` for literal braces |
+| `std::println("{}", vec)` | ranges and tuples format themselves | C++23; `{::.3f}` applies a spec per element |
+
+<!--
+Notes: One minute. The first row is the one that matters: a wrong placeholder is a compile
+error, not a crash at 3 a.m. print and println are format without the string; use them for
+everything that used to be printf. vformat is the escape hatch for run-time format strings,
+and it is where the compile-time check cannot help. Demo files: demos/s02/format_specs.cpp,
+demos/s02/print.cpp
+-->
+
+---
+
 <!-- _class: feature -->
 
 ## `std::formatter` for your own types <span class="badge cpp20">C++20</span>
@@ -1129,6 +1206,31 @@ it. Exercise task 4. Demo file: demos/s02/formatter_custom.cpp
 
 ---
 
+<!-- _class: feature dense -->
+
+## `std::formatter` at a glance <span class="badge cpp20">C++20</span>
+
+<p class="problem">Two member functions, and the three ways to write them.</p>
+
+| Piece | What it does | Watch for |
+|---|---|---|
+| `template <> struct std::formatter<T> { ... };` | teaches `format` about `T` | spelled `std::formatter<T>`, at global scope or in `std` |
+| `constexpr auto parse(std::format_parse_context& ctx)` | read the spec between `:` and `}`; return where you stopped | return `ctx.begin()` to accept an empty spec only |
+| `template <class Ctx> auto format(const T& v, Ctx& ctx) const` | write `v` to `ctx.out()`; return the iterator | a template on the context, and `const`: libc++ checks both |
+| `return std::format_to(ctx.out(), "...", fields...);` | the usual body of `format` | delegate; do not hand-build strings |
+| `: std::formatter<std::string_view>` | inherit `parse`, width and alignment for free | the enum-like pattern: format `to_string(v)` through the base |
+| `: std::formatter<double>` and a stored spec | forward a numeric spec to a member | `{:.2f}` on your type means `.2f` on the field you choose |
+| `std::format("{}", t)` fails to compile | no specialization, or `format` not `const`, or `parse` not `constexpr` | the error names `formattable`; check those three first |
+
+<!--
+Notes: One minute. Pattern one, inherit from formatter<string_view>: five lines, and you get
+{:>10} for free. Pattern two, parse plus format from scratch: for structs. Lab 2.3's TODO 3
+is pattern two with an empty parse. Demo files: demos/s02/formatter_custom.cpp,
+demos/s02/formatter_spec.cpp
+-->
+
+---
+
 <!-- _class: takeaway -->
 
 ## Formatting takeaway
@@ -1164,7 +1266,7 @@ read the four output lines and ask which stage produced each failure.
 
 ---
 
-<!-- SEGMENT: Block 4, Library tour and the checklist (1:30; lab at 1:48) -->
+<!-- SEGMENT: Block 4, Library tour and the checklist (1:30; lab at 1:44) -->
 
 <!-- _class: feature -->
 
@@ -1191,6 +1293,31 @@ fs::remove_all(p.parent_path(), ec);                   // error_code overload: n
 Notes: `operator/` joins paths. Every operation has a throwing overload and an error_code
 overload. The exercise's main.cpp could check fs::exists before opening. Demo file:
 demos/s02/tour_filesystem.cpp
+-->
+
+---
+
+<!-- _class: feature dense -->
+
+## `std::filesystem` at a glance <span class="badge cpp17">C++17</span>
+
+<p class="problem">Paths, queries, and directory walks. Every operation comes in a throwing and an error_code form.</p>
+
+| Call | What it does | Watch for |
+|---|---|---|
+| `fs::path p = dir / "run1.csv";` | portable path joining | `operator/` inserts the platform separator |
+| `p.filename()`, `p.stem()`, `p.extension()`, `p.parent_path()` | take the path apart | each is a `path`; `.string()` to print |
+| `fs::exists(p)`, `fs::is_regular_file(p)`, `fs::is_directory(p)` | queries | the file can vanish after the check; handle the open failing too |
+| `fs::file_size(p)`, `fs::last_write_time(p)` | metadata | `file_time_type` has its own clock (`clock_cast`, C++20) |
+| `fs::create_directories(p)`, `fs::remove(p)`, `fs::remove_all(p)` | make or delete | `remove_all` is recursive |
+| `fs::copy(a, b)`, `fs::rename(a, b)` | copy and move | `copy_options::overwrite_existing` |
+| `for (auto& e : fs::directory_iterator(dir))` | one level; `recursive_directory_iterator` walks down | `e.path()`, `e.is_regular_file()`, `e.file_size()` |
+| `fs::remove(p, ec)` with `std::error_code ec;` | the no-throw overload | every operation has one; the other throws `fs::filesystem_error` |
+
+<!--
+Notes: One minute. The habit to build: pick the error_code overload in anything that runs
+unattended, and the throwing one in tools where an exception ending the run is fine.
+Demo file: demos/s02/tour_filesystem.cpp
 -->
 
 ---
@@ -1328,6 +1455,31 @@ the tzdata database (libstdc++ 13+ ships one; libc++ 19+). Demo file: demos/s02/
 
 <!-- _class: feature dense -->
 
+## `<chrono>` at a glance <span class="badge cpp11">C++11</span> <span class="badge cpp20">C++20</span>
+
+<p class="problem">Durations and time points since C++11; calendars, formatting and time zones since C++20.</p>
+
+| Call | What it does | Watch for |
+|---|---|---|
+| `1500ms`, `2s`, `3h`, `milliseconds{1500}` | typed durations | `using namespace std::chrono_literals` |
+| `duration_cast<s>(d)`, `floor<s>(d)`, `round<s>(d)` | convert, choosing the rounding | implicit only when nothing is lost |
+| `steady_clock::now()`, `system_clock::now()` | measure elapsed time; stamp wall time | never measure with `system_clock` |
+| `sys_time<milliseconds>{ms}`, `sys_seconds`, `sys_days` | a time point with a unit | the typed version of the exercise's timestamp |
+| `std::println("{:%F %T}", tp)` | format a time point | C++20; `%F` date, `%T` time, `%Z` zone |
+| `floor<days>(tp)`, `year_month_day{d}`, `weekday{d}` | truncate to a day; take it apart | `.year()`, `.month()`, `.day()`; `ok()` validates |
+| `ymd + months{1}`, `2024y/8/30`, `hh_mm_ss{dur}` | calendar arithmetic, literals, hours and minutes split | `2024y/2/30` is `!ok()`, not an exception |
+| `zoned_time{"America/Chicago", tp}`, `clock_cast<utc_clock>(tp)` | local time in a named zone; convert between clocks | zones need the tz database (libstdc++ 13+, libc++ 19+) |
+
+<!--
+Notes: One minute. Two habits: steady_clock for durations, system_clock for timestamps; and
+the typed time point instead of a long long of milliseconds, because then {:%F %T} prints it
+and the calendar arithmetic is right. Demo file: demos/s02/tour_chrono.cpp
+-->
+
+---
+
+<!-- _class: feature dense -->
+
 ## C++23 tour, 1: `flat_map`, `stacktrace`, `move_only_function` <span class="badge cpp23">C++23</span>
 
 <p class="problem">Three additions with uneven availability today (GCC 15 / libc++ 20 for flat_map; libstdc++ only for stacktrace, link -lstdc++exp; libstdc++ only for move_only_function, libc++ has none yet).</p>
@@ -1423,7 +1575,7 @@ in handouts/toolchain-support-matrix.md.
 
 ---
 
-<!-- Checklist (1:45), then lab 2.4 at 1:48 and the close at 1:58 -->
+<!-- Checklist (1:42), then lab 2.4 at 1:44 and the close at 1:54 -->
 
 ## Interface design checklist
 
@@ -1593,23 +1745,26 @@ the compiler rejects an 8-byte array. Show the demo's `std::span<std::byte, 8>` 
 
 ---
 
-<!-- _class: appendix -->
+<!-- _class: feature dense appendix -->
 
-## `std::mdspan`: a preview <span class="badge cpp23">C++23</span>
+## `std::mdspan` at a glance <span class="badge cpp23">C++23</span>
 
-```cpp
-std::array<float, 12> buf{};
-std::mdspan<float, std::extents<std::size_t, 3, 4>> m{buf.data()};   // 3x4 view over flat storage
-m[1, 2] = 7.0f;                            // C++23 multidimensional subscript
-std::mdspan<float, std::dextents<std::size_t, 2>> d{buf.data(), 3, 4};   // dynamic extents
-```
+<p class="problem">A span with a shape: the same flat buffer seen as a matrix, with no copy.</p>
 
-- A view, like `span`, but with a shape and a **layout policy** (`layout_right`, `layout_left`, `layout_stride`): the same buffer as row-major or column-major with no copy
-- Available: libc++ 17+; libstdc++ from GCC 15. Compiler Explorer for today.
+| Call | What it does | Watch for |
+|---|---|---|
+| `std::mdspan<float, std::extents<size_t, 3, 4>> m{buf.data()};` | a 3 by 4 view over 12 floats | static extents: the shape is in the type |
+| `std::mdspan<float, std::dextents<size_t, 2>> d{buf.data(), rows, cols};` | dynamic extents | `dextents<size_t, N>` for an N-dimensional run-time shape |
+| `m[1, 2] = 7.0f;` | multidimensional subscript | C++23 `operator[]` with several indices |
+| `m.extent(0)`, `m.extent(1)`, `m.rank()`, `m.size()` | the shape | `size()` is the element count |
+| `std::layout_right` (default), `layout_left`, `layout_stride` | row-major, column-major, arbitrary strides | the same memory, a different mapping, no copy |
+| `m.data_handle()`, `m.mapping()`, `m.accessor()` | the three policy pieces | an accessor can add bounds checks or atomics |
+| `std::submdspan(m, 1, std::full_extent)` | a row, a column, or a tile as a new view | C++26; `std::strided_slice` for steps |
+| Availability | libc++ 17+; libstdc++ from GCC 15 | Compiler Explorer for today |
 
 <!--
-Notes: One slide. The audience for it is anyone with image or matrix buffers. Hand-typed:
-GCC 14 lacks the header.
+Notes: The audience for this is anyone with image or matrix buffers in a flat array.
+Hand-typed: GCC 14 lacks the header.
 -->
 
 ---
